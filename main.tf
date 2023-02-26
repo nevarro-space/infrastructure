@@ -17,3 +17,19 @@ terraform {
 provider "hcloud" {
   token = var.hcloud_token
 }
+
+# SSH Keys
+resource "hcloud_ssh_key" "tatooine_ssh_key" {
+  name       = "sumner@tatooine"
+  public_key = file("./ssh-pubkeys/tatooine.pub")
+}
+
+resource "hcloud_ssh_key" "coruscant_ssh_key" {
+  name       = "sumner@coruscant"
+  public_key = file("./ssh-pubkeys/coruscant.pub")
+}
+
+resource "hcloud_ssh_key" "scarif_ssh_key" {
+  name       = "sumner@scarif"
+  public_key = file("./ssh-pubkeys/scarif.pub")
+}
