@@ -3,13 +3,23 @@ variable "hcloud_token" {
   type      = string
 }
 
+variable "hetznerdns_token" {
+  sensitive = true
+  type      = string
+}
+
 # Configure the Hetzner Cloud Provider
 terraform {
   required_version = ">= 1.0"
+
   required_providers {
     hcloud = {
       source  = "hetznercloud/hcloud"
       version = "1.36.2"
+    }
+    hetznerdns = {
+      source  = "timohirt/hetznerdns"
+      version = "2.2.0"
     }
   }
 
@@ -24,6 +34,10 @@ terraform {
 
 provider "hcloud" {
   token = var.hcloud_token
+}
+
+provider "hetznerdns" {
+  apitoken = var.hetznerdns_token
 }
 
 # SSH Keys
@@ -88,28 +102,4 @@ resource "hcloud_firewall" "web_server_firewall" {
       "::/0"
     ]
   }
-}
-
-resource "hcloud_server" "mineshspc" {
-  name        = "mineshspc"
-  image       = "ubuntu-22.04"
-  server_type = "cx11"
-  location    = "ash"
-
-  ssh_keys = [
-    hcloud_ssh_key.tatooine_ssh_key.id,
-    hcloud_ssh_key.coruscant_ssh_key.id,
-    hcloud_ssh_key.scarif_ssh_key.id,
-  ]
-
-  firewall_ids = [
-    hcloud_firewall.web_server_firewall.id,
-  ]
-
-  public_net {
-    ipv4_enabled = true
-    ipv6_enabled = true
-  }
-
-  user_data = file("./cloud-init/mineshspc")
 }
