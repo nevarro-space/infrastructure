@@ -1,0 +1,15 @@
+name: Deploy Infrastructure
+
+on:
+  push:
+    branches: [master]
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Run pre-commit
+        uses: pre-commit/action@v3.0.0
