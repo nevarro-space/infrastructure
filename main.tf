@@ -89,3 +89,27 @@ resource "hcloud_firewall" "web_server_firewall" {
     ]
   }
 }
+
+resource "hcloud_server" "mineshspc" {
+  name        = "mineshspc"
+  image       = "ubuntu-22.04"
+  server_type = "cx11"
+  location    = "ash"
+
+  ssh_keys = [
+    hcloud_ssh_key.tatooine_ssh_key.id,
+    hcloud_ssh_key.coruscant_ssh_key.id,
+    hcloud_ssh_key.scarif_ssh_key.id,
+  ]
+
+  firewall_ids = [
+    hcloud_firewall.web_server_firewall.id,
+  ]
+
+  public_net {
+    ipv4_enabled = true
+    ipv6_enabled = true
+  }
+
+  user_data = file("./cloud-init/mineshspc")
+}
