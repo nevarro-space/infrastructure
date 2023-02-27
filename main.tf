@@ -12,6 +12,14 @@ terraform {
       version = "1.36.2"
     }
   }
+
+  cloud {
+    organization = "nevarro"
+
+    workspaces {
+      name = "infrastructure"
+    }
+  }
 }
 
 provider "hcloud" {
