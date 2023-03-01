@@ -2,8 +2,8 @@
 pkgs.mkShell {
   propagatedBuildInputs = with pkgs; [
     cargo
+    colmena
     git-crypt
-    # nixops_unstable
     nodePackages.bash-language-server
     openssl
     pre-commit
