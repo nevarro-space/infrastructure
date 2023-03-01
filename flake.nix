@@ -12,12 +12,18 @@
         description = "Nevarro Infrastructure";
       };
 
-      mineshspc = { lib, pkgs, ... }: {
+      mineshspc = { config, lib, pkgs, ... }: {
         deployment = {
           targetHost = "5.161.87.234";
           targetPort = 22;
           targetUser = "root";
           tags = [ "hetzner" "ashburn" ];
+
+          keys = {
+            mineshspc_env = {
+              keyFile = ./secrets/mineshspc_env;
+            };
+          };
         };
 
         boot = {
@@ -69,17 +75,27 @@
             };
           };
         };
+
         # Open up the ports
         networking.firewall.allowedTCPPorts = [ 80 443 ];
 
         virtualisation.oci-containers.containers = {
           "mineshspc.com" = {
-            image = "ghcr.io/coloradoschoolofmines/mineshspc.com:d61d4f7a2816191011e0c9e65e1856441da12876";
+            image = "ghcr.io/coloradoschoolofmines/mineshspc.com:39b61502edefa421512c017ec654dbd46f76d309";
             volumes = [ "/var/lib/mineshspc:/data" ];
             ports = [ "8090:8090" ];
+            environmentFiles = [ "/run/keys/mineshspc_env" ];
+            environment = {
+              MINESHSPC_DOMAIN = "https://mineshspc.com";
+              MINESHSPC_HOSTED_BY_HTML = ''Hosting provided by <a href="https://nevarro.space" target="_blank">Nevarro LLC</a>.'';
+            };
           };
         };
+        systemd.services."${config.virtualisation.oci-containers.backend}-mineshspc.com".after = [
+          "mineshspc_env-key.service"
+        ];
 
+        # Make sure that the working directory is available
         system.activationScripts.makeMinesHSPCDir = lib.stringAfter [ "var" ] ''
           mkdir -p /var/lib/mineshspc
         '';

@@ -58,9 +58,8 @@ resource "hetznerdns_record" "mineshspc_ns_3" {
 resource "hetznerdns_record" "mineshspc_com_root" {
   zone_id = hetznerdns_zone.mineshspc_com.id
   name    = "@"
-  # value   = hcloud_server.mineshspc.ipv4_address
-  value = "5.161.43.204"
-  type  = "A"
+  value   = hcloud_server.mineshspc.ipv4_address
+  type    = "A"
 }
 
 resource "hetznerdns_record" "mineshspc_com_mx_1" {
