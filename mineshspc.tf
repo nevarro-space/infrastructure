@@ -27,6 +27,13 @@ resource "hetznerdns_zone" "mineshspc_com" {
   ttl  = 60
 }
 
+resource "hetznerdns_record" "mineshspc_cname_status" {
+  zone_id = hetznerdns_zone.mineshspc_com.id
+  name    = "status"
+  value   = "stats.uptimerobot.com."
+  type    = "CNAME"
+}
+
 resource "hetznerdns_record" "mineshspc_ns_1" {
   zone_id = hetznerdns_zone.mineshspc_com.id
   name    = "@"
