@@ -3,6 +3,7 @@ pkgs.mkShell {
   propagatedBuildInputs = with pkgs; [
     cargo
     colmena
+    git
     git-crypt
     nodePackages.bash-language-server
     openssl

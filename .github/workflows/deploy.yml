@@ -22,6 +22,8 @@ jobs:
   terraform-plan:
     name: Terraform Plan
     runs-on: ubuntu-latest
+    outputs:
+      exit_code: ${{ steps.terraform_plan.outputs.exit_code }}
 
     steps:
       - uses: actions/checkout@v3
@@ -35,7 +37,10 @@ jobs:
         run: terraform init
 
       - name: Terraform Plan
-        run: terraform plan -input=false
+        id: terraform_plan
+        run: |
+          terraform plan -input=false -detailed-exitcode
+          echo "exit_code=$?" >> $GITHUB_OUTPUT
 
   terraform-apply:
     name: Terraform Apply
@@ -43,8 +48,8 @@ jobs:
       - lint
       - terraform-plan
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/master'
-    environment: production
+    if: github.ref == 'refs/heads/master' && needs.terraform-plan.outputs.exit_code == 2
+    environment: terraform
 
     steps:
       - uses: actions/checkout@v3
@@ -59,3 +64,68 @@ jobs:
 
       - name: Terraform Apply
         run: terraform apply -auto-approve -input=false
+
+  colmena-build:
+    name: Colmena Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: cachix/install-nix-action@v19
+        with:
+          nix_path: nixpkgs=channel:nixos-unstable
+
+      - name: Install dependencies
+        run: nix-shell --command "echo dependencies installed"
+
+      - name: colmena build
+        run: nix-shell --command "colmena build"
+
+  colmena-apply:
+    name: Colmena Apply
+    needs:
+      - colmena-build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/master'
+    environment: production
+    env:
+      GIT_CRYPT_SECRET: ${{ secrets.GIT_CRYPT_SECRET }}
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          path: infrastructure
+
+      - uses: actions/checkout@v3
+        with:
+          repository: nevarro-space/infrastructure-secrets
+          token: ${{ secrets.SECRET_REPO_CLONE_TOKEN }}
+          path: infrastructure-secrets
+
+      - uses: cachix/install-nix-action@v19
+        with:
+          nix_path: nixpkgs=channel:nixos-unstable
+
+      - name: Unlock git crypt
+        run: |
+          echo "$GIT_CRYPT_SECRET" | base64 -d > "$HOME/git-crypt-secret"
+          cd infrastructure-secrets
+          nix-shell --command "git crypt unlock $HOME/git-crypt-secret"
+          rm $HOME/git-crypt-secret
+
+      - name: Install SSH Key
+        uses: shimataro/ssh-key-action@v2.5.0
+        with:
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          known_hosts: ${{ secrets.MINESHSPC_KNOWN_HOSTS }}
+
+      - name: Install dependencies
+        run: |
+          cd infrastructure
+          nix-shell --command "echo dependencies installed"
+
+      - name: colmena apply
+        run: |
+          cd infrastructure
+          nix-shell --command "colmena apply"
