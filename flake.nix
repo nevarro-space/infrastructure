@@ -88,6 +88,7 @@
             environment = {
               MINESHSPC_DOMAIN = "https://mineshspc.com";
               MINESHSPC_HOSTED_BY_HTML = ''Hosting provided by <a href="https://nevarro.space" target="_blank">Nevarro LLC</a>.'';
+              MINESHSPC_REGISTRATION_ENABLED = "1";
             };
           };
         };
