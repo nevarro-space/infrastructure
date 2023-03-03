@@ -1,13 +1,13 @@
 {
+  description = "Nevarro Infrastructure NixOS deployments";
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
   };
-  outputs = { nixpkgs, ... }: {
+  outputs = { nixpkgs-unstable, ... }: {
     colmena = {
       meta = {
-        nixpkgs = import nixpkgs {
+        nixpkgs = import nixpkgs-unstable {
           system = "x86_64-linux";
-          overlays = [ ];
         };
         description = "Nevarro Infrastructure";
       };
@@ -34,6 +34,14 @@
         security.acme = {
           defaults.email = "admin@nevarro.space";
           acceptTerms = true;
+        };
+
+        services.prometheus.exporters = {
+          node = {
+            enable = true;
+            enabledCollectors = [ "systemd" ];
+            port = 9002;
+          };
         };
 
         services.openssh.enable = true;
@@ -77,6 +85,10 @@
           settings = {
             server.domain = "grafana.${config.networking.domain}";
           };
+        };
+
+        services.prometheus = {
+          enable = true;
         };
 
         services.nginx = {
