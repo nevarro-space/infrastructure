@@ -22,6 +22,12 @@ resource "hcloud_server" "monitoring" {
   user_data = file("./cloud-init/nixos")
 }
 
+resource "hcloud_server_network" "monitoring_nevarronet" {
+  server_id  = hcloud_server.monitoring.id
+  network_id = hcloud_network.nevarro_network.id
+  ip         = "10.0.1.2"
+}
+
 resource "hetznerdns_zone" "nevarro_space" {
   name = "nevarro.space"
   ttl  = 60

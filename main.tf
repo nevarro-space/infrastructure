@@ -103,3 +103,16 @@ resource "hcloud_firewall" "web_server_firewall" {
     ]
   }
 }
+
+# Private Networks
+resource "hcloud_network" "nevarro_network" {
+  name     = "nevarro"
+  ip_range = "10.0.0.0/8"
+}
+
+resource "hcloud_network_subnet" "nevarronet" {
+  network_id   = hcloud_network.nevarro_network.id
+  type         = "cloud"
+  network_zone = "us-east"
+  ip_range     = "10.0.1.0/24"
+}

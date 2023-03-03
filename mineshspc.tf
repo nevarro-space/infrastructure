@@ -22,6 +22,12 @@ resource "hcloud_server" "mineshspc" {
   user_data = file("./cloud-init/nixos")
 }
 
+resource "hcloud_server_network" "mineshspc_nevarronet" {
+  server_id  = hcloud_server.mineshspc.id
+  network_id = hcloud_network.nevarro_network.id
+  ip         = "10.0.1.1"
+}
+
 resource "hetznerdns_zone" "mineshspc_com" {
   name = "mineshspc.com"
   ttl  = 3600

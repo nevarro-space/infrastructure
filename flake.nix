@@ -44,6 +44,37 @@
           };
         };
 
+        services.promtail = {
+          enable = true;
+          configuration = {
+            server = {
+              http_listen_port = 28183;
+              grpc_listen_port = 0;
+            };
+            positions.filename = "/tmp/positions.yaml";
+            clients = [
+              { url = "http://10.0.1.2:3100/loki/api/v1/push"; }
+            ];
+            scrape_configs = [
+              {
+                job_name = "journal";
+                journal = {
+                  max_age = "12h";
+                  labels = {
+                    job = "systemd-journal";
+                    host = config.networking.hostName;
+                  };
+                };
+                relabel_configs = [
+                  { source_labels = [ "__journal__systemd_unit" ]; target_label = "unit"; }
+                ];
+              }
+            ];
+          };
+        };
+
+        networking.firewall.allowedTCPPorts = [ 9002 ];
+
         services.openssh.enable = true;
         services.openssh.settings.PermitRootLogin = "prohibit-password";
 
@@ -89,6 +120,73 @@
 
         services.prometheus = {
           enable = true;
+          scrapeConfigs = [
+            {
+              job_name = "monitoring";
+              static_configs = [{
+                targets = [ "127.0.0.1:${toString config.services.prometheus.exporters.node.port}" ];
+              }];
+            }
+            {
+              job_name = "mineshspc";
+              static_configs = [{
+                targets = [ "10.0.1.1:${toString config.services.prometheus.exporters.node.port}" ];
+              }];
+            }
+          ];
+        };
+
+        services.loki = {
+          enable = true;
+          configuration = {
+            auth_enabled = false;
+            server = {
+              http_listen_port = 3100;
+            };
+            ingester = {
+              lifecycler.ring = {
+                kvstore.store = "inmemory";
+                replication_factor = 1;
+              };
+              chunk_idle_period = "1h";
+              chunk_target_size = 1048576;
+              max_transfer_retries = 0;
+            };
+            schema_config = {
+              configs = [
+                {
+                  from = "2022-03-03";
+                  store = "boltdb-shipper";
+                  object_store = "filesystem";
+                  schema = "v11";
+                  index = { prefix = "index_"; period = "24h"; };
+                }
+              ];
+            };
+            storage_config = {
+              boltdb_shipper = {
+                active_index_directory = "/var/lib/loki/boltdb-shipper-active";
+                cache_location = "/var/lib/loki/boltdb-shipper-cache";
+                cache_ttl = "24h";
+                shared_store = "filesystem";
+              };
+              filesystem.directory = "/var/lib/loki/chunks";
+            };
+            limits_config = {
+              reject_old_samples = true;
+              reject_old_samples_max_age = "168h";
+            };
+            chunk_store_config.max_look_back_period = "0s";
+            table_manager = {
+              retention_deletes_enabled = false;
+              retention_period = "0s";
+            };
+            compactor = {
+              working_directory = "/var/lib/loki";
+              shared_store = "filesystem";
+              compactor_ring.kvstore.store = "inmemory";
+            };
+          };
         };
 
         services.nginx = {
@@ -122,7 +220,7 @@
         };
 
         # Open up the ports
-        networking.firewall.allowedTCPPorts = [ 80 443 ];
+        networking.firewall.allowedTCPPorts = [ 80 443 3100 ];
       };
 
       mineshspc = { config, lib, pkgs, ... }: {
