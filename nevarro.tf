@@ -34,6 +34,13 @@ resource "hetznerdns_record" "nevarro_space_cname_status" {
   type    = "CNAME"
 }
 
+resource "hetznerdns_record" "nevarro_space_a_monitoring" {
+  zone_id = hetznerdns_zone.nevarro_space.id
+  name    = "monitoring"
+  value   = hcloud_server.monitoring.ipv4_address
+  type    = "A"
+}
+
 resource "hetznerdns_record" "nevarro_space_a_grafana" {
   zone_id = hetznerdns_zone.nevarro_space.id
   name    = "grafana"
