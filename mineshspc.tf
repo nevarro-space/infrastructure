@@ -19,7 +19,7 @@ resource "hcloud_server" "mineshspc" {
     ipv6_enabled = true
   }
 
-  user_data = file("./cloud-init/mineshspc")
+  user_data = file("./cloud-init/nixos")
 }
 
 resource "hetznerdns_zone" "mineshspc_com" {
@@ -104,30 +104,30 @@ resource "hetznerdns_record" "mineshspc_com_cname_autoconfig" {
   type    = "CNAME"
 }
 
-resource "hetznerdns_record" "mineshspc_com_srv_autodiscover" {
+resource "hetznerdns_record" "mineshspc_com_srv_autodiscover_tcp" {
   zone_id = hetznerdns_zone.mineshspc_com.id
-  name    = "_autodiscover"
+  name    = "_autodiscover._tcp"
   value   = "0 1 443 autodiscover.migadu.com"
   type    = "SRV"
 }
 
-resource "hetznerdns_record" "mineshspc_com_srv_imaps" {
+resource "hetznerdns_record" "mineshspc_com_srv_imaps_tcp" {
   zone_id = hetznerdns_zone.mineshspc_com.id
-  name    = "_imaps"
+  name    = "_imaps._tcp"
   value   = "0 1 993 imap.migadu.com"
   type    = "SRV"
 }
 
-resource "hetznerdns_record" "mineshspc_com_srv_pop3s" {
+resource "hetznerdns_record" "mineshspc_com_srv_pop3s_tcp" {
   zone_id = hetznerdns_zone.mineshspc_com.id
-  name    = "_pop3s"
+  name    = "_pop3s._tcp"
   value   = "0 1 995 pop.migadu.com"
   type    = "SRV"
 }
 
-resource "hetznerdns_record" "mineshspc_com_srv_submissions" {
+resource "hetznerdns_record" "mineshspc_com_srv_submissions_tcp" {
   zone_id = hetznerdns_zone.mineshspc_com.id
-  name    = "_submissions"
+  name    = "_submissions._tcp"
   value   = "0 1 465 smtp.migadu.com"
   type    = "SRV"
 }

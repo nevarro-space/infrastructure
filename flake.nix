@@ -14,7 +14,7 @@
 
       mineshspc = { config, lib, pkgs, ... }: {
         deployment = {
-          targetHost = "5.161.87.234";
+          targetHost = "mineshspc.com";
           targetPort = 22;
           targetUser = "root";
           tags = [ "hetzner" "ashburn" ];
@@ -74,6 +74,10 @@
               '';
             };
           };
+        };
+
+        services.grafana = {
+          enable = true;
         };
 
         # Open up the ports
