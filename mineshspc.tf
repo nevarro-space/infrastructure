@@ -24,7 +24,7 @@ resource "hcloud_server" "mineshspc" {
 
 resource "hetznerdns_zone" "mineshspc_com" {
   name = "mineshspc.com"
-  ttl  = 60
+  ttl  = 3600
 }
 
 resource "hetznerdns_record" "mineshspc_cname_status" {
