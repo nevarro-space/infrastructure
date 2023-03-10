@@ -277,7 +277,10 @@
             environmentFiles = [ "/run/keys/mineshspc_env" ];
             environment = {
               MINESHSPC_DOMAIN = "https://mineshspc.com";
-              MINESHSPC_HOSTED_BY_HTML = ''Hosting provided by <a href="https://nevarro.space" target="_blank">Nevarro LLC</a>.'';
+              MINESHSPC_HOSTED_BY_HTML = ''
+                Hosting provided by <a href="https://nevarro.space" target="_blank">Nevarro LLC</a>.
+                Check the <a href="https://status.mineshspc.com/" target="_blank">site status</a>.
+              '';
               MINESHSPC_REGISTRATION_ENABLED = "1";
             };
           };
