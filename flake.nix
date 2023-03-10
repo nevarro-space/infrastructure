@@ -232,6 +232,8 @@
 
           keys = {
             mineshspc_env.keyCommand = [ "cat" "../infrastructure-secrets/secrets/mineshspc_env" ];
+            restic_password_file.keyCommand = [ "cat" "../infrastructure-secrets/secrets/restic_password_file" ];
+            restic_environment_file.keyCommand = [ "cat" "../infrastructure-secrets/secrets/restic_environment_file" ];
           };
         };
 
@@ -294,6 +296,46 @@
         system.activationScripts.makeMinesHSPCDir = lib.stringAfter [ "var" ] ''
           mkdir -p /var/lib/mineshspc
         '';
+
+        systemd.services."restic-backup" =
+          let
+            resticCmd = "${pkgs.restic}/bin/restic --verbose=3";
+            resticBackupScript = paths: exclude: pkgs.writeShellScriptBin "restic-backup" ''
+              set -xe
+
+              # Perfrom the backup
+              ${resticCmd} backup \
+                ${lib.concatStringsSep " " paths} \
+                ${lib.concatMapStringsSep " " (e: "-e \"${e}\"") exclude}
+
+              # Make sure that the backup has time to settle before running the check.
+              sleep 10
+
+              # Check the validity of the repository.
+              ${resticCmd} check
+            '';
+            script = resticBackupScript [ "/var/lib/mineshspc" ] [ ];
+          in
+          {
+            description = "Run Restic Backup";
+            environment = {
+              RESTIC_PASSWORD_FILE = "/run/keys/restic_password_file";
+              RESTIC_REPOSITORY = "b2:nevarro-backups:mineshspc";
+              RESTIC_CACHE_DIR = "/var/cache";
+            };
+            startAt = "0/2:0"; # Run backup every 2 hours
+            serviceConfig = {
+              ExecStart = "${script}/bin/restic-backup";
+              EnvironmentFile = "/run/keys/restic_environment_file";
+              PrivateTmp = true;
+              ProtectSystem = true;
+              ProtectHome = "read-only";
+            };
+            # Initialize the repository if it doesn't exist already.
+            preStart = ''
+              ${resticCmd} snapshots || ${resticCmd} init
+            '';
+          };
       };
     };
   };
