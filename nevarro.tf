@@ -89,11 +89,60 @@ resource "hetznerdns_record" "nevarro_space_mx_2" {
   type    = "MX"
 }
 
-resource "hetznerdns_record" "nevarro_space_a_root" {
+resource "hetznerdns_record" "nevarro_space_a_root_1" {
   zone_id = hetznerdns_zone.nevarro_space.id
   name    = "@"
-  value   = "5.161.43.147"
+  value   = "185.199.108.153"
   type    = "A"
+}
+
+resource "hetznerdns_record" "nevarro_space_a_root_2" {
+  zone_id = hetznerdns_zone.nevarro_space.id
+  name    = "@"
+  value   = "185.199.109.153"
+  type    = "A"
+}
+
+resource "hetznerdns_record" "nevarro_space_a_root_3" {
+  zone_id = hetznerdns_zone.nevarro_space.id
+  name    = "@"
+  value   = "185.199.110.153"
+  type    = "A"
+}
+
+resource "hetznerdns_record" "nevarro_space_a_root_4" {
+  zone_id = hetznerdns_zone.nevarro_space.id
+  name    = "@"
+  value   = "185.199.111.153"
+  type    = "A"
+}
+
+resource "hetznerdns_record" "nevarro_space_aaaa_root_1" {
+  zone_id = hetznerdns_zone.nevarro_space.id
+  name    = "@"
+  value   = "2606:50c0:8000::153"
+  type    = "AAAA"
+}
+
+resource "hetznerdns_record" "nevarro_space_aaaa_root_2" {
+  zone_id = hetznerdns_zone.nevarro_space.id
+  name    = "@"
+  value   = "2606:50c0:8001::153"
+  type    = "AAAA"
+}
+
+resource "hetznerdns_record" "nevarro_space_aaaa_root_3" {
+  zone_id = hetznerdns_zone.nevarro_space.id
+  name    = "@"
+  value   = "2606:50c0:8002::153"
+  type    = "AAAA"
+}
+
+resource "hetznerdns_record" "nevarro_space_aaaa_root_4" {
+  zone_id = hetznerdns_zone.nevarro_space.id
+  name    = "@"
+  value   = "2606:50c0:8003::153"
+  type    = "AAAA"
 }
 
 resource "hetznerdns_record" "nevarro_space_a_grafana_kessel" {
