@@ -284,6 +284,7 @@
                 Check the <a href="https://status.mineshspc.com/" target="_blank">site status</a>.
               '';
               MINESHSPC_REGISTRATION_ENABLED = "1";
+              MINESHSPC_LOG_LEVEL = "INFO";
             };
           };
         };
