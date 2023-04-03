@@ -15,7 +15,7 @@ terraform {
   required_providers {
     hcloud = {
       source  = "hetznercloud/hcloud"
-      version = "1.36.2"
+      version = "1.37.0"
     }
     hetznerdns = {
       source  = "timohirt/hetznerdns"
