@@ -273,7 +273,7 @@
 
         virtualisation.oci-containers.containers = {
           "mineshspc.com" = {
-            image = "ghcr.io/coloradoschoolofmines/mineshspc.com:b1545659660baefe8f5debd2f668ae21170204ef";
+            image = "ghcr.io/coloradoschoolofmines/mineshspc.com:41ec419de1dbd528f343792b3a57a5bfa34876e1";
             volumes = [ "/var/lib/mineshspc:/data" ];
             ports = [ "8090:8090" ];
             environmentFiles = [ "/run/keys/mineshspc_env" ];
