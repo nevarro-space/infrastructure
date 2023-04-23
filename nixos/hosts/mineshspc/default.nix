@@ -1,4 +1,8 @@
 { config, lib, pkgs, ... }: {
+  imports = [
+    ./hardware-configuration.nix
+  ];
+
   deployment.keys = {
     mineshspc_env.keyCommand = [ "cat" "../infrastructure-secrets/secrets/mineshspc_env" ];
     restic_password_file.keyCommand = [ "cat" "../infrastructure-secrets/secrets/restic_password_file" ];

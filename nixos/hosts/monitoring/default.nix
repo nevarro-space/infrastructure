@@ -1,4 +1,8 @@
 { config, ... }: {
+  imports = [
+    ./hardware-configuration.nix
+  ];
+
   networking.hostName = "monitoring";
 
   services.grafana = {

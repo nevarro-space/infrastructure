@@ -1,4 +1,8 @@
 { pkgs, ... }: {
+  imports = [
+    ./hardware-configuration.nix
+  ];
+
   networking.hostName = "pc2test";
 
   services.pc2 = {
