@@ -1,0 +1,19 @@
+name: CS@Mines HSPC 2023
+short-name: HSPC 2023
+
+accounts:
+  - account: TEAM
+    site: 1
+    start: 100
+    count: 10
+
+  - account: SCOREBOARD
+    site: 1
+    count: 3
+
+sites:
+  - number: 1
+    name: Mines
+    IP: 5.161.216.225
+    port: 50002
+    password: site1

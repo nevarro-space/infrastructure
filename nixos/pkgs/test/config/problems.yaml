@@ -1,0 +1,5 @@
+problemset:
+  - letter: A
+    short-name: hello
+    color: red
+    rgb: "#FF0000"

@@ -40,4 +40,13 @@
 
     imports = [ ./hosts/mineshspc ];
   };
+
+  pc2test = { config, lib, pkgs, ... }: {
+    deployment = {
+      targetHost = "pc2test.mineshspc.com";
+      tags = [ "hetzner" "ashburn" ];
+    };
+
+    imports = [ ./hosts/pc2test ];
+  };
 }

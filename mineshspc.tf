@@ -42,10 +42,6 @@ resource "hcloud_server" "mineshspc_pc2test" {
     hcloud_ssh_key.scarif_ssh_key.id,
   ]
 
-  firewall_ids = [
-    hcloud_firewall.web_server_firewall.id,
-  ]
-
   public_net {
     ipv4_enabled = true
     ipv6_enabled = true
