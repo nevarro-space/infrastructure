@@ -23,7 +23,9 @@ stdenv.mkDerivation rec {
     pushd projects
       tar -xvf WebTeamInterface-1.1-6456.tar.gz
       pushd WebTeamInterface-1.1
+        rm WebContent/WTI-UI/assets/appconfig.json
         cp -r WebContent $out/wti
+
         install -Dm755 WebTeamInterface-1.1.jar $out/wti
         substituteInPlace bin/pc2wti \
           --replace 'java' "${jdk11}/bin/java" \

@@ -11,12 +11,20 @@
       wtiwsName = "/websocket";
       wtiscoreboardaccount = "scoreboard2";
       wtiscoreboardpassword = "scoreboard2";
-      wtiOverridePublicIP = cfg.wti.externalIP;
     };
   };
 
   iniFormat = pkgs.formats.ini { };
   pc2ConfigFile = iniFormat.generate "pc2v9.ini" pc2Config;
+
+  wtiAppConfig = {
+    production = true;
+    baseUrl = "https://${cfg.wti.virtualHost}/api";
+    websocketUrl = "wss://${cfg.wti.virtualHost}/websocket/WTISocket";
+  };
+
+  jsonFormat = pkgs.formats.json { };
+  wtiAppConfigFile = jsonFormat.generate "appconfig.json" wtiAppConfig;
 in
 {
   options.services.pc2.wti = {
@@ -49,10 +57,13 @@ in
       preStart = ''
         # Setup config
         rm -rf ${cfg.wti.dataDir}/*
-        ln -s ${pc2ConfigFile} ${cfg.wti.dataDir}/pc2v9.ini
-        ln -s ${pc2}/wti/WebContent ${cfg.wti.dataDir}
+        cp --no-preserve=mode,ownership -r ${pc2}/wti/WebContent ${cfg.wti.dataDir}
+        cp ${pc2ConfigFile} ${cfg.wti.dataDir}/pc2v9.ini
+        cp ${wtiAppConfigFile} ${cfg.wti.dataDir}/WebContent/WTI-UI/assets/appconfig.json
       '';
       serviceConfig = {
+        AmbientCapabilities = [ "CAP_NET_BIND_SERVICE" "CAP_SYS_RESOURCE" ];
+        CapabilityBoundingSet = [ "CAP_NET_BIND_SERVICE" "CAP_SYS_RESOURCE" ];
         ExecStart = "${pc2}/wti/bin/pc2wti";
         WorkingDirectory = cfg.wti.dataDir;
         Restart = "always";
@@ -60,6 +71,7 @@ in
         Group = "pc2";
       };
     };
+    networking.firewall.allowedTCPPorts = [ cfg.wti.port ];
 
     users.users.pc2wti = {
       description = "PC^2 WTI User";
@@ -68,23 +80,6 @@ in
       home = cfg.wti.dataDir;
       createHome = true;
       isSystemUser = true;
-    };
-
-    services.nginx = {
-      enable = true;
-
-      virtualHosts.${cfg.wti.virtualHost} = {
-        enableACME = true;
-        forceSSL = true;
-
-        locations."/" = {
-          proxyPass = "http://localhost:${toString cfg.wti.port}";
-          proxyWebsockets = true;
-          extraConfig = ''
-            access_log /var/log/nginx/pc2wti.access.log;
-          '';
-        };
-      };
     };
   };
 }

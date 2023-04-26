@@ -22,28 +22,39 @@ in
   };
 
   config = mkIf cfg.server.enable {
-    systemd.services.pc2server = {
-      description = "PC^2 Server";
-      after = [ "network.target" ];
-      wantedBy = [ "multi-user.target" ];
-      serviceConfig = {
-        ExecStart = ''
-          ${pc2}/bin/pc2admin \
-            --nogui \
-            --login site1 \
-            --password site1 \
-            --contestpassword ohea \
-            --server \
-            --port ${toString cfg.server.port} \
-            --ini ${configFile} \
-            --load ${cfg.contestPkg}
-        '';
-        WorkingDirectory = cfg.server.dataDir;
-        Restart = "always";
-        User = "pc2server";
-        Group = "pc2";
-      };
-    };
+    environment.systemPackages = [ pc2 ];
+
+    # systemd.services.pc2server = {
+    #   description = "PC^2 Server";
+    #   after = [ "network.target" ];
+    #   wantedBy = [ "multi-user.target" ];
+
+    #   # TODO REMOVE THIS
+    #   preStart = ''
+    #     # Reset everything
+    #     rm -rf ${cfg.server.dataDir}/*
+    #   '';
+    #   # END TODO
+
+    #   serviceConfig = {
+    #     ExecStart = ''
+    #       ${pc2}/bin/pc2admin \
+    #         --nogui \
+    #         --login site1 \
+    #         --password site1 \
+    #         --contestpassword ohea \
+    #         --server \
+    #         --port ${toString cfg.server.port} \
+    #         --ini ${configFile} \
+    #         --load ${cfg.contestPkg}
+    #     '';
+    #     WorkingDirectory = cfg.server.dataDir;
+    #     Restart = "always";
+    #     User = "pc2server";
+    #     Group = "pc2";
+    #   };
+    # };
+    networking.firewall.allowedTCPPorts = [ 50002 ];
 
     users.users.pc2server = {
       description = "PC^2 Server User";
