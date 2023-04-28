@@ -29,33 +29,6 @@ resource "hcloud_server_network" "mineshspc_nevarronet" {
   ip         = "10.0.1.1"
 }
 
-// PC2 Test Site Server
-resource "hcloud_server" "mineshspc_pc2test" {
-  name        = "pc2test"
-  image       = "ubuntu-22.04"
-  server_type = "cpx11"
-  location    = "ash"
-
-  ssh_keys = [
-    hcloud_ssh_key.tatooine_ssh_key.id,
-    hcloud_ssh_key.coruscant_ssh_key.id,
-    hcloud_ssh_key.scarif_ssh_key.id,
-  ]
-
-  public_net {
-    ipv4_enabled = true
-    ipv6_enabled = true
-  }
-
-  user_data = file("./cloud-init/nixos")
-}
-
-resource "hcloud_server_network" "mineshspc_pc2test_nevarronet" {
-  server_id  = hcloud_server.mineshspc_pc2test.id
-  network_id = hcloud_network.nevarro_network.id
-  ip         = "10.0.1.3"
-}
-
 resource "hetznerdns_zone" "mineshspc_com" {
   name = "mineshspc.com"
   ttl  = 3600
@@ -93,13 +66,6 @@ resource "hetznerdns_record" "mineshspc_com_root" {
   zone_id = hetznerdns_zone.mineshspc_com.id
   name    = "@"
   value   = hcloud_server.mineshspc.ipv4_address
-  type    = "A"
-}
-
-resource "hetznerdns_record" "mineshspc_com_pc2test" {
-  zone_id = hetznerdns_zone.mineshspc_com.id
-  name    = "pc2test"
-  value   = hcloud_server.mineshspc_pc2test.ipv4_address
   type    = "A"
 }
 
