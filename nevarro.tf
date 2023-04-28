@@ -166,13 +166,6 @@ resource "hetznerdns_record" "nevarro_space_a_kessel" {
   type    = "A"
 }
 
-resource "hetznerdns_record" "nevarro_space_a_matrix" {
-  zone_id = hetznerdns_zone.nevarro_space.id
-  name    = "matrix"
-  value   = "5.161.43.147"
-  type    = "A"
-}
-
 resource "hetznerdns_record" "nevarro_space_a_nevarro" {
   zone_id = hetznerdns_zone.nevarro_space.id
   name    = "nevarro"
