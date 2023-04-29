@@ -48,6 +48,12 @@
             targets = [ "10.0.1.1:${portStr}" ];
           }];
         }
+        {
+          job_name = "matrix";
+          static_configs = [{
+            targets = [ "10.0.1.3:${portStr}" ];
+          }];
+        }
       ];
     };
 

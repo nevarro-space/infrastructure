@@ -30,6 +30,15 @@
     imports = [ ./hosts/monitoring ];
   };
 
+  matrix = {
+    deployment = {
+      targetHost = "5.161.216.225";
+      tags = [ "hetzner" "ashburn" ];
+    };
+
+    imports = [ ./hosts/matrix ];
+  };
+
   mineshspc = { config, lib, pkgs, ... }: {
     deployment = {
       targetHost = "mineshspc.com";
