@@ -23,6 +23,10 @@ resource "hcloud_server" "matrix" {
   user_data = file("./cloud-init/nixos")
 }
 
+output "matrix_server_ipv4" {
+  value = hcloud_server.matrix.ipv4_address
+}
+
 # resource "hcloud_volume" "matrix-postgres-data" {
 #   name      = "matrix-postgres-data"
 #   size      = 100
@@ -40,6 +44,10 @@ resource "hcloud_server_network" "matrix_nevarronet" {
   server_id  = hcloud_server.mineshspc.id
   network_id = hcloud_network.nevarro_network.id
   ip         = "10.0.1.3"
+}
+
+output "matrix_server_internal_ip" {
+  value = hcloud_server_network.matrix_nevarronet.ip
 }
 
 resource "hetznerdns_record" "nevarro_space_a_matrix" {

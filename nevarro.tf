@@ -1,3 +1,4 @@
+# Monitoring server
 resource "hcloud_server" "monitoring" {
   name        = "monitoring"
   image       = "ubuntu-22.04"
@@ -22,10 +23,18 @@ resource "hcloud_server" "monitoring" {
   user_data = file("./cloud-init/nixos")
 }
 
+output "monitoring_server_ipv4" {
+  value = hcloud_server.monitoring.ipv4_address
+}
+
 resource "hcloud_server_network" "monitoring_nevarronet" {
   server_id  = hcloud_server.monitoring.id
   network_id = hcloud_network.nevarro_network.id
   ip         = "10.0.1.2"
+}
+
+output "monitoring_server_internal_ip" {
+  value = hcloud_server_network.monitoring_nevarronet.ip
 }
 
 resource "hetznerdns_zone" "nevarro_space" {

@@ -23,10 +23,18 @@ resource "hcloud_server" "mineshspc" {
   user_data = file("./cloud-init/nixos")
 }
 
+output "mineshspc_server_ipv4" {
+  value = hcloud_server.mineshspc.ipv4_address
+}
+
 resource "hcloud_server_network" "mineshspc_nevarronet" {
   server_id  = hcloud_server.mineshspc.id
   network_id = hcloud_network.nevarro_network.id
   ip         = "10.0.1.1"
+}
+
+output "mineshspc_server_internal_ip" {
+  value = hcloud_server_network.matrix_nevarronet.ip
 }
 
 resource "hetznerdns_zone" "mineshspc_com" {
