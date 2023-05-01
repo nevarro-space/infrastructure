@@ -1,4 +1,4 @@
-{ nixpkgs-unstable, ... }: {
+{ nixpkgs-unstable, terraform-outputs, ... }: {
   meta = {
     nixpkgs = import nixpkgs-unstable { system = "x86_64-linux"; };
     description = "Nevarro Infrastructure";
@@ -21,27 +21,36 @@
     ];
   };
 
-  monitoring = {
+  monitoring = { lib, ... }: with lib; {
     deployment = {
-      targetHost = "monitoring.nevarro.space";
+      targetHost = terraform-outputs.monitoring_server_ipv4.value;
       tags = [ "hetzner" "ashburn" ];
     };
 
     imports = [ ./hosts/monitoring ];
+
+    services.prometheus.scrapeIPs = mapAttrsToList
+      (k: v: {
+        name = elemAt (splitString "_" k) 0;
+        ip = v.value;
+      })
+      (filterAttrs
+        (k: v: lib.hasInfix "_server_internal_ip" k)
+        terraform-outputs);
   };
 
   matrix = {
     deployment = {
-      targetHost = "5.161.216.225";
+      targetHost = terraform-outputs.matrix_server_ipv4.value;
       tags = [ "hetzner" "ashburn" ];
     };
 
     imports = [ ./hosts/matrix ];
   };
 
-  mineshspc = { config, lib, pkgs, ... }: {
+  mineshspc = {
     deployment = {
-      targetHost = "mineshspc.com";
+      targetHost = terraform-outputs.mineshspc_server_ipv4.value;
       tags = [ "hetzner" "ashburn" ];
     };
 
