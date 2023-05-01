@@ -30,11 +30,11 @@ output "mineshspc_server_ipv4" {
 resource "hcloud_server_network" "mineshspc_nevarronet" {
   server_id  = hcloud_server.mineshspc.id
   network_id = hcloud_network.nevarro_network.id
-  ip         = "10.0.1.1"
+  ip         = "10.0.1.4"
 }
 
 output "mineshspc_server_internal_ip" {
-  value = hcloud_server_network.matrix_nevarronet.ip
+  value = hcloud_server_network.mineshspc_nevarronet.ip
 }
 
 resource "hetznerdns_zone" "mineshspc_com" {

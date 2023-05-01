@@ -41,7 +41,7 @@ output "matrix_server_ipv4" {
 # }
 
 resource "hcloud_server_network" "matrix_nevarronet" {
-  server_id  = hcloud_server.mineshspc.id
+  server_id  = hcloud_server.matrix.id
   network_id = hcloud_network.nevarro_network.id
   ip         = "10.0.1.3"
 }
