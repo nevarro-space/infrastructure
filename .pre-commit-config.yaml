@@ -10,12 +10,12 @@ repos:
       - id: check-added-large-files
 
   - repo: https://github.com/nix-community/nixpkgs-fmt/
-    rev: 398c5226d3402ec075d36c504a4575c40d01cf0c
+    rev: v1.3.0
     hooks:
       - id: nixpkgs-fmt
 
   - repo: https://github.com/antonbabenko/pre-commit-terraform
-    rev: v1.77.1
+    rev: v1.78.0
     hooks:
       - id: terraform_fmt
       - id: terraform_docs
