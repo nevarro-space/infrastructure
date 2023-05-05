@@ -1,4 +1,9 @@
 {
-  services.openssh.enable = true;
-  services.openssh.settings.PermitRootLogin = "prohibit-password";
+  services.openssh = {
+    enable = true;
+    settings = {
+      PermitRootLogin = "prohibit-password";
+      StreamLocalBindUnlink = "yes";
+    };
+  };
 }
