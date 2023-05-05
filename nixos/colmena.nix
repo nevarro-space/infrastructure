@@ -19,6 +19,8 @@
     swapDevices = [
       { device = "/var/swapfile"; size = 4096; }
     ];
+
+    services.logrotate.enable = true;
   };
 
   monitoring = { lib, ... }: with lib; {
