@@ -1,4 +1,8 @@
-{ config, lib, pkgs, ... }: {
+{ config, lib, pkgs, ... }:
+let
+  dataDir = "/var/lib/mineshspc";
+in
+{
   imports = [
     ./hardware-configuration.nix
   ];
@@ -30,7 +34,7 @@
   virtualisation.oci-containers.containers = {
     "mineshspc.com" = {
       image = "ghcr.io/coloradoschoolofmines/mineshspc.com:27b05c266304871f91b32f55644c4fcfc9296af4";
-      volumes = [ "/var/lib/mineshspc:/data" ];
+      volumes = [ "${dataDir}:/data" ];
       ports = [ "8090:8090" ];
       environmentFiles = [ "/run/keys/mineshspc_env" ];
       environment = {
@@ -50,47 +54,12 @@
 
   # Make sure that the working directory is available
   system.activationScripts.makeMinesHSPCDir = lib.stringAfter [ "var" ] ''
-    mkdir -p /var/lib/mineshspc
+    mkdir -p ${dataDir}
   '';
 
-  # TODO move this to a generic restic backup service
-  systemd.services."restic-backup" =
-    let
-      resticCmd = "${pkgs.restic}/bin/restic --verbose=3";
-      resticBackupScript = paths: exclude: pkgs.writeShellScriptBin "restic-backup" ''
-        set -xe
-
-        # Perfrom the backup
-        ${resticCmd} backup \
-          ${lib.concatStringsSep " " paths} \
-          ${lib.concatMapStringsSep " " (e: "-e \"${e}\"") exclude}
-
-        # Make sure that the backup has time to settle before running the check.
-        sleep 10
-
-        # Check the validity of the repository.
-        ${resticCmd} check
-      '';
-      script = resticBackupScript [ "/var/lib/mineshspc" ] [ ];
-    in
-    {
-      description = "Run Restic Backup";
-      environment = {
-        RESTIC_PASSWORD_FILE = "/run/keys/restic_password_file";
-        RESTIC_REPOSITORY = "b2:nevarro-backups:mineshspc";
-        RESTIC_CACHE_DIR = "/var/cache";
-      };
-      startAt = "0/2:0"; # Run backup every 2 hours
-      serviceConfig = {
-        ExecStart = "${script}/bin/restic-backup";
-        EnvironmentFile = "/run/keys/restic_environment_file";
-        PrivateTmp = true;
-        ProtectSystem = true;
-        ProtectHome = "read-only";
-      };
-      # Initialize the repository if it doesn't exist already.
-      preStart = ''
-        ${resticCmd} snapshots || ${resticCmd} init
-      '';
-    };
+  services.backup = {
+    healthcheckId = "e3b7948f-42cd-4571-a400-f77401d7dc56";
+    healthcheckPruneId = "197d3821-bbf0-4081-b388-8d9dc1c2f11f";
+    backups.mineshspc.path = dataDir;
+  };
 }

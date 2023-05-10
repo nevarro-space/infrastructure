@@ -19,4 +19,10 @@
     homeserver = "https://matrix.nevarro.space";
     passwordFile = "/run/keys/mscbot_password";
   };
+
+  services.healthcheck = {
+    enable = true;
+    checkId = "d7eae3e9-de4c-452b-9142-60e7831874c3";
+    disks = [ "/" ];
+  };
 }

@@ -8,6 +8,7 @@
     ./nginx.nix
     ./prometheus.nix
     ./promtail.nix
+    ./restic.nix
     ./ssh.nix
   ];
 }
