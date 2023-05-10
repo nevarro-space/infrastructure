@@ -62,4 +62,11 @@ in
     healthcheckPruneId = "197d3821-bbf0-4081-b388-8d9dc1c2f11f";
     backups.mineshspc.path = dataDir;
   };
+
+  services.healthcheck = {
+    enable = true;
+    disks = [
+      { path = "/"; threshold = 95; checkId = "b05f5eb0-ac9e-480e-982e-85a42a505e02"; }
+    ];
+  };
 }

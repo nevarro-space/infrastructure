@@ -23,6 +23,8 @@
   services.healthcheck = {
     enable = true;
     checkId = "d7eae3e9-de4c-452b-9142-60e7831874c3";
-    disks = [ "/" ];
+    disks = [
+      { path = "/"; threshold = 95; checkId = "5406129d-1352-4a24-b2db-6daa0c0a3d8f"; }
+    ];
   };
 }

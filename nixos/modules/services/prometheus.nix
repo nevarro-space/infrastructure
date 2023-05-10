@@ -8,11 +8,11 @@ in
       type = with types; listOf (submodule {
         options = {
           name = mkOption {
-            type = types.str;
+            type = str;
             description = "The server's name.";
           };
           ip = mkOption {
-            type = types.str;
+            type = str;
             description = "The IP address to scrape.";
           };
         };

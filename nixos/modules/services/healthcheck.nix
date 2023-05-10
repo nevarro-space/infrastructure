@@ -1,60 +1,86 @@
 { config, lib, pkgs, ... }: with lib;
 let
   healthcheckCfg = config.services.healthcheck;
-  threshold = 97;
 
-  healthcheckCurl = fail: ''
-    ${pkgs.curl}/bin/curl \
-      --verbose \
-      -fsS \
-      --retry 2 \
-      --max-time 5 \
-      --ipv4 \
-      https://hc-ping.com/${healthcheckCfg.checkId}${optionalString fail "/fail"}
-  '';
+  curlCmd = concatStringsSep " " [
+    "${pkgs.curl}/bin/curl"
+    "--verbose"
+    "-fsS"
+    "--retry 3"
+    "--max-time 5"
+    "--ipv4"
+  ];
 
-  diskCheckScript = with pkgs; disk: writeShellScriptBin "diskcheck" ''
+  # https://blog.healthchecks.io/2023/05/monitor-disk-space-on-servers-without-installing-monitoring-agents/
+  diskCheckScript = with pkgs; { path, threshold, checkId }: writeShellScriptBin "diskcheck" ''
     set -xe
-    CURRENT=$(${coreutils}/bin/df ${disk} | ${gnugrep}/bin/grep ${disk} | ${gawk}/bin/awk '{ print $5}' | ${gnused}/bin/sed 's/%//g')
+    pct=$(${coreutils}/bin/df --output=pcent ${path} | ${coreutils}/bin/tail -n 1 | ${coreutils}/bin/tr -d '% ')
 
-    if [ "$CURRENT" -gt "${toString threshold}" ] ; then
-      echo "Used space on ${disk} is over ${toString threshold}%"
-      ${healthcheckCurl true}
-      exit 1
+    if [ "$pct" -gt "${toString threshold}" ] ; then
+      echo "Used space on ${path} is $pct% which is over ${toString threshold}%"
+      ${curlCmd} https://hc-ping.com/${checkId}/fail \
+        --data-raw "Used space on ${path} is $pct% which is over ${toString threshold}%"
+    else
+      ${curlCmd} https://hc-ping.com/${checkId}
     fi
   '';
 
-  healthcheckScript = pkgs.writeShellScriptBin "healthcheck" ''
-    set -xe
-
-    ${concatMapStringsSep "\n" (disk: "${diskCheckScript disk}/bin/diskcheck") healthcheckCfg.disks}
-
-    # Everything worked, so success.
-    ${healthcheckCurl false}
-  '';
+  diskCheckService = cfg@{ path, ... }: {
+    name = "healthcheck-${builtins.replaceStrings [ "/" ] [ "-" ] path}";
+    value = {
+      description = "Healthcheck for ${path}";
+      startAt = "*-*-* 00/1:00:00"; # Check the disk every hour.
+      serviceConfig = {
+        ExecStart = "${diskCheckScript cfg}/bin/diskcheck";
+        TimeoutSec = 10;
+      };
+    };
+  };
 in
 {
   options.services.healthcheck = {
     enable = mkEnableOption "the healthcheck ping service.";
     checkId = mkOption {
-      type = types.str;
-      description = "The healthchecks.io check ID.";
+      type = with types; nullOr str;
+      default = null;
+      description = "The healthchecks.io check ID for determining if the server is up.";
     };
     disks = mkOption {
-      type = with types; listOf str;
+      type = with types; listOf (submodule {
+        options = {
+          path = mkOption {
+            type = path;
+            description = "The path where the disk is mounted.";
+          };
+          threshold = mkOption {
+            type = int;
+            default = 90;
+            description = "The threshold percentage for alerting.";
+          };
+          checkId = mkOption {
+            type = str;
+            description = "The healthcheck ID for this disk.";
+          };
+        };
+      });
       default = [ ];
-      description = "List of paths to disks to check for usage thresholds";
+      description = "List of disks to check with thresholds";
     };
   };
 
   config = mkIf healthcheckCfg.enable {
-    systemd.services.healthcheck = {
-      description = "Healthcheck service";
-      startAt = "*:*:0/30"; # Send a healthcheck ping every 30 seconds.
-      serviceConfig = {
-        ExecStart = "${healthcheckScript}/bin/healthcheck";
-        TimeoutSec = 10;
-      };
-    };
+    systemd.services = mkMerge [
+      (mkIf (healthcheckCfg.checkId != null) {
+        healthcheck = {
+          description = "Healthcheck server up service";
+          startAt = "*-*-* *:*:00/30"; # Send a healthcheck ping every 30 seconds.
+          serviceConfig = {
+            ExecStart = "${curlCmd} https://hc-ping.com/${healthcheckCfg.checkId}";
+            TimeoutSec = 10;
+          };
+        };
+      })
+      (listToAttrs (map diskCheckService healthcheckCfg.disks))
+    ];
   };
 }
