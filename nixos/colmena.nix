@@ -5,11 +5,13 @@
   };
 
   defaults = { config, ... }: {
-    deployment.replaceUnknownProfiles = true;
+    imports = [ ./modules ];
 
-    imports = [
-      ./modules
-    ];
+    _module.args = {
+      inherit terraform-outputs;
+    };
+
+    deployment.replaceUnknownProfiles = true;
 
     system.stateVersion = "23.05";
 
