@@ -27,18 +27,22 @@ output "matrix_server_ipv4" {
   value = hcloud_server.matrix.ipv4_address
 }
 
-# resource "hcloud_volume" "matrix-postgres-data" {
-#   name      = "matrix-postgres-data"
-#   size      = 100
-#   location = "ash"
-#   format    = "ext4"
-# }
+resource "hcloud_volume" "matrix-postgres-data" {
+  name     = "matrix-postgres-data"
+  size     = 10
+  location = "ash"
+  format   = "ext4"
+}
 
-# resource "hcloud_volume_attachment" "main" {
-#   volume_id = hcloud_volume.matrix-postgres-data.id
-#   server_id = hcloud_server.matrix.id
-#   automount = true
-# }
+output "matrix_server_postgresql_data_linux_device" {
+  value = hcloud_volume.matrix-postgres-data.linux_device
+}
+
+resource "hcloud_volume_attachment" "main" {
+  volume_id = hcloud_volume.matrix-postgres-data.id
+  server_id = hcloud_server.matrix.id
+  automount = true
+}
 
 resource "hcloud_server_network" "matrix_nevarronet" {
   server_id  = hcloud_server.matrix.id
