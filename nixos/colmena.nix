@@ -25,22 +25,13 @@
     services.logrotate.enable = true;
   };
 
-  monitoring = { lib, ... }: with lib; {
+  monitoring = {
     deployment = {
       targetHost = terraform-outputs.monitoring_server_ipv4.value;
       tags = [ "hetzner" "ashburn" ];
     };
 
     imports = [ ./hosts/monitoring ];
-
-    services.prometheus.scrapeIPs = mapAttrsToList
-      (k: v: {
-        name = elemAt (splitString "_" k) 0;
-        ip = v.value;
-      })
-      (filterAttrs
-        (k: v: lib.hasInfix "_server_internal_ip" k)
-        terraform-outputs);
   };
 
   matrix = {

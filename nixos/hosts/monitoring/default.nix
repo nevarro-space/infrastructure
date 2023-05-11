@@ -1,4 +1,4 @@
-{ config, ... }: {
+{ config, lib, terraform-outputs, ... }: with lib; {
   imports = [
     ./hardware-configuration.nix
   ];
@@ -7,6 +7,15 @@
 
   services.grafana.enable = true;
   services.loki.enable = true;
+
+  services.prometheus.scrapeIPs = mapAttrsToList
+    (k: v: {
+      name = elemAt (splitString "_" k) 0;
+      ip = v.value;
+    })
+    (filterAttrs
+      (k: v: lib.hasInfix "_server_internal_ip" k)
+      terraform-outputs);
 
   services.healthcheck = {
     enable = true;
