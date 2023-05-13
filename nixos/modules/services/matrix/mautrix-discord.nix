@@ -223,5 +223,10 @@ in
         }
       ];
     };
+
+    # Add a backup service.
+    services.backup.backups.mautrix-discord = {
+      path = cfg.dataDir;
+    };
   };
 }

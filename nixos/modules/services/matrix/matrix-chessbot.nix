@@ -55,5 +55,10 @@ in
       };
       groups.matrix-chessbot = { };
     };
+
+    # Add a backup service.
+    services.backup.backups.matrix-chessbot = {
+      path = cfg.dataDir;
+    };
   };
 }

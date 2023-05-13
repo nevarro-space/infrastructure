@@ -66,5 +66,10 @@ in
       };
       groups.msclinkbot = { };
     };
+
+    # Add a backup service.
+    services.backup.backups.msclinkbot = {
+      path = cfg.dataDir;
+    };
   };
 }
