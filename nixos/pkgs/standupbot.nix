@@ -13,7 +13,7 @@ buildGoModule rec {
 
   buildInputs = [ olm ];
 
-  vendorSha256 = "sha256-GyY1z6R/IImCHtoAAAAAAA8tn+hFXIGgDWbbKRHvkIM=";
+  vendorSha256 = "sha256-fJOoqdMjZC8BZl4/gyQ0qShI2MaBD9uXBK3k4JKvHc0=";
 
   meta = with lib; {
     homepage = "https://github.com/beeper/standupbot";

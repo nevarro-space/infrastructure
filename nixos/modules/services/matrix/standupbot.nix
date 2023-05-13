@@ -35,6 +35,7 @@ in
         '';
         Restart = "on-failure";
         User = "standupbot";
+        SupplementaryGroups = [ "keys" ];
       };
     };
 
@@ -46,6 +47,11 @@ in
         createHome = true;
       };
       groups.standupbot = { };
+    };
+
+    # Add a backup service.
+    services.backup.backups.standupbot = {
+      path = cfg.dataDir;
     };
   };
 }
