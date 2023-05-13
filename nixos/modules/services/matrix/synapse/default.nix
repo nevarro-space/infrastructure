@@ -70,6 +70,12 @@ let
     "matrix-synapse-config.yaml"
     sharedConfig;
 
+  configFiles = [
+    sharedConfigFile
+  ] ++ optional (cfg.sharedSecretAuthConfigFile != null) cfg.sharedSecretAuthConfigFile
+  ++ optional (cfg.registrationSharedSecretConfigFile != null) cfg.registrationSharedSecretConfigFile;
+  configPaths = concatMapStringsSep " " (p: " --config-path ${p} ") configFiles;
+
   mkSynapseWorkerService = config: recursiveUpdate config {
     after = [ "matrix-synapse.service" ];
     partOf = [ "matrix-synapse.target" ];
@@ -82,6 +88,7 @@ let
       ExecReload = "${pkgs.util-linux}/bin/kill -HUP $MAINPID";
       Restart = "on-failure";
       UMask = "0077";
+      SupplementaryGroups = [ "keys" ];
     };
   };
 
@@ -210,25 +217,19 @@ in
         '';
       };
 
-      registrationSharedSecretFile = mkOption {
+      registrationSharedSecretConfigFile = mkOption {
         type = types.path;
         description = ''
           The path to a file that contains the shared registration secret.
         '';
       };
 
-      sharedSecretAuthFile = mkOption {
+      sharedSecretAuthConfigFile = mkOption {
         type = with types; nullOr path;
         default = null;
         description = ''
           The path to a file that contains the shared secret auth secret.
         '';
-      };
-
-      emailCfg = mkOption {
-        type = with types; attrsOf anything;
-        default = { };
-        description = "The email configuration.";
       };
 
       extraConfig = mkOption {
@@ -265,7 +266,7 @@ in
       wantedBy = [ "matrix-synapse.target" ];
       preStart = ''
         ${packageWithModules}/bin/synapse_homeserver \
-          --config-path ${sharedConfigFile} \
+          ${configPaths} \
           --keys-directory ${cfg.dataDir} \
           --generate-keys
       '';
@@ -282,12 +283,13 @@ in
         ];
         ExecStart = ''
           ${packageWithModules}/bin/synapse_homeserver \
-            --config-path ${sharedConfigFile} \
+            ${configPaths} \
             --keys-directory ${cfg.dataDir}
         '';
         ExecReload = "${pkgs.util-linux}/bin/kill -HUP $MAINPID";
         Restart = "on-failure";
         UMask = "0077";
+        SupplementaryGroups = [ "keys" ];
       };
     };
 
@@ -296,7 +298,7 @@ in
       description = "Synapse Matrix federation sender 1";
       serviceConfig.ExecStart = ''
         ${packageWithModules}/bin/python -m synapse.app.federation_sender \
-          --config-path ${sharedConfigFile} \
+          ${configPaths} \
           --config-path ${federationSender1ConfigFile} \
           --keys-directory ${cfg.dataDir}
       '';
@@ -306,7 +308,7 @@ in
       description = "Synapse Matrix federation sender 2";
       serviceConfig.ExecStart = ''
         ${packageWithModules}/bin/python -m synapse.app.federation_sender \
-          --config-path ${sharedConfigFile} \
+          ${configPaths} \
           --config-path ${federationSender2ConfigFile} \
           --keys-directory ${cfg.dataDir}
       '';
@@ -317,7 +319,7 @@ in
       description = "Synapse Matrix federation reader 1";
       serviceConfig.ExecStart = ''
         ${packageWithModules}/bin/python -m synapse.app.generic_worker \
-          --config-path ${sharedConfigFile} \
+          ${configPaths} \
           --config-path ${federationReader1ConfigFile} \
           --keys-directory ${cfg.dataDir}
       '';
@@ -328,7 +330,7 @@ in
       description = "Synapse Matrix event persister 1";
       serviceConfig.ExecStart = ''
         ${packageWithModules}/bin/python -m synapse.app.generic_worker \
-          --config-path ${sharedConfigFile} \
+          ${configPaths} \
           --config-path ${eventPersister1ConfigFile} \
           --keys-directory ${cfg.dataDir}
       '';
@@ -339,7 +341,7 @@ in
       description = "Synapse Matrix synchotron 1";
       serviceConfig.ExecStart = ''
         ${packageWithModules}/bin/python -m synapse.app.generic_worker \
-          --config-path ${sharedConfigFile} \
+          ${configPaths} \
           --config-path ${synchotron1ConfigFile} \
           --keys-directory ${cfg.dataDir}
       '';
@@ -350,7 +352,7 @@ in
       description = "Synapse Matrix media repo 1";
       serviceConfig.ExecStart = ''
         ${packageWithModules}/bin/python -m synapse.app.media_repository \
-          --config-path ${sharedConfigFile} \
+          ${configPaths} \
           --config-path ${mediaRepo1ConfigFile} \
           --keys-directory ${cfg.dataDir}
       '';

@@ -211,6 +211,7 @@ in
       };
     };
 
+    # TODO make this work
     services.prometheus = {
       enable = true;
       scrapeConfigs = [

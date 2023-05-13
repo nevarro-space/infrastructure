@@ -26,18 +26,6 @@ let
   };
 in
 {
-  # Modules
-  modules =
-    if (cfg.sharedSecretAuthFile == null) then [ ] else [
-      {
-        module = "shared_secret_authenticator.SharedSecretAuthProvider";
-        config = {
-          shared_secret = removeSuffix "\n" (readFile cfg.sharedSecretAuthFile);
-          m_login_password_support_enabled = true;
-        };
-      }
-    ];
-
   # Experimental features
   experimental_features = {
     # Enable support for the suppressing edit notifications.
@@ -135,7 +123,6 @@ in
   # Registration
   enable_registration = true;
   registration_requires_token = true;
-  registration_shared_secret = removeSuffix "\n" (readFile cfg.registrationSharedSecretFile);
 
   # Metrics
   enable_metrics = true;
@@ -150,9 +137,6 @@ in
     { server_name = "matrix.org"; }
   ];
   suppress_key_server_warning = true;
-
-  # Email
-  email = cfg.emailCfg;
 
   # Workers
   send_federation = false;

@@ -28,18 +28,9 @@ in
   options = {
     services.msclinkbot = {
       enable = mkEnableOption "MSC Link Bot";
-      username = mkOption {
-        type = types.str;
-        default = "@mscbot:${config.networking.domain}";
-      };
-      homeserver = mkOption {
-        type = types.str;
-        default = "http://localhost:8008";
-      };
-      passwordFile = mkOption {
-        type = types.path;
-        default = "/var/lib/msclinkbot/passwordfile";
-      };
+      username = mkOption { type = types.str; };
+      homeserver = mkOption { type = types.str; };
+      passwordFile = mkOption { type = types.path; };
       dataDir = mkOption {
         type = types.path;
         default = "/var/lib/msclinkbot";

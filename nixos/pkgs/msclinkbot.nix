@@ -2,7 +2,7 @@
 
 buildGoModule rec {
   pname = "msclinkbot";
-  version = "unstable-2022-04-28";
+  version = "unstable-2023-04-28";
 
   src = fetchFromGitHub {
     owner = "beeper";

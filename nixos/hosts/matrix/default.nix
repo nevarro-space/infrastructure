@@ -3,22 +3,23 @@
     ./hardware-configuration.nix
   ];
 
-  deployment.keys = {
-    mscbot_password = {
-      keyCommand = [ "cat" "../infrastructure-secrets/secrets/matrix/bots/mscbot" ];
-      user = "msclinkbot";
-      group = "msclinkbot";
+  deployment.keys =
+    let
+      keyFor = keyname: for: {
+        keyCommand = [ "cat" "../infrastructure-secrets/secrets/${keyname}" ];
+        user = for;
+        group = for;
+      };
+    in
+    {
+      mscbot_password = keyFor "matrix/bots/mscbot" "msclinkbot";
+      chessbot_password = keyFor "matrix/bots/chessbot" "matrix-chessbot";
+      # nevarro_space_registration_shared_secret = keyFor "matrix/registration-shared-secret/nevarro.space" "matrix-synapse";
+      # nevarro_space_shared_secret_auth = keyFor "matrix/shared-secret-auth/nevarro.space" "matrix-synapse";
+      nevarro_space_cleanup_synapse_environment_file = keyFor "matrix/cleanup-synapse/nevarro.space" "root";
     };
-  };
 
   networking.hostName = "matrix2";
-
-  # MSC Link Bot
-  services.msclinkbot = {
-    enable = true;
-    homeserver = "https://matrix.nevarro.space";
-    passwordFile = "/run/keys/mscbot_password";
-  };
 
   services.healthcheck = {
     enable = true;
@@ -28,4 +29,33 @@
       { path = "/mnt/postgresql-data"; threshold = 95; checkId = "2b04d70f-f432-4359-aab3-f0d2ba6d8995"; }
     ];
   };
+
+  services.backup = {
+    healthcheckId = "e3b7948f-42cd-4571-a400-f77401d7dc56";
+    healthcheckPruneId = "197d3821-bbf0-4081-b388-8d9dc1c2f11f";
+  };
+
+  # Chessbot
+  services.matrix-chessbot = {
+    enable = true;
+    username = "@chessbot:nevarro.space";
+    homeserver = "https://matrix.nevarro.space";
+    passwordFile = "/run/keys/chessbot_password";
+  };
+
+  # MSC Link Bot
+  services.msclinkbot = {
+    enable = true;
+    username = "@mscbot:nevarro.space";
+    homeserver = "https://matrix.nevarro.space";
+    passwordFile = "/run/keys/mscbot_password";
+  };
+
+  # Synapse
+  # services.matrix-synapse-custom = {
+  #   enable = true;
+  #   registrationSharedSecretConfigFile = "/run/keys/nevarro_space_registration_shared_secret";
+  #   sharedSecretAuthConfigFile = "/run/keys/nevarro_space_shared_secret_auth";
+  # };
+  # services.cleanup-synapse.environmentFile = "/run/keys/nevarro_space_cleanup_synapse_environment_file";
 }
