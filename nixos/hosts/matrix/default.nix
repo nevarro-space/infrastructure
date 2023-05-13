@@ -61,6 +61,7 @@
     passwordFile = "/run/keys/standupbot_password";
   };
 
+  # Mjolnir
   services.mjolnir = {
     enable = true;
     homeserverUrl = "https://matrix.nevarro.space";
