@@ -15,6 +15,7 @@
       mscbot_password = keyFor "matrix/bots/mscbot" "msclinkbot";
       chessbot_password = keyFor "matrix/bots/chessbot" "matrix-chessbot";
       standupbot_password = keyFor "matrix/bots/standupbot" "standupbot";
+      marshal_password = keyFor "matrix/bots/marshal" "mjolnir";
       # nevarro_space_registration_shared_secret = keyFor "matrix/registration-shared-secret/nevarro.space" "matrix-synapse";
       # nevarro_space_shared_secret_auth = keyFor "matrix/shared-secret-auth/nevarro.space" "matrix-synapse";
       nevarro_space_cleanup_synapse_environment_file = keyFor "matrix/cleanup-synapse/nevarro.space" "root";
@@ -58,6 +59,17 @@
     username = "@standupbot:nevarro.space";
     homeserver = "https://matrix.nevarro.space";
     passwordFile = "/run/keys/standupbot_password";
+  };
+
+  services.mjolnir = {
+    enable = true;
+    homeserverUrl = "https://matrix.nevarro.space";
+    managementRoom = "#mjolnir:nevarro.space";
+
+    pantalaimon = {
+      username = "marshal";
+      passwordFile = "/run/keys/marshal_password";
+    };
   };
 
   # Synapse
