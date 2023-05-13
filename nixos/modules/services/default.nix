@@ -6,6 +6,7 @@
     ./loki.nix
     ./matrix
     ./nginx.nix
+    ./postgresql.nix
     ./prometheus.nix
     ./promtail.nix
     ./restic.nix

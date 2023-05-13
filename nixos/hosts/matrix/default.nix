@@ -79,4 +79,9 @@
   #   sharedSecretAuthConfigFile = "/run/keys/nevarro_space_shared_secret_auth";
   # };
   # services.cleanup-synapse.environmentFile = "/run/keys/nevarro_space_cleanup_synapse_environment_file";
+
+  # PosgreSQL
+  services.postgresql.enable = true;
+  services.postgresql.dataDir = "/mnt/postgresql-data/${config.services.postgresql.package.psqlSchema}";
+  services.postgresqlBackup.enable = true;
 }
