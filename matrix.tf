@@ -57,7 +57,6 @@ output "matrix_server_internal_ip" {
 resource "hetznerdns_record" "nevarro_space_a_matrix" {
   zone_id = hetznerdns_zone.nevarro_space.id
   name    = "matrix"
-  value   = "5.161.43.147"
-  # value   = hcloud_server.matrix.ipv4_address
-  type = "A"
+  value   = hcloud_server.matrix.ipv4_address
+  type    = "A"
 }
