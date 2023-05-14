@@ -1,6 +1,7 @@
 {
   imports = [
     ./matrix-chessbot.nix
+    ./maubot-echo.nix
     ./maubot-github.nix
     ./mautrix-discord.nix
     ./mjolnir.nix

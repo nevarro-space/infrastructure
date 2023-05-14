@@ -23,6 +23,7 @@
       nevarro_space_shared_secret_auth = keyFor "matrix/shared-secret-auth/nevarro.space" "matrix-synapse";
       nevarro_space_cleanup_synapse_environment_file = keyFor "matrix/cleanup-synapse/nevarro.space" "root";
       github_maubot_secrets_yaml = keyFor "matrix/bots/github.yaml" "maubot-github";
+      echobot_maubot_secrets_yaml = keyFor "matrix/bots/echobot.yaml" "maubot-echo";
     };
 
   networking.hostName = "matrix";
@@ -84,6 +85,14 @@
     homeserver = "https://matrix.nevarro.space";
     publicUrl = "https://matrix.nevarro.space";
     secretYAML = "/run/keys/github_maubot_secrets_yaml";
+  };
+
+  # Echo Maubot
+  services.maubot-echo = {
+    enable = true;
+    username = "@ping:nevarro.space";
+    homeserver = "https://matrix.nevarro.space";
+    secretYAML = "/run/keys/echobot_maubot_secrets_yaml";
   };
 
   # Synapse
