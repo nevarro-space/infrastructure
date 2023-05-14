@@ -12,18 +12,25 @@
       };
     in
     {
+      # Backup Secrets
       restic_password_file = keyFor "restic_password_file" "root";
       restic_environment_file = keyFor "restic_environment_file" "root";
 
+      # Matrix Bot Secrets
       mscbot_password = keyFor "matrix/bots/mscbot" "msclinkbot";
       chessbot_password = keyFor "matrix/bots/chessbot" "matrix-chessbot";
       standupbot_password = keyFor "matrix/bots/standupbot" "standupbot";
       marshal_password = keyFor "matrix/bots/marshal" "mjolnir";
+      github_maubot_secrets_yaml = keyFor "matrix/bots/github.yaml" "maubot-github";
+      echobot_maubot_secrets_yaml = keyFor "matrix/bots/echobot.yaml" "maubot-echo";
+
+      # Matrix Server Secrets
       nevarro_space_registration_shared_secret = keyFor "matrix/registration-shared-secret/nevarro.space" "matrix-synapse";
       nevarro_space_shared_secret_auth = keyFor "matrix/shared-secret-auth/nevarro.space" "matrix-synapse";
       nevarro_space_cleanup_synapse_environment_file = keyFor "matrix/cleanup-synapse/nevarro.space" "root";
-      github_maubot_secrets_yaml = keyFor "matrix/bots/github.yaml" "maubot-github";
-      echobot_maubot_secrets_yaml = keyFor "matrix/bots/echobot.yaml" "maubot-echo";
+
+      # App Service Secrets
+      linkedin_matrix_secrets_yaml = keyFor "matrix/appservices/linkedin-matrix.yaml" "linkedinmatrix";
     };
 
   networking.hostName = "matrix";
@@ -93,6 +100,15 @@
     username = "@ping:nevarro.space";
     homeserver = "https://matrix.nevarro.space";
     secretYAML = "/run/keys/echobot_maubot_secrets_yaml";
+  };
+
+  # LinkedIn <-> Matrix Bridge
+  services.linkedin-matrix = {
+    enable = true;
+    homeserver = "https://matrix.nevarro.space";
+    secretYAML = "/run/keys/linkedin_matrix_secrets_yaml";
+    appServiceToken = "lEIIFqiQjzLuyTrObCmwDD0kFiInVdhdxSqWfwpqRN6RmN6HeK3Vv96KIrNQcbus";
+    homeserverToken = "NHdC2NaU03P4oCrdwA1uKZPxE443DLpRVjyCtrg5vrBs9QeGW3WR41v2LkLFObas";
   };
 
   # Synapse
