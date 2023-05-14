@@ -22,6 +22,7 @@
       nevarro_space_registration_shared_secret = keyFor "matrix/registration-shared-secret/nevarro.space" "matrix-synapse";
       nevarro_space_shared_secret_auth = keyFor "matrix/shared-secret-auth/nevarro.space" "matrix-synapse";
       nevarro_space_cleanup_synapse_environment_file = keyFor "matrix/cleanup-synapse/nevarro.space" "root";
+      github_maubot_secrets_yaml = keyFor "matrix/bots/github.yaml" "maubot-github";
     };
 
   networking.hostName = "matrix";
@@ -74,6 +75,15 @@
       username = "marshal";
       passwordFile = "/run/keys/marshal_password";
     };
+  };
+
+  # GitHub Maubot
+  services.maubot-github = {
+    enable = true;
+    username = "@github:nevarro.space";
+    homeserver = "https://matrix.nevarro.space";
+    publicUrl = "https://matrix.nevarro.space";
+    secretYAML = "/run/keys/github_maubot_secrets_yaml";
   };
 
   # Synapse
