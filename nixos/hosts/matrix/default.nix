@@ -19,12 +19,12 @@
       chessbot_password = keyFor "matrix/bots/chessbot" "matrix-chessbot";
       standupbot_password = keyFor "matrix/bots/standupbot" "standupbot";
       marshal_password = keyFor "matrix/bots/marshal" "mjolnir";
-      # nevarro_space_registration_shared_secret = keyFor "matrix/registration-shared-secret/nevarro.space" "matrix-synapse";
-      # nevarro_space_shared_secret_auth = keyFor "matrix/shared-secret-auth/nevarro.space" "matrix-synapse";
+      nevarro_space_registration_shared_secret = keyFor "matrix/registration-shared-secret/nevarro.space" "matrix-synapse";
+      nevarro_space_shared_secret_auth = keyFor "matrix/shared-secret-auth/nevarro.space" "matrix-synapse";
       nevarro_space_cleanup_synapse_environment_file = keyFor "matrix/cleanup-synapse/nevarro.space" "root";
     };
 
-  networking.hostName = "matrix2";
+  networking.hostName = "matrix";
 
   services.healthcheck = {
     enable = true;
@@ -77,12 +77,12 @@
   };
 
   # Synapse
-  # services.matrix-synapse-custom = {
-  #   enable = true;
-  #   registrationSharedSecretConfigFile = "/run/keys/nevarro_space_registration_shared_secret";
-  #   sharedSecretAuthConfigFile = "/run/keys/nevarro_space_shared_secret_auth";
-  # };
-  # services.cleanup-synapse.environmentFile = "/run/keys/nevarro_space_cleanup_synapse_environment_file";
+  services.matrix-synapse-custom = {
+    enable = true;
+    registrationSharedSecretConfigFile = "/run/keys/nevarro_space_registration_shared_secret";
+    sharedSecretAuthConfigFile = "/run/keys/nevarro_space_shared_secret_auth";
+  };
+  services.cleanup-synapse.environmentFile = "/run/keys/nevarro_space_cleanup_synapse_environment_file";
 
   # PosgreSQL
   services.postgresql.enable = true;

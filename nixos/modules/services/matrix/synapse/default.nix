@@ -377,35 +377,6 @@ in
     services.nginx = {
       enable = true;
       virtualHosts = {
-        ${config.networking.domain} = {
-          enableACME = true;
-          forceSSL = true;
-
-          locations =
-            let
-              server = { "m.server" = "${matrixDomain}:443"; };
-              client = {
-                "m.homeserver" = { "base_url" = "https://${matrixDomain}"; };
-                "m.identity_server" = { "base_url" = "https://vector.im"; };
-              };
-            in
-            {
-              "= /.well-known/matrix/server" = {
-                extraConfig = ''
-                  add_header Content-Type application/json;
-                '';
-                return = "200 '${builtins.toJSON server}'";
-              };
-              "= /.well-known/matrix/client" = {
-                extraConfig = ''
-                  add_header Content-Type application/json;
-                  add_header Access-Control-Allow-Origin *;
-                '';
-                return = "200 '${builtins.toJSON client}'";
-              };
-            };
-        };
-
         # Reverse proxy for Matrix client-server and server-server communication
         ${matrixDomain} = {
           enableACME = true;
