@@ -12,6 +12,9 @@
       };
     in
     {
+      restic_password_file = keyFor "restic_password_file" "root";
+      restic_environment_file = keyFor "restic_environment_file" "root";
+
       mscbot_password = keyFor "matrix/bots/mscbot" "msclinkbot";
       chessbot_password = keyFor "matrix/bots/chessbot" "matrix-chessbot";
       standupbot_password = keyFor "matrix/bots/standupbot" "standupbot";

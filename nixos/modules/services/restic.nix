@@ -15,11 +15,10 @@
 { config, lib, pkgs, ... }: with lib; let
   cfg = config.services.backup;
   bucket = "nevarro-backups";
-  repoPath = config.networking.hostName;
   frequency = "0/6:0"; # Run backup every six hours
   pruneFrequency = "Sun *-*-* 02:00"; # Run prune every Sunday at 02:00
   resticEnvironmentFile = "/run/keys/restic_environment_file";
-  resticRepository = "b2:${bucket}:${repoPath}";
+  resticRepository = "b2:${bucket}:${config.networking.hostName}";
   # TODO be able to restore from a different repo path
 
   resticCmd = "${pkgs.restic}/bin/restic --verbose=3";
