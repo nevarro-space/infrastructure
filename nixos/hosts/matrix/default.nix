@@ -36,8 +36,8 @@
   };
 
   services.backup = {
-    healthcheckId = "e3b7948f-42cd-4571-a400-f77401d7dc56";
-    healthcheckPruneId = "197d3821-bbf0-4081-b388-8d9dc1c2f11f";
+    healthcheckId = "a60db84a-ace2-411f-89b7-961982823c60";
+    healthcheckPruneId = "3d6709f9-0d86-44fc-805f-e1ad496e7006";
   };
 
   # Chessbot
