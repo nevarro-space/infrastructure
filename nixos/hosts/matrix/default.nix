@@ -30,7 +30,12 @@
       nevarro_space_cleanup_synapse_environment_file = keyFor "matrix/cleanup-synapse/nevarro.space" "root";
 
       # App Service Secrets
-      linkedin_matrix_secrets_yaml = keyFor "matrix/appservices/linkedin-matrix.yaml" "linkedinmatrix";
+      appservice_login_shared_secret_yaml = {
+        keyCommand = [ "cat" "../infrastructure-secrets/secrets/matrix/appservices/shared-secret-map.yaml" ];
+        user = "root";
+        group = "matrix";
+        permissions = "0640";
+      };
     };
 
   networking.hostName = "matrix";
@@ -106,9 +111,17 @@
   services.linkedin-matrix = {
     enable = true;
     homeserver = "https://matrix.nevarro.space";
-    secretYAML = "/run/keys/linkedin_matrix_secrets_yaml";
+    secretYAML = "/run/keys/appservice_login_shared_secret_yaml";
     appServiceToken = "lEIIFqiQjzLuyTrObCmwDD0kFiInVdhdxSqWfwpqRN6RmN6HeK3Vv96KIrNQcbus";
     homeserverToken = "NHdC2NaU03P4oCrdwA1uKZPxE443DLpRVjyCtrg5vrBs9QeGW3WR41v2LkLFObas";
+  };
+
+  services.mautrix-discord = {
+    enable = true;
+    homeserver = "https://matrix.nevarro.space";
+    secretYAML = "/run/keys/appservice_login_shared_secret_yaml";
+    appServiceToken = "lrmZkqNUTzK1Mu03gkAAPsrkC6oYTHOxj6GexWcY4tIIg9IIMqaA8yBDjzWejlGw";
+    homeserverToken = "ook7dtTg9lNwtU6A7HgiO7QitLrruDY6V9ZTWPN1XJPSezY0zhJGzxtjcKntbE4V";
   };
 
   # Synapse

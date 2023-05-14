@@ -70,9 +70,6 @@
       restricted_rooms = true;
       delete_portal_on_channel_delete = true;
       federate_rooms = false;
-      login_shared_secret_map = mkIf (cfg.sharedSecretAuthFile != null) {
-        "nevarro.space" = removeSuffix "\n" (readFile cfg.sharedSecretAuthFile);
-      };
       command_prefix = "!dis";
       encryption = {
         allow = true;
@@ -93,14 +90,10 @@
     };
 
     logging = {
-      directory = "./logs";
-      file_name_format = "{{.Date}}-{{.Index}}.log";
-      file_date_format = "2006-01-02";
-      file_mode = 384;
-      timestamp_format = "Jan _2, 2006 15:04:05";
-      print_level = "debug";
-      print_json = false;
-      file_json = false;
+      min_level = "debug";
+      writers = [
+        { type = "stdout"; format = "json"; }
+      ];
     };
   };
 
@@ -153,13 +146,7 @@ in
         type = types.path;
         default = "/var/lib/mautrix-discord";
       };
-      sharedSecretAuthFile = mkOption {
-        type = with types; nullOr path;
-        default = null;
-        description = ''
-          The path to a file that contains the shared secret auth secret.
-        '';
-      };
+      secretYAML = mkOption { type = types.path; };
     };
   };
 
@@ -183,31 +170,31 @@ in
     # Create a user for mautrix-discord.
     users = {
       users.mautrixdiscord = {
-        group = "mautrixdiscord";
+        group = "matrix";
         isSystemUser = true;
         home = cfg.dataDir;
         createHome = true;
       };
-      groups.mautrixdiscord = { };
+      groups.matrix = { };
     };
 
     systemd.services.mautrix-discord = {
       description = "Discord <-> Matrix Bridge";
-      after = optional cfg.useLocalSynapse "matrix-synapse.target";
       wantedBy = [ "multi-user.target" ];
+      after = [
+        "appservice_login_shared_secret_yaml-key.service"
+      ] ++ optional cfg.useLocalSynapse "matrix-synapse.target";
       preStart = ''
-        ${pkgs.coreutils}/bin/mkdir -p ${cfg.dataDir}/logs
+        ${pkgs.yq-go}/bin/yq ea '. as $item ireduce ({}; . * $item )' \
+          ${mautrixDiscordConfigYaml} ${cfg.secretYAML} > config.yaml
       '';
       serviceConfig = {
         User = "mautrixdiscord";
-        Group = "mautrixdiscord";
-        ExecStart = ''
-          ${mautrix-discord}/bin/mautrix-discord \
-            --config ${mautrixDiscordConfigYaml} \
-            --no-update
-        '';
+        Group = "matrix";
+        ExecStart = "${mautrix-discord}/bin/mautrix-discord --no-update";
         WorkingDirectory = cfg.dataDir;
         Restart = "on-failure";
+        SupplementaryGroups = [ "keys" ];
       };
     };
 

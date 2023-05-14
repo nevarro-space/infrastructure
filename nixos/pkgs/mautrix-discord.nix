@@ -2,18 +2,18 @@
 
 buildGoModule rec {
   pname = "mautrix-discord";
-  version = "unstable-2023-05-08";
+  version = "unstable-2023-05-14";
 
   src = fetchFromGitHub {
     owner = "mautrix";
     repo = "discord";
-    rev = "7655ff1a648e6312203623ff4bcc3ab85653cc18";
-    sha256 = "sha256-SBLP3fvx3C6fSDB61VU0D8nhAy3U0OcV2qELG926xP0=";
+    rev = "ad8efb864bd72a2060436117c8f299d365091c45";
+    sha256 = "sha256-2gzJqCoydttkui+F9ZAQyZnFCJr+FPCWElh3jaz5Hag=";
   };
 
   buildInputs = [ olm ];
 
-  vendorSha256 = "sha256-4K/FjeEbsM7cHfx7WGcsCUVKL1bT2qLDBkST1Fp9KNU=";
+  vendorSha256 = "sha256-yZhgfarexBCmDinmVB3BYo6sQ/UAwr/Yi1ilj0wgH08=";
 
   meta = with lib; {
     homepage = "https://github.com/mautrix/discord";

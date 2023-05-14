@@ -192,12 +192,12 @@ in
 
     # Create a user for linkedin-matrix.
     users.users.linkedinmatrix = {
-      group = "linkedinmatrix";
+      group = "matrix";
       isSystemUser = true;
       home = cfg.dataDir;
       createHome = true;
     };
-    users.groups.linkedinmatrix = { };
+    users.groups.matrix = { };
 
     # Create a database user for linkedin-matrix
     services.postgresql.ensureDatabases = [ "linkedin-matrix" ];
@@ -214,7 +214,7 @@ in
     systemd.services.linkedin-matrix = {
       description = "LinkedIn Messaging <-> Matrix Bridge";
       after = [
-        "linkedin_matrix_secrets_yaml-key.service"
+        "appservice_login_shared_secret_yaml-key.service"
       ] ++ optional cfg.useLocalSynapse "matrix-synapse.target";
       wantedBy = [ "multi-user.target" ];
       preStart = ''
@@ -223,7 +223,7 @@ in
       '';
       serviceConfig = {
         User = "linkedinmatrix";
-        Group = "linkedinmatrix";
+        Group = "matrix";
         WorkingDirectory = cfg.dataDir;
         ExecStart = "${linkedin-matrix}/bin/linkedin-matrix --no-update";
         Restart = "on-failure";
