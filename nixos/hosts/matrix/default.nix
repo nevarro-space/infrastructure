@@ -112,17 +112,21 @@
     enable = true;
     homeserver = "https://matrix.nevarro.space";
     secretYAML = "/run/keys/appservice_login_shared_secret_yaml";
-    appServiceToken = "lEIIFqiQjzLuyTrObCmwDD0kFiInVdhdxSqWfwpqRN6RmN6HeK3Vv96KIrNQcbus";
-    homeserverToken = "NHdC2NaU03P4oCrdwA1uKZPxE443DLpRVjyCtrg5vrBs9QeGW3WR41v2LkLFObas";
-  };
+  } // (import ../../../secrets/matrix/appservices/linkedin-matrix.nix);
 
+  # Discord <-> Matrix Bridge
   services.mautrix-discord = {
     enable = true;
     homeserver = "https://matrix.nevarro.space";
     secretYAML = "/run/keys/appservice_login_shared_secret_yaml";
-    appServiceToken = "lrmZkqNUTzK1Mu03gkAAPsrkC6oYTHOxj6GexWcY4tIIg9IIMqaA8yBDjzWejlGw";
-    homeserverToken = "ook7dtTg9lNwtU6A7HgiO7QitLrruDY6V9ZTWPN1XJPSezY0zhJGzxtjcKntbE4V";
-  };
+  } // (import ../../../secrets/matrix/appservices/mautrix-discord.nix);
+
+  # Slack <-> Matrix Bridge
+  services.mautrix-slack = {
+    enable = true;
+    homeserver = "https://matrix.nevarro.space";
+    secretYAML = "/run/keys/appservice_login_shared_secret_yaml";
+  } // (import ../../../secrets/matrix/appservices/mautrix-slack.nix);
 
   # Synapse
   services.matrix-synapse-custom = {
