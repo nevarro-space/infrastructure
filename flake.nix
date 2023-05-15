@@ -3,6 +3,7 @@
   inputs = {
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
     flake-utils.url = "github:numtide/flake-utils";
+    mineshspc.url = "github:ColoradoSchoolOfMines/mineshspc.com";
   };
 
   outputs = inputs@{ nixpkgs-unstable, flake-utils, ... }:

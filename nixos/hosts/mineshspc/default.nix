@@ -1,4 +1,4 @@
-{ config, lib, pkgs, ... }:
+{ config, lib, pkgs, mineshspc, ... }:
 let
   dataDir = "/var/lib/mineshspc";
 in
@@ -31,31 +31,40 @@ in
     };
   };
 
-  virtualisation.oci-containers.containers = {
-    "mineshspc.com" = {
-      image = "ghcr.io/coloradoschoolofmines/mineshspc.com:f0e8390bb21cf37c90f712427775e812fa57b92b";
-      volumes = [ "${dataDir}:/data" ];
-      ports = [ "8090:8090" ];
-      environmentFiles = [ "/run/keys/mineshspc_env" ];
-      environment = {
-        MINESHSPC_DOMAIN = "https://mineshspc.com";
-        MINESHSPC_HOSTED_BY_HTML = ''
-          Hosting provided by <a href="https://nevarro.space" target="_blank">Nevarro LLC</a>.
-          Check the <a href="https://status.mineshspc.com/" target="_blank">site status</a>.
-        '';
-        MINESHSPC_REGISTRATION_ENABLED = "0";
-      };
+  systemd.services."mineshspc.com" = {
+    description = "Mines HSPC Website service";
+    after = [
+      "network-online.target"
+      "mineshspc_env-key.service"
+    ];
+    wantedBy = [ "multi-user.target" ];
+    serviceConfig = {
+      WorkingDirectory = dataDir;
+      User = "mineshspc";
+      Group = "mineshspc";
+      ExecStart = "${mineshspc}/bin/mineshspc.com";
+      Restart = "on-failure";
+      EnvironmentFile = "/run/keys/mineshspc_env";
+    };
+    environment = {
+      MINESHSPC_DOMAIN = "https://mineshspc.com";
+      MINESHSPC_HOSTED_BY_HTML = ''
+        Hosting provided by <a href="https://nevarro.space" target="_blank">Nevarro LLC</a>.
+        Check the <a href="https://status.mineshspc.com/" target="_blank">site status</a>.
+      '';
+      MINESHSPC_REGISTRATION_ENABLED = "0";
     };
   };
-  systemd.services."${config.virtualisation.oci-containers.backend}-mineshspc.com" = {
-    after = [ "mineshspc_env-key.service" ];
-    partOf = [ "mineshspc_env-key.service" ];
-  };
 
-  # Make sure that the working directory is available
-  system.activationScripts.makeMinesHSPCDir = lib.stringAfter [ "var" ] ''
-    mkdir -p ${dataDir}
-  '';
+  users = {
+    users.mineshspc = {
+      group = "mineshspc";
+      isSystemUser = true;
+      home = dataDir;
+      createHome = true;
+    };
+    groups.mineshspc = { };
+  };
 
   services.backup = {
     healthcheckId = "e3b7948f-42cd-4571-a400-f77401d7dc56";
