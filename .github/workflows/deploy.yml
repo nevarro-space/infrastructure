@@ -14,8 +14,6 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: cachix/install-nix-action@v20
-        with:
-          nix_path: nixpkgs=channel:nixos-unstable
       - name: Run pre-commit
         run: nix develop --command pre-commit run --all --verbose
 
@@ -73,14 +71,12 @@ jobs:
 #       - uses: actions/checkout@v3
 
 #       - uses: cachix/install-nix-action@v20
-#         with:
-#           nix_path: nixpkgs=channel:nixos-unstable
 
 #       - name: Install dependencies
-#         run: nix-shell --command "echo dependencies installed"
+#         run: nix develop --command "echo dependencies installed"
 
 #       - name: colmena build
-#         run: nix-shell --command "colmena build"
+#         run: nix develop --command "colmena build"
 
 #   colmena-apply:
 #     name: Colmena Apply
@@ -104,14 +100,12 @@ jobs:
 #           path: infrastructure-secrets
 
 #       - uses: cachix/install-nix-action@v20
-#         with:
-#           nix_path: nixpkgs=channel:nixos-unstable
 
 #       - name: Unlock git crypt
 #         run: |
 #           echo "$GIT_CRYPT_SECRET" | base64 -d > "$HOME/git-crypt-secret"
 #           cd infrastructure-secrets
-#           nix-shell --command "git crypt unlock $HOME/git-crypt-secret"
+#           nix develop --command "git crypt unlock $HOME/git-crypt-secret"
 #           rm $HOME/git-crypt-secret
 
 #       - name: Install SSH Key
@@ -123,9 +117,9 @@ jobs:
 #       - name: Install dependencies
 #         run: |
 #           cd infrastructure
-#           nix-shell --command "echo dependencies installed"
+#           nix develop --command "echo dependencies installed"
 
 #       - name: colmena apply
 #         run: |
 #           cd infrastructure
-#           nix-shell --command "colmena apply"
+#           nix develop --command "colmena apply"
