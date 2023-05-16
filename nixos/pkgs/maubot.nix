@@ -79,7 +79,8 @@ python3.pkgs.buildPythonPackage rec {
   '';
 
   postPatch = ''
-    sed -i -e 's/SQLAlchemy>=1,<1.4/SQLAlchemy/' requirements.txt
+    sed -i -e 's/aiosqlite>=0.16,<0.19/aiosqlite<0.20,>=0.16/' requirements.txt
+    sed -i -e 's/SQLAlchemy>=1,<1.4/SQLAlchemy>=1,<1.5/' requirements.txt
     sed -i -e 's/bcrypt>=3,<4/bcrypt/' requirements.txt
   '';
 
