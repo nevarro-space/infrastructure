@@ -51,13 +51,13 @@ let
     (package.python.pkgs.toPythonModule package)
     (pkgs.matrix-synapse-plugins.matrix-synapse-shared-secret-auth.overridePythonAttrs (old: rec {
       pname = "matrix-synapse-shared-secret-auth";
-      version = "2.0.1";
+      version = "2.0.2";
 
       src = pkgs.fetchFromGitHub {
         owner = "devture";
         repo = "matrix-synapse-shared-secret-auth";
         rev = version;
-        sha256 = "sha256-kaok5IwKx97FYDrVIGAtUJfExqDln5vxEKrZda2RdzE=";
+        sha256 = "sha256-qzXKwTEOMtdvsxoU3Xh3vQyhK+Q18LfkeSts7EyDIXE=";
       };
       buildInputs = [ pkgs.matrix-synapse ];
     }))
