@@ -154,38 +154,10 @@ resource "hetznerdns_record" "nevarro_space_aaaa_root_4" {
   type    = "AAAA"
 }
 
-resource "hetznerdns_record" "nevarro_space_a_grafana_kessel" {
-  zone_id = hetznerdns_zone.nevarro_space.id
-  name    = "grafana.kessel"
-  value   = "5.161.43.147"
-  type    = "A"
-}
-
-resource "hetznerdns_record" "nevarro_space_a_grafana_nevarro" {
-  zone_id = hetznerdns_zone.nevarro_space.id
-  name    = "grafana.nevarro"
-  value   = "45.33.24.161"
-  type    = "A"
-}
-
-resource "hetznerdns_record" "nevarro_space_a_kessel" {
-  zone_id = hetznerdns_zone.nevarro_space.id
-  name    = "kessel"
-  value   = "5.161.43.147"
-  type    = "A"
-}
-
 resource "hetznerdns_record" "nevarro_space_a_nevarro" {
   zone_id = hetznerdns_zone.nevarro_space.id
   name    = "nevarro"
   value   = "45.33.24.161"
-  type    = "A"
-}
-
-resource "hetznerdns_record" "nevarro_space_a_turn" {
-  zone_id = hetznerdns_zone.nevarro_space.id
-  name    = "turn"
-  value   = "5.161.43.147"
   type    = "A"
 }
 
