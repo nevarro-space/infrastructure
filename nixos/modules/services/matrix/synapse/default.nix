@@ -218,7 +218,8 @@ in
       };
 
       registrationSharedSecretConfigFile = mkOption {
-        type = types.path;
+        type = with types; nullOr path;
+        default = null;
         description = ''
           The path to a file that contains the shared registration secret.
         '';
