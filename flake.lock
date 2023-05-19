@@ -42,11 +42,11 @@
         "nixpkgs-unstable": "nixpkgs-unstable"
       },
       "locked": {
-        "lastModified": 1684332361,
-        "narHash": "sha256-9WH7Atk2+2YOKfrsZeh+dJmk9db1/RkGqw9201lCfLE=",
+        "lastModified": 1684334947,
+        "narHash": "sha256-2em6/6vUP0K4KWS2XgF8R0fSb1lK1tQuIHaFLWYWCt0=",
         "owner": "ColoradoSchoolOfMines",
         "repo": "mineshspc.com",
-        "rev": "2f98856403141f4babf3bc018e9647ccef6d70f1",
+        "rev": "3cef5e3c5021a6ba636648c41931b7d4c4c964b3",
         "type": "github"
       },
       "original": {
@@ -73,11 +73,11 @@
     },
     "nixpkgs-unstable_2": {
       "locked": {
-        "lastModified": 1684215771,
-        "narHash": "sha256-fsum28z+g18yreNa1Y7MPo9dtps5h1VkHfZbYQ+YPbk=",
+        "lastModified": 1684385584,
+        "narHash": "sha256-O7y0gK8OLIDqz+LaHJJyeu09IGiXlZIS3+JgEzGmmJA=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "963006aab35e3e8ebbf6052b6bf4ea712fdd3c28",
+        "rev": "48a0fb7aab511df92a17cf239c37f2bd2ec9ae3a",
         "type": "github"
       },
       "original": {
