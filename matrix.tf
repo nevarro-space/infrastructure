@@ -60,3 +60,10 @@ resource "hetznerdns_record" "nevarro_space_a_matrix" {
   value   = hcloud_server.matrix.ipv4_address
   type    = "A"
 }
+
+resource "hetznerdns_record" "nevarro_space_a_meetbot" {
+  zone_id = hetznerdns_zone.nevarro_space.id
+  name    = "meetbot"
+  value   = hcloud_server.matrix.ipv4_address
+  type    = "A"
+}

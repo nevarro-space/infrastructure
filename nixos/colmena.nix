@@ -1,10 +1,18 @@
-{ nixpkgs-unstable, terraform-outputs, mineshspc, ... }:
+{ nixpkgs-unstable, terraform-outputs, mineshspc, meetbot, ... }:
 let
   system = "x86_64-linux";
 in
 {
   meta = {
-    nixpkgs = import nixpkgs-unstable { inherit system; };
+    nixpkgs = import nixpkgs-unstable {
+      inherit system;
+      overlays = [
+        (self: super: {
+          inherit (mineshspc.packages.${system}) mineshspc;
+          inherit (meetbot.packages.${system}) meetbot;
+        })
+      ];
+    };
     description = "Nevarro Infrastructure";
   };
 
@@ -51,10 +59,6 @@ in
     deployment = {
       targetHost = terraform-outputs.mineshspc_server_ipv4.value;
       tags = [ "hetzner" "ashburn" ];
-    };
-
-    _module.args = {
-      inherit (mineshspc.packages.${system}) mineshspc;
     };
 
     imports = [ ./hosts/mineshspc ];

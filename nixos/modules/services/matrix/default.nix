@@ -6,6 +6,7 @@
     ./maubot-github.nix
     ./mautrix-discord.nix
     ./mautrix-slack.nix
+    ./meetbot.nix
     ./mjolnir.nix
     ./msclinkbot.nix
     ./standupbot.nix
