@@ -1,4 +1,4 @@
-{ config, lib, pkgs, mineshspc, ... }:
+{ config, lib, pkgs, ... }:
 let
   dataDir = "/var/lib/mineshspc";
 in
@@ -42,7 +42,7 @@ in
       WorkingDirectory = dataDir;
       User = "mineshspc";
       Group = "mineshspc";
-      ExecStart = "${mineshspc}/bin/mineshspc.com";
+      ExecStart = "${pkgs.mineshspc}/bin/mineshspc.com";
       Restart = "on-failure";
       EnvironmentFile = "/run/keys/mineshspc_env";
     };

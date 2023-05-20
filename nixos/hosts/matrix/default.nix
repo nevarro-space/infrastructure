@@ -23,6 +23,7 @@
       marshal_password = keyFor "matrix/bots/marshal" "mjolnir";
       github_maubot_secrets_yaml = keyFor "matrix/bots/github.yaml" "maubot-github";
       echobot_maubot_secrets_yaml = keyFor "matrix/bots/echobot.yaml" "maubot-echo";
+      meetbot_secret_env = keyFor "matrix/bots/meetbot.env" "meetbot";
 
       # Matrix Server Secrets
       nevarro_space_registration_shared_secret = keyFor "matrix/registration-shared-secret/nevarro.space" "matrix-synapse";
@@ -105,6 +106,14 @@
     username = "@ping:nevarro.space";
     homeserver = "https://matrix.nevarro.space";
     secretYAML = "/run/keys/echobot_maubot_secrets_yaml";
+  };
+
+  # Meetbot
+  services.meetbot = {
+    enable = true;
+    username = "@meetbot:nevarro.space";
+    homeserver = "https://matrix.nevarro.space";
+    secretEnv = "/run/keys/meetbot_secret_env";
   };
 
   # LinkedIn <-> Matrix Bridge
