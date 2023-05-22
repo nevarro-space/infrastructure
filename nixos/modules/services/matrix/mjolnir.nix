@@ -1,7 +1,7 @@
 { config, lib, pkgs, ... }: with lib; let
   mjolnirCfg = config.services.mjolnir;
 in
-{
+mkIf mjolnirCfg.enable {
   services.mjolnir = {
     pantalaimon = {
       enable = true;
@@ -22,10 +22,8 @@ in
     ];
     serviceConfig.SupplementaryGroups = [ "keys" ];
   };
-  services.pantalaimon-headless.instances = mkIf mjolnirCfg.enable {
-    mjolnir = {
-      listenAddress = "127.0.0.1";
-      listenPort = 8100;
-    };
+  services.pantalaimon-headless.instances.mjolnir = {
+    listenAddress = "127.0.0.1";
+    listenPort = 8100;
   };
 }
