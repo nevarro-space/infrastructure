@@ -2,8 +2,17 @@
 
 [![Deploy Infrastructure](https://github.com/nevarro-space/infrastructure/actions/workflows/deploy.yml/badge.svg)](https://github.com/nevarro-space/infrastructure/actions/workflows/deploy.yml)
 
-This repository contains the NixOS configuration for all servers operated by
+This repository contains the configuration for all servers operated by
 [Nevarro LLC](https://nevarro.space).
+
+The servers are running on Hetzner and provisioned by Terraform. The
+configuration is managed by [colmena](https://colmena.cli.rs/).
+
+## Servers
+
+* **monitoring** - runs the monitoring stack
+* **matrix** - runs the nevarro.space matrix homeserver
+* **mineshspc** - runs the [mineshspc.com](https://mineshspc.com) website
 
 ## How to deploy manually
 
