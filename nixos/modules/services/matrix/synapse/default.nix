@@ -385,7 +385,7 @@ in
 
           # If they access root, redirect to Element. If they access the API, then
           # forward on to Synapse.
-          locations."/".return = "301 https://app.element.io";
+          locations."/".return = "301 https://${config.networking.domain}";
           locations."/_matrix" = {
             proxyPass = "http://0.0.0.0:8008"; # without a trailing /
             extraConfig = ''
