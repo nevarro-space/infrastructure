@@ -60,11 +60,11 @@
         "nixpkgs-unstable": "nixpkgs-unstable"
       },
       "locked": {
-        "lastModified": 1684617314,
-        "narHash": "sha256-CrIpX3LcSd6WTvt5SNGT/caJ/n7GnmfuPbI5aVhR084=",
+        "lastModified": 1684777588,
+        "narHash": "sha256-nhZX6bhp45fI5cp3tsKF3MfO5f8AeBROUAh4yUfpooM=",
         "owner": "beeper",
         "repo": "meetbot",
-        "rev": "2370701ce4dfbe82dc178a647f7b360aee2de25b",
+        "rev": "4219616dadbd6ddf745c7f0fda8cb78aa89d6fe7",
         "type": "github"
       },
       "original": {
