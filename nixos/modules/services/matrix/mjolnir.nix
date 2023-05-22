@@ -15,7 +15,13 @@ in
       protectAllJoinedRooms = true;
     };
   };
-  systemd.services.mjolnir.serviceConfig.SupplementaryGroups = [ "keys" ];
+  systemd.services.mjolnir = {
+    after = [
+      "matrix-synapse.target"
+      "marshal_password-key.service"
+    ];
+    serviceConfig.SupplementaryGroups = [ "keys" ];
+  };
   services.pantalaimon-headless.instances = mkIf mjolnirCfg.enable {
     mjolnir = {
       listenAddress = "127.0.0.1";
