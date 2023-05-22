@@ -1,21 +1,27 @@
 {
   description = "Nevarro Infrastructure NixOS deployments";
   inputs = {
-    nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     flake-utils.url = "github:numtide/flake-utils";
-    mineshspc.url = "github:ColoradoSchoolOfMines/mineshspc.com";
-    meetbot.url = "github:beeper/meetbot";
+    mineshspc = {
+      url = "github:ColoradoSchoolOfMines/mineshspc.com";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    meetbot = {
+      url = "github:beeper/meetbot";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
-  outputs = inputs@{ nixpkgs-unstable, flake-utils, ... }:
+  outputs = inputs@{ nixpkgs, flake-utils, ... }:
     {
       colmena = import ./nixos/colmena.nix (inputs // {
-        terraform-outputs = nixpkgs-unstable.lib.importJSON ./terraform-output.json;
+        terraform-outputs = nixpkgs.lib.importJSON ./terraform-output.json;
       });
     } // (flake-utils.lib.eachDefaultSystem
       (system:
         let
-          pkgs = import nixpkgs-unstable { system = system; };
+          pkgs = import nixpkgs { system = system; };
         in
         {
           devShells.default = pkgs.mkShell {

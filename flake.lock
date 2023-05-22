@@ -57,14 +57,16 @@
     "meetbot": {
       "inputs": {
         "flake-utils": "flake-utils_2",
-        "nixpkgs-unstable": "nixpkgs-unstable"
+        "nixpkgs": [
+          "nixpkgs"
+        ]
       },
       "locked": {
-        "lastModified": 1684777588,
-        "narHash": "sha256-nhZX6bhp45fI5cp3tsKF3MfO5f8AeBROUAh4yUfpooM=",
+        "lastModified": 1684782464,
+        "narHash": "sha256-oA+t5wKewxaGxMXTom5B1NU5mFUM/F50VqhmcKV9rrw=",
         "owner": "beeper",
         "repo": "meetbot",
-        "rev": "4219616dadbd6ddf745c7f0fda8cb78aa89d6fe7",
+        "rev": "de5a1ba4f2e887d2981912f6fa5eaf6a49026f53",
         "type": "github"
       },
       "original": {
@@ -76,14 +78,16 @@
     "mineshspc": {
       "inputs": {
         "flake-utils": "flake-utils_3",
-        "nixpkgs-unstable": "nixpkgs-unstable_2"
+        "nixpkgs": [
+          "nixpkgs"
+        ]
       },
       "locked": {
-        "lastModified": 1684782257,
-        "narHash": "sha256-k5wQlDkp7K1YAyTdxPK7RMd+Ns9eP9+BTP4HL8mmdRk=",
+        "lastModified": 1684782507,
+        "narHash": "sha256-tUkFMTgAwf6mPHWoZugwxaoW4J7OQiQFOqsNPSkxgKE=",
         "owner": "ColoradoSchoolOfMines",
         "repo": "mineshspc.com",
-        "rev": "c01424d95e4636a35726b9f3fe78c3a6ceda81af",
+        "rev": "6d8fbd2d1da7d7129840248628aa8b9502688b51",
         "type": "github"
       },
       "original": {
@@ -92,39 +96,7 @@
         "type": "github"
       }
     },
-    "nixpkgs-unstable": {
-      "locked": {
-        "lastModified": 1684570954,
-        "narHash": "sha256-FX5y4Sm87RWwfu9PI71XFvuRpZLowh00FQpIJ1WfXqE=",
-        "owner": "NixOS",
-        "repo": "nixpkgs",
-        "rev": "3005f20ce0aaa58169cdee57c8aa12e5f1b6e1b3",
-        "type": "github"
-      },
-      "original": {
-        "owner": "NixOS",
-        "ref": "nixos-unstable",
-        "repo": "nixpkgs",
-        "type": "github"
-      }
-    },
-    "nixpkgs-unstable_2": {
-      "locked": {
-        "lastModified": 1684662198,
-        "narHash": "sha256-lmGDGuFONWSoGBKDDhU/6fOhhmFoZQ8rPf+kS7/e/Gs=",
-        "owner": "NixOS",
-        "repo": "nixpkgs",
-        "rev": "50a183182d7ae39133555414d48d5d609a28a57d",
-        "type": "github"
-      },
-      "original": {
-        "owner": "NixOS",
-        "ref": "nixos-unstable",
-        "repo": "nixpkgs",
-        "type": "github"
-      }
-    },
-    "nixpkgs-unstable_3": {
+    "nixpkgs": {
       "locked": {
         "lastModified": 1684662198,
         "narHash": "sha256-lmGDGuFONWSoGBKDDhU/6fOhhmFoZQ8rPf+kS7/e/Gs=",
@@ -145,7 +117,7 @@
         "flake-utils": "flake-utils",
         "meetbot": "meetbot",
         "mineshspc": "mineshspc",
-        "nixpkgs-unstable": "nixpkgs-unstable_3"
+        "nixpkgs": "nixpkgs"
       }
     },
     "systems": {

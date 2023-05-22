@@ -1,10 +1,10 @@
-{ nixpkgs-unstable, terraform-outputs, mineshspc, meetbot, ... }:
+{ nixpkgs, terraform-outputs, mineshspc, meetbot, ... }:
 let
   system = "x86_64-linux";
 in
 {
   meta = {
-    nixpkgs = import nixpkgs-unstable {
+    nixpkgs = import nixpkgs {
       inherit system;
       overlays = [
         (self: super: {
