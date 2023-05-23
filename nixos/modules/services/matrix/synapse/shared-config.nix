@@ -145,6 +145,10 @@ in
     "federation_sender2"
   ];
   instance_map = {
+    main = {
+      host = "localhost";
+      port = 9093;
+    };
     event_persister1 = {
       host = "localhost";
       port = 9091;

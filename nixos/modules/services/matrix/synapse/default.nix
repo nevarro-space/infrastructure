@@ -95,10 +95,6 @@ let
   mkSynapseWorkerConfig = port: config:
     let
       newConfig = {
-        # The replication listener on the main synapse process.
-        worker_replication_host = "127.0.0.1";
-        worker_replication_http_port = 9093;
-
         # Default to generic worker.
         worker_app = "synapse.app.generic_worker";
       } // config;
