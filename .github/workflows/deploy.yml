@@ -13,7 +13,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      - uses: cachix/install-nix-action@v20
+      - uses: cachix/install-nix-action@v21
       - name: Run pre-commit
         run: nix develop --command pre-commit run --all --verbose
 
@@ -70,7 +70,7 @@ jobs:
 #     steps:
 #       - uses: actions/checkout@v3
 
-#       - uses: cachix/install-nix-action@v20
+#       - uses: cachix/install-nix-action@v21
 
 #       - name: Install dependencies
 #         run: nix develop --command "echo dependencies installed"
@@ -99,7 +99,7 @@ jobs:
 #           token: ${{ secrets.SECRET_REPO_CLONE_TOKEN }}
 #           path: infrastructure-secrets
 
-#       - uses: cachix/install-nix-action@v20
+#       - uses: cachix/install-nix-action@v21
 
 #       - name: Unlock git crypt
 #         run: |
