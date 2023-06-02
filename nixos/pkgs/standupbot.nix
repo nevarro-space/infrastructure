@@ -2,18 +2,18 @@
 
 buildGoModule rec {
   pname = "standupbot";
-  version = "unstable-2023-05-11";
+  version = "unstable-2023-06-02";
 
   src = fetchFromGitHub {
     owner = "beeper";
     repo = "standupbot";
-    rev = "491d6451b448f821a1bb0e0bb62ceeaf20a7ccf8";
-    sha256 = "sha256-xHB5euBeNmvF1igSR+9FUYuucX8JKZaI6xgU5ZDjXnc=";
+    rev = "885677b757df4febdee9fa4fee9a6c6b4e3eb8d8";
+    sha256 = "sha256-pa0k3ZvAWC+/woH2/mLYLaYWijO+lIFe5Ht5/bo3cBU=";
   };
 
   buildInputs = [ olm ];
 
-  vendorSha256 = "sha256-fJOoqdMjZC8BZl4/gyQ0qShI2MaBD9uXBK3k4JKvHc0=";
+  vendorSha256 = "sha256-X5D38xyde8zwYZg4RIKbz9v5mFU7inKLMPI9iVbifYI=";
 
   meta = with lib; {
     homepage = "https://github.com/beeper/standupbot";

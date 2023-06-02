@@ -10,12 +10,12 @@
 }:
 python3.pkgs.buildPythonPackage rec {
   pname = "maubot";
-  version = "unstable-2023-05-14";
+  version = "unstable-2023-06-02";
 
   src = fetchFromGitHub {
     owner = "maubot";
     repo = pname;
-    rev = "b4e8e5bfbb4c668e5e0a4cf09c44150dd77ff17c";
+    rev = "bf8ae9eb5aba7eaac70838e323228db910c27171";
     sha256 = "sha256-qfIjI3vEnb0aQBEjTwhzp/c43AYL7aDQiBJRMeSdnN0=";
   };
 

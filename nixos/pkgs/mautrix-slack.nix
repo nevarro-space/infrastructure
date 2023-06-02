@@ -2,18 +2,18 @@
 
 buildGoModule rec {
   pname = "mautrix-slack";
-  version = "unstable-2023-05-14";
+  version = "unstable-2023-06-02";
 
   src = fetchFromGitHub {
     owner = "mautrix";
     repo = "slack";
-    rev = "5a967e49bd48c95f326d530dfa4f4fb3ce9af4c9";
-    sha256 = "sha256-lqeSXUQyNdso551mPrcylpX8n44U3sio319as1/Zfu8=";
+    rev = "7e379049f1c0be2bb6d0b38eaff331f2eb000591";
+    sha256 = "sha256-BZFAaQkUURM2+X+KztEHeNKckJT6jKvd+TA9VXh1oMo=";
   };
 
   buildInputs = [ olm ];
 
-  vendorSha256 = "sha256-6mO3HCUlKDFS80ueNL7w/LKka5F8MvmBpwEDVj4dlEw=";
+  vendorSha256 = "sha256-zLD06I6pE/BQss8C7WH2F5fid4npaB36mxfr8WitGFQ=";
 
   meta = with lib; {
     homepage = "https://github.com/mautrix/slack";

@@ -10,8 +10,8 @@ buildPythonPackage rec {
   src = fetchFromGitHub {
     owner = "beeper";
     repo = "linkedin";
-    rev = "63aac713f8ebd0ebec2d28d1f276be6ee0c7d8bb";
-    sha256 = "sha256-YXDtoXeVz6e8WhB8Zv9OFr6QOmVqef7UrxXDNTyejHI=";
+    rev = "5d2a312336e4f7ed8fc5f06d3742291b0fed9daf";
+    sha256 = "sha256-4m3NARmxvjSwTGW9EFiJKl74v6u0CuMIr878aJrXXk0=";
   };
 
   propagatedBuildInputs = [
