@@ -1,125 +1,111 @@
 name: Deploy Infrastructure
 
-on:
-  push:
-    branches:
-      - master
-  pull_request:
+on: workflow_dispatch
 
 jobs:
-  lint:
-    name: Lint
+  terraform-plan:
+    name: Terraform Plan
+    runs-on: ubuntu-latest
+    outputs:
+      exit_code: ${{ steps.terraform_plan.outputs.exit_code }}
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
+
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Terraform Plan
+        id: terraform_plan
+        run: |
+          terraform plan -input=false -detailed-exitcode
+          echo "exit_code=$?" >> $GITHUB_OUTPUT
+
+  terraform-apply:
+    name: Terraform Apply
+    needs:
+      - lint
+      - terraform-plan
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/master' && needs.terraform-plan.outputs.exit_code == 2
+    environment: terraform
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
+
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Terraform Apply
+        run: terraform apply -auto-approve -input=false
+
+  colmena-build:
+    name: Colmena Build
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v3
+
       - uses: cachix/install-nix-action@v21
-      - name: Run pre-commit
-        run: nix develop --command pre-commit run --all --verbose
 
-#   terraform-plan:
-#     name: Terraform Plan
-#     runs-on: ubuntu-latest
-#     outputs:
-#       exit_code: ${{ steps.terraform_plan.outputs.exit_code }}
+      - name: Install dependencies
+        run: nix develop --command "echo dependencies installed"
 
-#     steps:
-#       - uses: actions/checkout@v3
+      - name: colmena build
+        run: nix develop --command "colmena build"
 
-#       - name: Setup Terraform
-#         uses: hashicorp/setup-terraform@v2
-#         with:
-#           cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
+  colmena-apply:
+    name: Colmena Apply
+    needs:
+      - colmena-build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/master'
+    environment: production
+    env:
+      GIT_CRYPT_SECRET: ${{ secrets.GIT_CRYPT_SECRET }}
 
-#       - name: Terraform Init
-#         run: terraform init
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          path: infrastructure
 
-#       - name: Terraform Plan
-#         id: terraform_plan
-#         run: |
-#           terraform plan -input=false -detailed-exitcode
-#           echo "exit_code=$?" >> $GITHUB_OUTPUT
+      - uses: actions/checkout@v3
+        with:
+          repository: nevarro-space/infrastructure-secrets
+          token: ${{ secrets.SECRET_REPO_CLONE_TOKEN }}
+          path: infrastructure-secrets
 
-#   terraform-apply:
-#     name: Terraform Apply
-#     needs:
-#       - lint
-#       - terraform-plan
-#     runs-on: ubuntu-latest
-#     if: github.ref == 'refs/heads/master' && needs.terraform-plan.outputs.exit_code == 2
-#     environment: terraform
+      - uses: cachix/install-nix-action@v21
 
-#     steps:
-#       - uses: actions/checkout@v3
+      - name: Unlock git crypt
+        run: |
+          echo "$GIT_CRYPT_SECRET" | base64 -d > "$HOME/git-crypt-secret"
+          cd infrastructure-secrets
+          nix develop --command "git crypt unlock $HOME/git-crypt-secret"
+          rm $HOME/git-crypt-secret
 
-#       - name: Setup Terraform
-#         uses: hashicorp/setup-terraform@v2
-#         with:
-#           cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
+      - name: Install SSH Key
+        uses: shimataro/ssh-key-action@v2.5.0
+        with:
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          known_hosts: ${{ secrets.MINESHSPC_KNOWN_HOSTS }}
 
-#       - name: Terraform Init
-#         run: terraform init
+      - name: Install dependencies
+        run: |
+          cd infrastructure
+          nix develop --command "echo dependencies installed"
 
-#       - name: Terraform Apply
-#         run: terraform apply -auto-approve -input=false
-
-#   colmena-build:
-#     name: Colmena Build
-#     runs-on: ubuntu-latest
-
-#     steps:
-#       - uses: actions/checkout@v3
-
-#       - uses: cachix/install-nix-action@v21
-
-#       - name: Install dependencies
-#         run: nix develop --command "echo dependencies installed"
-
-#       - name: colmena build
-#         run: nix develop --command "colmena build"
-
-#   colmena-apply:
-#     name: Colmena Apply
-#     needs:
-#       - colmena-build
-#     runs-on: ubuntu-latest
-#     if: github.ref == 'refs/heads/master'
-#     environment: production
-#     env:
-#       GIT_CRYPT_SECRET: ${{ secrets.GIT_CRYPT_SECRET }}
-
-#     steps:
-#       - uses: actions/checkout@v3
-#         with:
-#           path: infrastructure
-
-#       - uses: actions/checkout@v3
-#         with:
-#           repository: nevarro-space/infrastructure-secrets
-#           token: ${{ secrets.SECRET_REPO_CLONE_TOKEN }}
-#           path: infrastructure-secrets
-
-#       - uses: cachix/install-nix-action@v21
-
-#       - name: Unlock git crypt
-#         run: |
-#           echo "$GIT_CRYPT_SECRET" | base64 -d > "$HOME/git-crypt-secret"
-#           cd infrastructure-secrets
-#           nix develop --command "git crypt unlock $HOME/git-crypt-secret"
-#           rm $HOME/git-crypt-secret
-
-#       - name: Install SSH Key
-#         uses: shimataro/ssh-key-action@v2.5.0
-#         with:
-#           key: ${{ secrets.DEPLOY_SSH_KEY }}
-#           known_hosts: ${{ secrets.MINESHSPC_KNOWN_HOSTS }}
-
-#       - name: Install dependencies
-#         run: |
-#           cd infrastructure
-#           nix develop --command "echo dependencies installed"
-
-#       - name: colmena apply
-#         run: |
-#           cd infrastructure
-#           nix develop --command "colmena apply"
+      - name: colmena apply
+        run: |
+          cd infrastructure
+          nix develop --command "colmena apply"
