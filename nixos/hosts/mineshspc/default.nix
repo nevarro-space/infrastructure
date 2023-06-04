@@ -42,7 +42,7 @@ in
       WorkingDirectory = dataDir;
       User = "mineshspc";
       Group = "mineshspc";
-      ExecStart = "${pkgs.mineshspc}/bin/mineshspc.com";
+      ExecStart = "${pkgs.mineshspc}/bin/mineshspc";
       Restart = "on-failure";
       EnvironmentFile = "/run/keys/mineshspc_env";
     };
