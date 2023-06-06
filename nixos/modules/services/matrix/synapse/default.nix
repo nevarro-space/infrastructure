@@ -7,20 +7,20 @@ let
   # Custom package that tracks with the latest release of Synapse.
   package = pkgs.matrix-synapse.overridePythonAttrs (old: rec {
     pname = "matrix-synapse";
-    version = "1.84.1";
+    version = "1.85.0";
     format = "pyproject";
 
     src = pkgs.fetchFromGitHub {
       owner = "matrix-org";
       repo = "synapse";
       rev = "v${version}";
-      hash = "sha256-6cUy3fAQoIFD7iL24vvlMj4S6s+68plemzH6GKkTGo0=";
+      hash = "sha256-YC0cFnmesZZJz/v6sCsy+nWhor1mwwQXDoIK0Pq0WcY=";
     };
 
     cargoDeps = pkgs.rustPackages.rustPlatform.fetchCargoTarball {
       inherit src;
       name = "${pname}-${version}";
-      hash = "sha256-Rd2BJe4M3NVQJdkYDaiDhqKf4lXIKQyFwqMqVyMHog4=";
+      hash = "sha256-ox0PldDR9L7TYwxCh3L8rw4ZYA1sUdokJZwCySyPU8g=";
     };
 
     postPatch = ''
