@@ -59,7 +59,7 @@
 
     bridge = {
       username_template = "discord_{{.}}";
-      displayname_template = "{{.Username}}#{{.Discriminator}} (D){{if .Bot}} (bot){{end}}";
+      displayname_template = "{{or .GlobalName .Username}}{{if .Bot}} (bot){{end}}";
       channel_name_template = "{{if or (eq .Type 3) (eq .Type 4)}}{{.Name}}{{else}}#{{.Name}}{{end}}";
       guild_name_template = "{{.Name}}";
       private_chat_portal_meta = false;
