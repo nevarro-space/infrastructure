@@ -27,6 +27,10 @@ output "mineshspc_server_ipv4" {
   value = hcloud_server.mineshspc.ipv4_address
 }
 
+output "mineshspc_server_ipv6" {
+  value = hcloud_server.mineshspc.ipv6_address
+}
+
 resource "hcloud_server_network" "mineshspc_nevarronet" {
   server_id  = hcloud_server.mineshspc.id
   network_id = hcloud_network.nevarro_network.id

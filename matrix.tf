@@ -27,6 +27,10 @@ output "matrix_server_ipv4" {
   value = hcloud_server.matrix.ipv4_address
 }
 
+output "matrix_server_ipv6" {
+  value = hcloud_server.matrix.ipv6_address
+}
+
 resource "hcloud_volume" "matrix-postgres-data" {
   name     = "matrix-postgres-data"
   size     = 100

@@ -27,6 +27,10 @@ output "monitoring_server_ipv4" {
   value = hcloud_server.monitoring.ipv4_address
 }
 
+output "monitoring_server_ipv6" {
+  value = hcloud_server.monitoring.ipv6_address
+}
+
 resource "hcloud_server_network" "monitoring_nevarronet" {
   server_id  = hcloud_server.monitoring.id
   network_id = hcloud_network.nevarro_network.id
