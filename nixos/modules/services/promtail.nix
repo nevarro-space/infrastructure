@@ -1,4 +1,4 @@
-{ config, ... }: {
+{ config, terraform-outputs, ... }: {
   services.promtail = {
     enable = true;
     configuration = {
@@ -8,7 +8,7 @@
       };
       positions.filename = "/tmp/positions.yaml";
       clients = [
-        { url = "http://10.0.1.2:3100/loki/api/v1/push"; }
+        { url = "http://${terraform-outputs.monitoring_server_internal_ip.value}:3100/loki/api/v1/push"; }
       ];
       scrape_configs = [
         {

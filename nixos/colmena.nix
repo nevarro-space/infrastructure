@@ -27,9 +27,6 @@ in
 
     system.stateVersion = "23.05";
 
-    networking.domain = "nevarro.space";
-    networking.interfaces.eth0.useDHCP = true;
-
     swapDevices = [
       { device = "/var/swapfile"; size = 4096; }
     ];
