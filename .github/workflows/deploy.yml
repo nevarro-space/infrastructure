@@ -56,7 +56,9 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - uses: cachix/install-nix-action@v21
+      - uses: nixbuild/nix-quick-install-action@v24
+        with:
+          nix_conf: experimental-features = nix-command flakes
 
       - name: Install dependencies
         run: nix develop --command "echo dependencies installed"
@@ -85,7 +87,9 @@ jobs:
           token: ${{ secrets.SECRET_REPO_CLONE_TOKEN }}
           path: infrastructure-secrets
 
-      - uses: cachix/install-nix-action@v21
+      - uses: nixbuild/nix-quick-install-action@v24
+        with:
+          nix_conf: experimental-features = nix-command flakes
 
       - name: Unlock git crypt
         run: |
