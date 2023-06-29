@@ -7,4 +7,6 @@
     usePredictableInterfaceNames = false;
     interfaces.eth0.useDHCP = true;
   };
+
+  services.fail2ban.enable = true;
 }
