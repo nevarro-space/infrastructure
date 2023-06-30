@@ -1,11 +1,12 @@
 {
-  networking = {
-    domain = "nevarro.space";
-    nameservers = [ "8.8.8.8" ];
+  networking.domain = "nevarro.space";
 
-    dhcpcd.enable = true;
-    usePredictableInterfaceNames = false;
-    interfaces.eth0.useDHCP = true;
+  systemd.network = {
+    enable = true;
+    networks = {
+      "10-wan".networkConfig.DHCP = "ipv4";
+      "10-nevarronet".networkConfig.DHCP = "ipv4";
+    };
   };
 
   services.fail2ban.enable = true;

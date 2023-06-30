@@ -14,6 +14,10 @@ in
   };
 
   networking.hostName = "mineshspc";
+  systemd.network.networks = {
+    "10-wan".matchConfig.MACAddress = "96:00:01:f3:c7:74";
+    "10-nevarronet".matchConfig.MACAddress = "86:00:00:3a:eb:6a";
+  };
 
   services.nginx = {
     enable = true;

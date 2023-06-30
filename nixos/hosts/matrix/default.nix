@@ -40,6 +40,10 @@
     };
 
   networking.hostName = "matrix";
+  systemd.network.networks = {
+    "10-wan".matchConfig.MACAddress = "96:00:02:23:cd:a5";
+    "10-nevarronet".matchConfig.MACAddress = "86:00:00:44:d6:83";
+  };
 
   services.healthcheck = {
     enable = true;
