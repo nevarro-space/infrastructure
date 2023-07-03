@@ -56,7 +56,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - uses: nixbuild/nix-quick-install-action@v24
+      - uses: nixbuild/nix-quick-install-action@v25
         with:
           nix_conf: experimental-features = nix-command flakes
 
@@ -87,7 +87,7 @@ jobs:
           token: ${{ secrets.SECRET_REPO_CLONE_TOKEN }}
           path: infrastructure-secrets
 
-      - uses: nixbuild/nix-quick-install-action@v24
+      - uses: nixbuild/nix-quick-install-action@v25
         with:
           nix_conf: experimental-features = nix-command flakes
 
