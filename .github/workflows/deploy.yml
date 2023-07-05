@@ -55,14 +55,9 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-
-      - uses: nixbuild/nix-quick-install-action@v24
-        with:
-          nix_conf: experimental-features = nix-command flakes
-
+      - uses: nixbuild/nix-quick-install-action@v25
       - name: Install dependencies
         run: nix develop --command "echo dependencies installed"
-
       - name: colmena build
         run: nix develop --command "colmena build"
 
@@ -87,9 +82,7 @@ jobs:
           token: ${{ secrets.SECRET_REPO_CLONE_TOKEN }}
           path: infrastructure-secrets
 
-      - uses: nixbuild/nix-quick-install-action@v24
-        with:
-          nix_conf: experimental-features = nix-command flakes
+      - uses: nixbuild/nix-quick-install-action@v25
 
       - name: Unlock git crypt
         run: |
