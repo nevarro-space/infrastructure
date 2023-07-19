@@ -13,6 +13,7 @@ mkIf mjolnirCfg.enable {
 
     settings = {
       protectAllJoinedRooms = true;
+      verboseLogging = false;
     };
   };
   systemd.services.mjolnir = {
