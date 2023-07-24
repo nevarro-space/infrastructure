@@ -145,6 +145,21 @@ let
       ];
     });
 
+  eventPersister2ConfigFile = yamlFormat.generate
+    "event-persister-2.yaml"
+    (mkSynapseWorkerConfig 9107 {
+      worker_name = "event_persister2";
+      # The event persister needs a replication listener
+      worker_listeners = [
+        {
+          type = "http";
+          port = 9092;
+          bind_address = "127.0.0.1";
+          resources = [{ names = [ "replication" ]; }];
+        }
+      ];
+    });
+
   synchotron1ConfigFile = yamlFormat.generate
     "synchotron-1.yaml"
     (mkSynapseWorkerConfig 9104 {
@@ -322,6 +337,16 @@ in
       '';
     };
 
+    systemd.services.matrix-synapse-event-persister2 = mkSynapseWorkerService {
+      description = "Synapse Matrix event persister 2";
+      serviceConfig.ExecStart = ''
+        ${packageWithModules}/bin/python -m synapse.app.generic_worker \
+          ${configPaths} \
+          --config-path ${eventPersister2ConfigFile} \
+          --keys-directory ${cfg.dataDir}
+      '';
+    };
+
     # Run the synchotron worker
     systemd.services.matrix-synapse-synchotron1 = mkSynapseWorkerService {
       description = "Synapse Matrix synchotron 1";
@@ -431,6 +456,11 @@ in
               # Event persister 1
               targets = [ "0.0.0.0:9103" ];
               labels = { instance = matrixDomain; job = "event_persister"; index = "1"; };
+            }
+            {
+              # Event persister 2
+              targets = [ "0.0.0.0:9107" ];
+              labels = { instance = matrixDomain; job = "event_persister"; index = "2"; };
             }
             {
               # Synchotron 1
