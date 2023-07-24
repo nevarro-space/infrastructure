@@ -153,6 +153,10 @@ in
       host = "localhost";
       port = 9091;
     };
+    event_persister2 = {
+      host = "localhost";
+      port = 9092;
+    };
   };
 
   stream_writers = {
