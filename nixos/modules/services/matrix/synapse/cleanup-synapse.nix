@@ -17,14 +17,13 @@ let
   purgeRemoteMedia = writeShellScriptBin "purge-remote-media" ''
     set -xe
 
-    now=$(${coreutils}/bin/date +%s%N | ${coreutils}/bin/cut -b1-13)
-    nintey_days_ago=$(( now - 7776000000 ))
+    prune_before_ts=$(date +%s%3N --date='1 month ago')
 
     ${adminCurl} \
       -X POST \
       -H "Content-Type: application/json" \
       -d "{}" \
-      "${adminMediaRepoUrl}/purge_media_cache?before_ts=$nintey_days_ago"
+      "${adminMediaRepoUrl}/purge_media_cache?before_ts=$prune_before_ts"
   '';
 
   # Get rid of any rooms that aren't joined by anyone from the homeserver.
