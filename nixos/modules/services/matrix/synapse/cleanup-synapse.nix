@@ -28,7 +28,7 @@ let
   '';
 
   # Get rid of any rooms that aren't joined by anyone from the homeserver.
-  cleanupForgottenRooms = writeShellScriptBin "cleanup-forgotten" ''
+  cleanupForgottenRooms = writeShellScriptBin "cleanup-forgotten-rooms" ''
     set -xe
 
     roomlist=$(mktemp)
@@ -49,6 +49,7 @@ let
     done < $to_purge
   '';
 
+  # TODO do this for only a defined set of rooms
   # # Delete all non-local room history that is from before 90 days ago.
   # cleanupHistory = writeShellScriptBin "cleanup-history" ''
   #   set -xe
@@ -69,48 +70,17 @@ let
   #   done < $roomlist
   # '';
 
-  largeStateRoomsQuery = "SELECT room_id FROM state_groups GROUP BY room_id ORDER BY count(*)";
   compressState = writeShellScriptBin "compress-state" ''
     set -xe
-    bigrooms=$(mktemp)
-    echo "\\copy (${largeStateRoomsQuery}) to '$bigrooms' with CSV" |
-      ${postgresql}/bin/psql -d matrix-synapse
 
-    echo 'Disabling autovacuum on state_groups_state'
-    echo 'ALTER TABLE state_groups_state SET (AUTOVACUUM_ENABLED = FALSE);' |
-      /run/wrappers/bin/sudo -u postgres ${postgresql}/bin/psql -d matrix-synapse
-
-    while read room_id; do
-      echo "compressing state for $room_id"
-
-      state_compressor=$(mktemp)
-
-      ${matrix-synapse-tools.rust-synapse-compress-state}/bin/synapse_compress_state \
-        -t \
-        -o $state_compressor \
-        -m 1000 \
-        -p "host=localhost user=matrix-synapse password=synapse dbname=matrix-synapse" \
-        -r $room_id
-
-      if test -s "$state_compressor"
-      then
-        ${postgresql}/bin/psql -d matrix-synapse -c '\set ON_ERROR_STOP on' -f $state_compressor
-      fi
-
-      echo "done compressing state for $room_id"
-
-      rm $state_compressor
-    done <$bigrooms
-
-    echo 'Enabling autovacuum on state_groups_state'
-    echo 'ALTER TABLE state_groups_state SET (AUTOVACUUM_ENABLED = TRUE);' |
-      /run/wrappers/bin/sudo -u postgres ${postgresql}/bin/psql -d matrix-synapse
+    ${matrix-synapse-tools.rust-synapse-compress-state}/bin/synapse_auto_compressor \
+      -p "host=localhost user=matrix-synapse password=synapse dbname=matrix-synapse" \
+      -c 500 \
+      -n 100
 
     echo 'Running VACUUM and ANALYZE for state_groups_state ...'
     echo 'VACUUM FULL ANALYZE state_groups_state' |
       /run/wrappers/bin/sudo -u postgres ${postgresql}/bin/psql -d matrix-synapse
-
-    rm $bigrooms
   '';
 
   reindexAndVaccum = writeShellScriptBin "reindex-and-vaccum" ''
@@ -125,14 +95,6 @@ let
 
     systemctl start matrix-synapse.target
   '';
-
-  cleanupSynapseScript = writeShellScriptBin "cleanup-synapse" ''
-    set -xe
-    ${purgeRemoteMedia}/bin/purge-remote-media
-    ${cleanupForgottenRooms}/bin/cleanup-forgotten
-    ${compressState}/bin/compress-state
-    ${reindexAndVaccum}/bin/reindex-and-vaccum
-  '';
 in
 {
   options.services.cleanup-synapse = {
@@ -143,17 +105,54 @@ in
   };
 
   config = mkIf synapseCfg.enable {
-    systemd.services.cleanup-synapse = {
-      description = "Cleanup synapse";
-      startAt = "*-10"; # Cleanup everything on the 10th of each month.
+    systemd.services.matrix-synapse-purge-remote-media = {
+      description = "Purge remote media in Synapse";
+      startAt = "*-*-* 02:00:00";
       serviceConfig = {
-        ExecStart = "${cleanupSynapseScript}/bin/cleanup-synapse";
+        ExecStart = "${purgeRemoteMedia}/bin/purge-remote-media";
         EnvironmentFile = cfg.environmentFile;
         PrivateTmp = true;
         ProtectSystem = true;
         ProtectHome = "read-only";
       };
     };
+
+    systemd.services.matrix-synapse-cleanup-forgotten-rooms = {
+      description = "Cleanup forgotten rooms in Synapse";
+      startAt = "*-*-* 02:00:00";
+      serviceConfig = {
+        ExecStart = "${cleanupForgottenRooms}/bin/cleanup-forgotten-rooms";
+        EnvironmentFile = cfg.environmentFile;
+        PrivateTmp = true;
+        ProtectSystem = true;
+        ProtectHome = "read-only";
+      };
+    };
+
+    systemd.services.matrix-synapse-compress-state = {
+      description = "Compress state";
+      startAt = "*-*-* 05:00:00";
+      serviceConfig = {
+        ExecStart = "${compressState}/bin/compress-state";
+        PrivateTmp = true;
+        Restart = "on-failure";
+        RestartSec = "30";
+        ProtectSystem = true;
+        ProtectHome = "read-only";
+      };
+    };
+
+    # systemd.services.matrix-synapse-reindex-and-vaccum = {
+    #   description = "Cleanup synapse";
+    #   startAt = "*-10"; # Cleanup everything on the 10th of each month.
+    #   serviceConfig = {
+    #     ExecStart = "${reindexAndVaccum}/bin/reindex-and-vaccum";
+    #     EnvironmentFile = cfg.environmentFile;
+    #     PrivateTmp = true;
+    #     ProtectSystem = true;
+    #     ProtectHome = "read-only";
+    #   };
+    # };
 
     # Allow root to manage matrix-synapse database.
     services.postgresql.ensureUsers = [
