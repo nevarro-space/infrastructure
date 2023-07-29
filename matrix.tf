@@ -33,7 +33,7 @@ output "matrix_server_ipv6" {
 
 resource "hcloud_volume" "matrix-postgres-data" {
   name     = "matrix-postgres-data"
-  size     = 100
+  size     = 150
   location = "ash"
   format   = "ext4"
 }
