@@ -29,7 +29,7 @@ let
     name = "healthcheck-${builtins.replaceStrings [ "/" ] [ "-" ] path}";
     value = {
       description = "Healthcheck for ${path}";
-      startAt = "*-*-* 00/1:00:00"; # Check the disk every hour.
+      startAt = "*-*-* *:00/5:00"; # Check the disk every five minutes.
       serviceConfig = {
         ExecStart = "${diskCheckScript cfg}/bin/diskcheck";
         TimeoutSec = 10;
