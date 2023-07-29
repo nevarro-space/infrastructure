@@ -15,7 +15,7 @@
       ignore_initial_sync = true;
       ignore_first_sync = true;
     };
-    database = "sqlite:///ping.db";
+    database = "sqlite://${cfg.dataDir}/ping.db";
     logging = {
       version = 1;
       formatters.journal_fmt.format = "%(name)s: %(message)s";

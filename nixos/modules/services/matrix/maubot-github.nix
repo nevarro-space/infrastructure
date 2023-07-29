@@ -21,7 +21,7 @@
       base_path = "/_matrix/maubot/plugin/github";
       public_url = cfg.publicUrl;
     };
-    database = "sqlite:///github.db";
+    database = "sqlite://${cfg.dataDir}/github.db";
     logging = {
       version = 1;
       formatters.journal_fmt.format = "%(name)s: %(message)s";
