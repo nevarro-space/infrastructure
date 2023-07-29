@@ -2,7 +2,7 @@
 resource "hcloud_server" "matrix" {
   name        = "matrix"
   image       = "ubuntu-22.04"
-  server_type = "ccx12"
+  server_type = "ccx22"
   location    = "ash"
 
   ssh_keys = [
