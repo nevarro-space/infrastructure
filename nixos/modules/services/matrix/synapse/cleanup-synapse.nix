@@ -9,43 +9,37 @@ let
   cfg = config.services.cleanup-synapse;
   synapseCfg = config.services.matrix-synapse-custom;
 
-  adminUrl = "http://localhost:8008/_synapse/admin/v1";
+  adminV1Url = "http://localhost:8008/_synapse/admin/v1";
+  adminV2Url = "http://localhost:8008/_synapse/admin/v2";
   adminMediaRepoUrl = "http://localhost:8011/_synapse/admin/v1";
   adminCurl = ''${curl}/bin/curl --header "Authorization: Bearer $CLEANUP_ACCESS_TOKEN"'';
 
   # Delete old cached remote media
   purgeRemoteMedia = writeShellScriptBin "purge-remote-media" ''
     set -xe
-
-    prune_before_ts=$(date +%s%3N --date='1 month ago')
-
-    ${adminCurl} \
-      -X POST \
-      -H "Content-Type: application/json" \
-      -d "{}" \
-      "${adminMediaRepoUrl}/purge_media_cache?before_ts=$prune_before_ts"
+    before_ts=$(date +%s%3N --date='1 month ago')
+    ${adminCurl} -X POST "${adminMediaRepoUrl}/purge_media_cache?before_ts=$before_ts"
   '';
 
   # Get rid of any rooms that aren't joined by anyone from the homeserver.
   cleanupForgottenRooms = writeShellScriptBin "cleanup-forgotten-rooms" ''
     set -xe
 
-    roomlist=$(mktemp)
-    to_purge=$(mktemp)
-
-    ${adminCurl} '${adminUrl}/rooms?limit=1000' > $roomlist
+    total_rooms=$(${adminCurl} '${adminV1Url}/rooms?limit=1' | ${jq}/bin/jq -r '.total_rooms')
+    echo "total_rooms: $total_rooms"
+    total_rooms=$(( total_rooms + 10 ))
 
     # Find all of the rooms that have no local users.
-    ${jq}/bin/jq -r '.rooms[] | select(.joined_local_members == 0) | .room_id' < $roomlist > $to_purge
-
-    while read room_id; do
-      echo "deleting $room_id..."
-      ${adminCurl} \
-        -X DELETE \
-        -H "Content-Type: application/json" \
-        -d "{}" \
-        "${adminUrl}/rooms/$room_id"
-    done < $to_purge
+    ${adminCurl} "${adminV1Url}/rooms?limit=$total_rooms" |
+      ${jq}/bin/jq -r '.rooms[] | select(.joined_local_members == 0) | .room_id' |
+      while read room_id; do
+        echo "deleting $room_id..."
+        ${adminCurl} \
+          -X DELETE \
+          -H "Content-Type: application/json" \
+          -d "{}" \
+          "${adminV2Url}/rooms/$room_id"
+      done
   '';
 
   # TODO do this for only a defined set of rooms
