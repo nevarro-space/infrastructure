@@ -38,6 +38,7 @@ lib.mkIf lokiCfg.enable {
       filesystem.directory = "/var/lib/loki/chunks";
     };
     limits_config = {
+      retention_period = "744h";
       reject_old_samples = true;
       reject_old_samples_max_age = "168h";
     };
@@ -50,6 +51,10 @@ lib.mkIf lokiCfg.enable {
       working_directory = "/var/lib/loki";
       shared_store = "filesystem";
       compactor_ring.kvstore.store = "inmemory";
+      compaction_interval = "10m";
+      retention_enabled = true;
+      retention_delete_delay = "2h";
+      retention_delete_worker_count = 20;
     };
   };
 
