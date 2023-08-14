@@ -50,34 +50,34 @@ let
   #    > select count(*) c, room_id from events group by room_id order by c desc;
   #
   # within the matrix-synapse database.
-  roomList = concatStringsSep "\n" [
-    "!KqkRjyTEzAGRiZFBYT:nixos.org" # #nix:nixos.org
-    "!XPxwZVXpPnNWmrJQwB:beeper.com" # beeper commits
-    "!wcajitOCLVswYZViyZ:beeper.com" # bc-infra-alerts
-    "!ping-v10.1:maunium.net" # #ping:maunium.net
-    "!aUhETchlgthwWVQzhi:matrix.org" # #gtk:gnome.org
-    "!YTvKGNlinIzlkMTVRl:matrix.org" # #element-web:matrix.org
-    "!NUhzqvfxHSIzJfxoVw:beeper.com" # bc-issues
-    "!QQpfJfZvqxbCfeDgCj:matrix.org" # #thisweekinmatrix:matrix.org
-    "!SMloEYlhCiqKwRLAgY:fachschaften.org" # #conduit:fachschaften.org
-    "!UbCmIlGTHNIgIRZcpt:nheko.im" # #nheko:nheko.im
-    "!KlacjKWnARbprTLuRM:nova.chat" # #beeper:beeper.com
-    "!iupBrYlVdqKLEkWtDs:tapenet.org" # #go-lang:matrix.org
-    "!NasysSDfxKxZBzJJoE:matrix.org" # #matrix-spec:matrix.org
-    "!kjdutkOsheZdjqYmqp:nixos.org" # #dev:nixos.org
-  ];
-  purgeHistoryOfLargeRooms = writeShellScriptBin "purge-history" ''
-    set -xe
+  # roomList = concatStringsSep "\n" [
+  #   "!KqkRjyTEzAGRiZFBYT:nixos.org" # #nix:nixos.org
+  #   "!XPxwZVXpPnNWmrJQwB:beeper.com" # beeper commits
+  #   "!wcajitOCLVswYZViyZ:beeper.com" # bc-infra-alerts
+  #   "!ping-v10.1:maunium.net" # #ping:maunium.net
+  #   "!aUhETchlgthwWVQzhi:matrix.org" # #gtk:gnome.org
+  #   "!YTvKGNlinIzlkMTVRl:matrix.org" # #element-web:matrix.org
+  #   "!NUhzqvfxHSIzJfxoVw:beeper.com" # bc-issues
+  #   "!QQpfJfZvqxbCfeDgCj:matrix.org" # #thisweekinmatrix:matrix.org
+  #   "!SMloEYlhCiqKwRLAgY:fachschaften.org" # #conduit:fachschaften.org
+  #   "!UbCmIlGTHNIgIRZcpt:nheko.im" # #nheko:nheko.im
+  #   "!KlacjKWnARbprTLuRM:nova.chat" # #beeper:beeper.com
+  #   "!iupBrYlVdqKLEkWtDs:tapenet.org" # #go-lang:matrix.org
+  #   "!NasysSDfxKxZBzJJoE:matrix.org" # #matrix-spec:matrix.org
+  #   "!kjdutkOsheZdjqYmqp:nixos.org" # #dev:nixos.org
+  # ];
+  # purgeHistoryOfLargeRooms = writeShellScriptBin "purge-history" ''
+  #   set -xe
 
-    before_ts=$(date +%s%3N --date='1 month ago')
+  #   before_ts=$(date +%s%3N --date='1 month ago')
 
-    echo '${roomList}' | while read room_id; do
-      echo "purging history for $room_id..."
-      ${adminCurl} -X POST -H "Content-Type: application/json" \
-        -d "{ \"delete_local_events\": false, \"purge_up_to_ts\": $before_ts }" \
-        "${adminV1Url}/purge_history/$room_id"
-    done
-  '';
+  #   echo '${roomList}' | while read room_id; do
+  #     echo "purging history for $room_id..."
+  #     ${adminCurl} -X POST -H "Content-Type: application/json" \
+  #       -d "{ \"delete_local_events\": false, \"purge_up_to_ts\": $before_ts }" \
+  #       "${adminV1Url}/purge_history/$room_id"
+  #   done
+  # '';
 
   compressState = writeShellScriptBin "compress-state" ''
     set -xe
@@ -151,18 +151,18 @@ in
       };
     };
 
-    systemd.services.matrix-synapse-purge-history = {
-      description = "Purge history of large rooms";
-      serviceConfig = {
-        ExecStart = "${purgeHistoryOfLargeRooms}/bin/purge-history";
-        EnvironmentFile = cfg.environmentFile;
-        PrivateTmp = true;
-        Restart = "on-failure";
-        RestartSec = "30";
-        ProtectSystem = true;
-        ProtectHome = "read-only";
-      };
-    };
+    # systemd.services.matrix-synapse-purge-history = {
+    #   description = "Purge history of large rooms";
+    #   serviceConfig = {
+    #     ExecStart = "${purgeHistoryOfLargeRooms}/bin/purge-history";
+    #     EnvironmentFile = cfg.environmentFile;
+    #     PrivateTmp = true;
+    #     Restart = "on-failure";
+    #     RestartSec = "30";
+    #     ProtectSystem = true;
+    #     ProtectHome = "read-only";
+    #   };
+    # };
 
     # systemd.services.matrix-synapse-reindex-and-vaccum = {
     #   description = "Cleanup synapse";

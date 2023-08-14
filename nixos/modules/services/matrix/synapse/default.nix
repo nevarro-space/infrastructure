@@ -164,7 +164,6 @@ let
     "synchotron-1.yaml"
     (mkSynapseWorkerConfig 9104 {
       worker_name = "synchotron1";
-      # The event persister needs a replication listener
       worker_listeners = [
         {
           type = "http";
@@ -180,7 +179,6 @@ let
     (mkSynapseWorkerConfig 9105 {
       worker_name = "media_repo1";
       worker_app = "synapse.app.media_repository";
-      # The event persister needs a replication listener
       worker_listeners = [
         {
           type = "http";
