@@ -4,46 +4,24 @@ let
   matrixDomain = "matrix.${config.networking.domain}";
   cfg = config.services.matrix-synapse-custom;
 
-  # Custom package that tracks with the latest release of Synapse.
-  package = pkgs.matrix-synapse.overridePythonAttrs (old: rec {
-    pname = "matrix-synapse";
-    version = "1.90.0";
-    format = "pyproject";
-
-    src = pkgs.fetchFromGitHub {
-      owner = "matrix-org";
-      repo = "synapse";
-      rev = "v${version}";
-      hash = "sha256-VUbEERQ/UFCroSiz8Y8EsjB+uhFQXLAsK52kM6HTjjY=";
-    };
-
-    cargoDeps = pkgs.rustPackages.rustPlatform.fetchCargoTarball {
-      inherit src;
-      name = "${pname}-${version}";
-      hash = "sha256-t65rvhkLryzba6eZH1thBMzV7y0y5XMbdbrTxC91blQ=";
-    };
-
-    # propagatedBuildInputs = (filter (i: i.pname != "matrix-common") old.propagatedBuildInputs) ++ [
-    #   (pkgs.python3Packages.matrix-common.overridePythonAttrs (
-    #     old: rec {
-    #       pname = "matrix-common";
-    #       version = "1.3.0";
-
-    #       src = pkgs.python3Packages.fetchPypi {
-    #         inherit pname version;
-    #         sha256 = "sha256-YuEhzM2fJDQXtX7DenbcRK6xmKelxnr9a4J1mS/yq9E=";
-    #       };
-    #     }
-    #   ))
-    # ];
-
-    doCheck = false;
-  });
-
-  packageWithModules = package.python.withPackages (ps: [
-    (package.python.pkgs.toPythonModule package)
-    pkgs.matrix-synapse-plugins.matrix-synapse-shared-secret-auth
-  ]);
+  wrapped = pkgs.matrix-synapse.override {
+    extras = [
+      "jwt"
+      "oidc"
+      "postgres"
+      "postgres"
+      "redis"
+      "sentry"
+      "systemd"
+      "url-preview"
+      "url-preview"
+      "user-search"
+      "user-search"
+    ];
+    plugins = [
+      pkgs.matrix-synapse-plugins.matrix-synapse-shared-secret-auth
+    ];
+  };
 
   yamlFormat = pkgs.formats.yaml { };
 
@@ -257,7 +235,7 @@ in
       partOf = [ "matrix-synapse.target" ];
       wantedBy = [ "matrix-synapse.target" ];
       preStart = ''
-        ${packageWithModules}/bin/synapse_homeserver \
+        ${wrapped}/bin/synapse_homeserver \
           ${configPaths} \
           --keys-directory ${cfg.dataDir} \
           --generate-keys
@@ -274,7 +252,7 @@ in
           ''))
         ];
         ExecStart = ''
-          ${packageWithModules}/bin/synapse_homeserver \
+          ${wrapped}/bin/synapse_homeserver \
             ${configPaths} \
             --keys-directory ${cfg.dataDir}
         '';
@@ -289,7 +267,7 @@ in
     systemd.services.matrix-synapse-federation-sender1 = mkSynapseWorkerService {
       description = "Synapse Matrix federation sender 1";
       serviceConfig.ExecStart = ''
-        ${packageWithModules}/bin/python -m synapse.app.federation_sender \
+        ${wrapped}/bin/synapse_worker \
           ${configPaths} \
           --config-path ${federationSender1ConfigFile} \
           --keys-directory ${cfg.dataDir}
@@ -299,7 +277,7 @@ in
     systemd.services.matrix-synapse-federation-sender2 = mkSynapseWorkerService {
       description = "Synapse Matrix federation sender 2";
       serviceConfig.ExecStart = ''
-        ${packageWithModules}/bin/python -m synapse.app.federation_sender \
+        ${wrapped}/bin/synapse_worker \
           ${configPaths} \
           --config-path ${federationSender2ConfigFile} \
           --keys-directory ${cfg.dataDir}
@@ -310,7 +288,7 @@ in
     systemd.services.matrix-synapse-federation-reader1 = mkSynapseWorkerService {
       description = "Synapse Matrix federation reader 1";
       serviceConfig.ExecStart = ''
-        ${packageWithModules}/bin/python -m synapse.app.generic_worker \
+        ${wrapped}/bin/synapse_worker \
           ${configPaths} \
           --config-path ${federationReader1ConfigFile} \
           --keys-directory ${cfg.dataDir}
@@ -321,7 +299,7 @@ in
     systemd.services.matrix-synapse-event-persister1 = mkSynapseWorkerService {
       description = "Synapse Matrix event persister 1";
       serviceConfig.ExecStart = ''
-        ${packageWithModules}/bin/python -m synapse.app.generic_worker \
+        ${wrapped}/bin/synapse_worker \
           ${configPaths} \
           --config-path ${eventPersister1ConfigFile} \
           --keys-directory ${cfg.dataDir}
@@ -331,7 +309,7 @@ in
     systemd.services.matrix-synapse-event-persister2 = mkSynapseWorkerService {
       description = "Synapse Matrix event persister 2";
       serviceConfig.ExecStart = ''
-        ${packageWithModules}/bin/python -m synapse.app.generic_worker \
+        ${wrapped}/bin/synapse_worker \
           ${configPaths} \
           --config-path ${eventPersister2ConfigFile} \
           --keys-directory ${cfg.dataDir}
@@ -342,7 +320,7 @@ in
     systemd.services.matrix-synapse-synchotron1 = mkSynapseWorkerService {
       description = "Synapse Matrix synchotron 1";
       serviceConfig.ExecStart = ''
-        ${packageWithModules}/bin/python -m synapse.app.generic_worker \
+        ${wrapped}/bin/synapse_worker \
           ${configPaths} \
           --config-path ${synchotron1ConfigFile} \
           --keys-directory ${cfg.dataDir}
@@ -353,7 +331,7 @@ in
     systemd.services.matrix-synapse-media-repo1 = mkSynapseWorkerService {
       description = "Synapse Matrix media repo 1";
       serviceConfig.ExecStart = ''
-        ${packageWithModules}/bin/python -m synapse.app.media_repository \
+        ${wrapped}/bin/synapse_worker \
           ${configPaths} \
           --config-path ${mediaRepo1ConfigFile} \
           --keys-directory ${cfg.dataDir}

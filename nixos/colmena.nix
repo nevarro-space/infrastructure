@@ -11,6 +11,29 @@ in
           inherit (mineshspc.packages.${system}) mineshspc;
           inherit (meetbot.packages.${system}) meetbot;
         })
+        (self: super: {
+          # Custom package that tracks with the latest release of Synapse.
+          matrix-synapse-unwrapped = super.matrix-synapse-unwrapped.overridePythonAttrs (old: rec {
+            pname = "matrix-synapse";
+            version = "1.90.0";
+            format = "pyproject";
+
+            src = super.fetchFromGitHub {
+              owner = "matrix-org";
+              repo = "synapse";
+              rev = "v${version}";
+              hash = "sha256-VUbEERQ/UFCroSiz8Y8EsjB+uhFQXLAsK52kM6HTjjY=";
+            };
+
+            cargoDeps = super.rustPackages.rustPlatform.fetchCargoTarball {
+              inherit src;
+              name = "${pname}-${version}";
+              hash = "sha256-t65rvhkLryzba6eZH1thBMzV7y0y5XMbdbrTxC91blQ=";
+            };
+
+            doCheck = false;
+          });
+        })
       ];
     };
     description = "Nevarro Infrastructure";
