@@ -10,7 +10,7 @@ jobs:
       exit_code: ${{ steps.terraform_plan.outputs.exit_code }}
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
@@ -36,7 +36,7 @@ jobs:
     environment: terraform
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
@@ -54,7 +54,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: nixbuild/nix-quick-install-action@v25
       - name: Install dependencies
         run: nix develop --command "echo dependencies installed"
@@ -72,11 +72,11 @@ jobs:
       GIT_CRYPT_SECRET: ${{ secrets.GIT_CRYPT_SECRET }}
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           path: infrastructure
 
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           repository: nevarro-space/infrastructure-secrets
           token: ${{ secrets.SECRET_REPO_CLONE_TOKEN }}
