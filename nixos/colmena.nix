@@ -15,20 +15,20 @@ in
           # Custom package that tracks with the latest release of Synapse.
           matrix-synapse-unwrapped = super.matrix-synapse-unwrapped.overridePythonAttrs (old: rec {
             pname = "matrix-synapse";
-            version = "1.91.0";
+            version = "1.91.1";
             format = "pyproject";
 
             src = super.fetchFromGitHub {
               owner = "matrix-org";
               repo = "synapse";
               rev = "v${version}";
-              hash = "sha256-rLEewCN8OdZ4wIWQRbLkxVF/VOAESTLAVQLfUu/PYsA=";
+              hash = "sha256-SOQp+mqADO+iwvKPA50IdxBvVzMiUUZ7f1hwXQYyopA=";
             };
 
             cargoDeps = super.rustPackages.rustPlatform.fetchCargoTarball {
               inherit src;
               name = "${pname}-${version}";
-              hash = "sha256-aOoSvT6e2x7JcXoQ2sVTCDvkWupixLzpbk3cTHVQs7I=";
+              hash = "sha256-vkM1U9L9PGDZFw64KAQyRQWtewRzXXWhk35m23x6o+8=";
             };
 
             doCheck = false;
