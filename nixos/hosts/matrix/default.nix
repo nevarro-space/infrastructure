@@ -147,7 +147,7 @@
     registrationSharedSecretConfigFile = "/run/keys/nevarro_space_registration_shared_secret";
     sharedSecretAuthConfigFile = "/run/keys/nevarro_space_shared_secret_auth";
   };
-  services.cleanup-synapse.environmentFile = "/run/keys/nevarro_space_cleanup_synapse_environment_file";
+  # services.cleanup-synapse.environmentFile = "/run/keys/nevarro_space_cleanup_synapse_environment_file";
 
   # PosgreSQL
   services.postgresql.enable = true;

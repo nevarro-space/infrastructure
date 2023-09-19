@@ -162,7 +162,7 @@ let
 in
 {
   imports = [
-    ./cleanup-synapse.nix
+    # ./cleanup-synapse.nix
   ];
 
   options = {
