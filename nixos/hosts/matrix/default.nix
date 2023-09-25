@@ -121,11 +121,11 @@
   };
 
   # LinkedIn <-> Matrix Bridge
-  # services.linkedin-matrix = {
-  #   enable = true;
-  #   homeserver = "https://matrix.nevarro.space";
-  #   secretYAML = "/run/keys/appservice_login_shared_secret_yaml";
-  # } // (import ../../../secrets/matrix/appservices/linkedin-matrix.nix);
+  services.linkedin-matrix = {
+    enable = true;
+    homeserver = "https://matrix.nevarro.space";
+    secretYAML = "/run/keys/appservice_login_shared_secret_yaml";
+  } // (import ../../../secrets/matrix/appservices/linkedin-matrix.nix);
 
   # Discord <-> Matrix Bridge
   services.mautrix-discord = {

@@ -4,18 +4,33 @@ let
 in
 buildPythonPackage rec {
   pname = "linkedin-matrix";
-  version = "unstable-2023-07-26";
-  format = "setuptools";
+  version = "0.5.5a1";
 
   src = fetchFromGitHub {
     owner = "beeper";
     repo = "linkedin";
-    rev = "9aeb02f462ba9d50b65f6e795b6e329f1793c2b9";
-    sha256 = "sha256-NtQEn+QQdWi5HjiNjKhR3zgIQwjTzPkJToM3JtXUwvQ=";
+    rev = "2cae15ee08e64bdba876f33d31404c04bde29823";
+    sha256 = "sha256-/N7QYD7WEjULRop3U5TTm+bCDzyPMBGQQKA5eNYrL7I=";
   };
+
+  postPatch = ''
+    # the version mangling in mautrix_signal/get_version.py interacts badly with pythonRelaxDepsHook
+    substituteInPlace setup.py \
+      --replace 'version=version' 'version="${version}"'
+  '';
+
+
+  nativeBuildInputs = [
+    pythonRelaxDepsHook
+  ];
+
+  pythonRelaxDeps = [
+    "asyncpg"
+  ];
 
   propagatedBuildInputs = [
     aiohttp
+    aiosqlite
     asyncpg
     CommonMark
     linkedin-messaging
@@ -29,6 +44,8 @@ buildPythonPackage rec {
     systemd
     unpaddedbase64
   ];
+
+  doCheck = false;
 
   postInstall = ''
     mkdir -p $out/bin
