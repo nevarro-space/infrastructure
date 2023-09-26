@@ -15,21 +15,36 @@ in
           # Custom package that tracks with the latest release of Synapse.
           matrix-synapse-unwrapped = super.matrix-synapse-unwrapped.overridePythonAttrs (old: rec {
             pname = "matrix-synapse";
-            version = "1.91.2";
+            version = "1.93.0";
             format = "pyproject";
 
             src = super.fetchFromGitHub {
               owner = "matrix-org";
               repo = "synapse";
               rev = "v${version}";
-              hash = "sha256-U9SyDmO34s9PjLPnT1QYemGeCmKdXRaQvEC8KKcFXOI=";
+              hash = "sha256-fmY5xjpbFwzrX47ijPxOUTI0w9stYVPpSV+HRF4GdlA=";
             };
 
             cargoDeps = super.rustPackages.rustPlatform.fetchCargoTarball {
               inherit src;
               name = "${pname}-${version}";
-              hash = "sha256-q3uoT2O/oTVSg6olZohU8tiWahijyva+1tm4e1GWGj4=";
+              hash = "sha256-9cCEfDV5X65JublgkUP6NVfMIObPawx+nXTmIG9lg5o=";
             };
+
+            postPatch = ''
+              # Remove setuptools_rust from runtime dependencies
+              # https://github.com/matrix-org/synapse/blob/v1.69.0/pyproject.toml#L177-L185
+              sed -i '/^setuptools_rust =/d' pyproject.toml
+
+              # Remove version pin on build dependencies. Upstream does this on purpose to
+              # be extra defensive, but we don't want to deal with updating this
+              sed -i 's/"poetry-core>=\([0-9.]*\),<=[0-9.]*"/"poetry-core>=\1"/' pyproject.toml
+              sed -i 's/"setuptools_rust>=\([0-9.]*\),<=[0-9.]*"/"setuptools_rust>=\1"/' pyproject.toml
+
+              # Don't force pillow to be 10.0.1 because we already have patched it, and
+              # we don't use the pillow wheels.
+              sed -i 's/Pillow = ".*"/Pillow = ">=5.4.0"/' pyproject.toml
+            '';
 
             doCheck = false;
           });

@@ -5,17 +5,17 @@ with python3.pkgs;
 buildPythonPackage rec {
   pname = "linkedin-messaging";
   version = "0.6.0";
-  format = "flit";
+  format = "pyproject";
 
   src = fetchFromGitHub {
-    owner = "sumnerevans";
+    owner = "beeper";
     repo = "linkedin-messaging-api";
     rev = "v${version}";
     sha256 = "sha256-Bn/yxv+RZrBtvpyotWhEY2HafIRTaWxiTexP4AVTJ0A=";
   };
 
   nativeBuildInputs = [
-    python3.pkgs.flit
+    python3.pkgs.flit-core
   ];
 
   propagatedBuildInputs = [
