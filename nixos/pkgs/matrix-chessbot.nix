@@ -8,7 +8,7 @@ buildGoModule rec {
     owner = "nevarro-space";
     repo = "matrix-chessbot";
     rev = "f9a8e247f47da1b5fd51e76816d36302fbd46a89";
-    sha256 = "sha256-lg3lw9PhvcNWGYEEaVJwwIt80QR3DvDcy4RXdLeuvh4=";
+    hash = "sha256-lg3lw9PhvcNWGYEEaVJwwIt80QR3DvDcy4RXdLeuvh4=";
   };
 
   buildInputs = [

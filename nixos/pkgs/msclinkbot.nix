@@ -8,7 +8,7 @@ buildGoModule rec {
     owner = "beeper";
     repo = "msc-link-bot";
     rev = "2c4807dd3c9c001a0b90bf9ed1fe2a8d07b76ce5";
-    sha256 = "sha256-/AVRIZTunByy8iTrB4Gfs6tRsKqrDtl9NILgxfSYXYE=";
+    hash = "sha256-/AVRIZTunByy8iTrB4Gfs6tRsKqrDtl9NILgxfSYXYE=";
   };
 
   buildInputs = [ olm ];

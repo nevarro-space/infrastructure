@@ -8,7 +8,7 @@ buildGoModule rec {
     owner = "beeper";
     repo = "standupbot";
     rev = "885677b757df4febdee9fa4fee9a6c6b4e3eb8d8";
-    sha256 = "sha256-pa0k3ZvAWC+/woH2/mLYLaYWijO+lIFe5Ht5/bo3cBU=";
+    hash = "sha256-pa0k3ZvAWC+/woH2/mLYLaYWijO+lIFe5Ht5/bo3cBU=";
   };
 
   buildInputs = [ olm ];

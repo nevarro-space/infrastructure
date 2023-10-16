@@ -11,7 +11,7 @@ buildPythonPackage rec {
     owner = "beeper";
     repo = "linkedin-messaging-api";
     rev = "v${version}";
-    sha256 = "sha256-Bn/yxv+RZrBtvpyotWhEY2HafIRTaWxiTexP4AVTJ0A=";
+    hash = "sha256-Bn/yxv+RZrBtvpyotWhEY2HafIRTaWxiTexP4AVTJ0A=";
   };
 
   nativeBuildInputs = [

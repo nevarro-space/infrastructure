@@ -10,7 +10,7 @@ buildPythonPackage rec {
     owner = "beeper";
     repo = "linkedin";
     rev = "2cae15ee08e64bdba876f33d31404c04bde29823";
-    sha256 = "sha256-/N7QYD7WEjULRop3U5TTm+bCDzyPMBGQQKA5eNYrL7I=";
+    hash = "sha256-/N7QYD7WEjULRop3U5TTm+bCDzyPMBGQQKA5eNYrL7I=";
   };
 
   postPatch = ''

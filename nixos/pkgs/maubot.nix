@@ -12,7 +12,7 @@ python3.pkgs.buildPythonPackage rec {
     owner = "maubot";
     repo = pname;
     rev = "bf8ae9eb5aba7eaac70838e323228db910c27171";
-    sha256 = "sha256-qfIjI3vEnb0aQBEjTwhzp/c43AYL7aDQiBJRMeSdnN0=";
+    hash = "sha256-qfIjI3vEnb0aQBEjTwhzp/c43AYL7aDQiBJRMeSdnN0=";
   };
 
   propagatedBuildInputs = with python3.pkgs; [
