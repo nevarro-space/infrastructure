@@ -13,6 +13,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - uses: nixbuild/nix-quick-install-action@v25
+      - uses: nixbuild/nix-quick-install-action@v26
       - name: Run pre-commit
         run: nix develop --command pre-commit run --all --verbose
