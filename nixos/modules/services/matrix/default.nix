@@ -5,6 +5,7 @@
     ./maubot-echo.nix
     ./maubot-github.nix
     ./mautrix-discord.nix
+    ./mautrix-signal.nix
     ./mautrix-slack.nix
     ./meetbot.nix
     ./mjolnir.nix
