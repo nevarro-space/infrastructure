@@ -6,10 +6,12 @@
     mineshspc = {
       url = "github:ColoradoSchoolOfMines/mineshspc.com";
       inputs.nixpkgs.follows = "nixpkgs";
+      inputs.flake-utils.follows = "flake-utils";
     };
     meetbot = {
       url = "github:beeper/meetbot";
       inputs.nixpkgs.follows = "nixpkgs";
+      inputs.flake-utils.follows = "flake-utils";
     };
   };
 
