@@ -28,11 +28,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1699011413,
-        "narHash": "sha256-4ouuZ5rkX6Od259KyvSDkcM4sXH/ogvHQ6e51577VPA=",
+        "lastModified": 1699024592,
+        "narHash": "sha256-ZaUrzYunGr3gQFFCc7LlWHDGt7EggsBMSMMWwcthAtM=",
         "owner": "beeper",
         "repo": "meetbot",
-        "rev": "00ac6b2416e4eef96922ca58d9182ebdf2f464e3",
+        "rev": "a101d3ac53a21acc0fcc692fe348c08491eda072",
         "type": "github"
       },
       "original": {

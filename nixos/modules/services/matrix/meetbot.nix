@@ -8,6 +8,8 @@
     displayname = "Google Meet";
     avatar_url = "mxc://nevarro.space/EQldsaNpqiGPJCatXiLeUTIb";
 
+    user_id_to_email = import ../../../../secrets/matrix/meetbot-emails.nix;
+
     database = {
       type = "sqlite3-fk-wal";
       uri = "${cfg.dataDir}/meetbot.db?_txlock=immediate";
