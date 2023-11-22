@@ -138,18 +138,18 @@ in
       };
     };
 
-    systemd.services.matrix-synapse-compress-state = {
-      description = "Compress state";
-      startAt = "*-*-* 05:00:00";
-      serviceConfig = {
-        ExecStart = "${compressState}/bin/compress-state";
-        PrivateTmp = true;
-        Restart = "on-failure";
-        RestartSec = "30";
-        ProtectSystem = true;
-        ProtectHome = "read-only";
-      };
-    };
+    # systemd.services.matrix-synapse-compress-state = {
+    #   description = "Compress state";
+    #   startAt = "*-*-* 05:00:00";
+    #   serviceConfig = {
+    #     ExecStart = "${compressState}/bin/compress-state";
+    #     PrivateTmp = true;
+    #     Restart = "on-failure";
+    #     RestartSec = "30";
+    #     ProtectSystem = true;
+    #     ProtectHome = "read-only";
+    #   };
+    # };
 
     # systemd.services.matrix-synapse-purge-history = {
     #   description = "Purge history of large rooms";
