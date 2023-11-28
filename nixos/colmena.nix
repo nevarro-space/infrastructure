@@ -1,8 +1,6 @@
 { nixpkgs, terraform-outputs, mineshspc, meetbot, ... }:
-let
-  system = "x86_64-linux";
-in
-{
+let system = "x86_64-linux";
+in {
   meta = {
     nixpkgs = import nixpkgs {
       inherit system;
@@ -13,41 +11,42 @@ in
         })
         (self: super: {
           # Custom package that tracks with the latest release of Synapse.
-          matrix-synapse-unwrapped = super.matrix-synapse-unwrapped.overridePythonAttrs (old: rec {
-            pname = "matrix-synapse";
-            version = "1.95.1";
-            format = "pyproject";
+          matrix-synapse-unwrapped =
+            super.matrix-synapse-unwrapped.overridePythonAttrs (old: rec {
+              pname = "matrix-synapse";
+              version = "1.97.0";
+              format = "pyproject";
 
-            src = super.fetchFromGitHub {
-              owner = "matrix-org";
-              repo = "synapse";
-              rev = "v${version}";
-              hash = "sha256-5RyJCMYsf6p9rd1ATEHa+FMV6vv3ULbcx7PXxMSUGSU=";
-            };
+              src = super.fetchFromGitHub {
+                owner = "matrix-org";
+                repo = "synapse";
+                rev = "v${version}";
+                hash = "sha256-KusCJj5MVmRbniI9aTjRInPMpIDZKWs5w+TImVKHrPc=";
+              };
 
-            cargoDeps = super.rustPackages.rustPlatform.fetchCargoTarball {
-              inherit src;
-              name = "${pname}-${version}";
-              hash = "sha256-gNjpML+j9ABv24WrAiJI5hoEoIqcVPL2I4V/W+sWFSg=";
-            };
+              cargoDeps = super.rustPackages.rustPlatform.fetchCargoTarball {
+                inherit src;
+                name = "${pname}-${version}";
+                hash = "sha256-SImgV47EfKy70VmcBREu1aiZFvX0+h0Ezw+/rUZufAg=";
+              };
 
-            postPatch = ''
-              # Remove setuptools_rust from runtime dependencies
-              # https://github.com/matrix-org/synapse/blob/v1.69.0/pyproject.toml#L177-L185
-              sed -i '/^setuptools_rust =/d' pyproject.toml
+              postPatch = ''
+                # Remove setuptools_rust from runtime dependencies
+                # https://github.com/matrix-org/synapse/blob/v1.69.0/pyproject.toml#L177-L185
+                sed -i '/^setuptools_rust =/d' pyproject.toml
 
-              # Remove version pin on build dependencies. Upstream does this on purpose to
-              # be extra defensive, but we don't want to deal with updating this
-              sed -i 's/"poetry-core>=\([0-9.]*\),<=[0-9.]*"/"poetry-core>=\1"/' pyproject.toml
-              sed -i 's/"setuptools_rust>=\([0-9.]*\),<=[0-9.]*"/"setuptools_rust>=\1"/' pyproject.toml
+                # Remove version pin on build dependencies. Upstream does this on purpose to
+                # be extra defensive, but we don't want to deal with updating this
+                sed -i 's/"poetry-core>=\([0-9.]*\),<=[0-9.]*"/"poetry-core>=\1"/' pyproject.toml
+                sed -i 's/"setuptools_rust>=\([0-9.]*\),<=[0-9.]*"/"setuptools_rust>=\1"/' pyproject.toml
 
-              # Don't force pillow to be 10.0.1 because we already have patched it, and
-              # we don't use the pillow wheels.
-              sed -i 's/Pillow = ".*"/Pillow = ">=5.4.0"/' pyproject.toml
-            '';
+                # Don't force pillow to be 10.0.1 because we already have patched it, and
+                # we don't use the pillow wheels.
+                sed -i 's/Pillow = ".*"/Pillow = ">=5.4.0"/' pyproject.toml
+              '';
 
-            doCheck = false;
-          });
+              doCheck = false;
+            });
         })
       ];
     };
@@ -57,17 +56,16 @@ in
   defaults = { config, ... }: {
     imports = [ ./modules ];
 
-    _module.args = {
-      inherit terraform-outputs;
-    };
+    _module.args = { inherit terraform-outputs; };
 
     deployment.replaceUnknownProfiles = true;
 
     system.stateVersion = "23.05";
 
-    swapDevices = [
-      { device = "/var/swapfile"; size = 4096; }
-    ];
+    swapDevices = [{
+      device = "/var/swapfile";
+      size = 4096;
+    }];
 
     services.logrotate.enable = true;
   };
