@@ -1,43 +1,47 @@
 { config, lib, pkgs, ... }: {
-  imports = [
-    ./hardware-configuration.nix
-  ];
+  imports = [ ./hardware-configuration.nix ];
 
-  deployment.keys =
-    let
-      keyFor = keyname: for: {
-        keyCommand = [ "cat" "../infrastructure-secrets/secrets/${keyname}" ];
-        user = for;
-        group = for;
-      };
-    in
-    {
-      # Backup Secrets
-      restic_password_file = keyFor "restic_password_file" "root";
-      restic_environment_file = keyFor "restic_environment_file" "root";
-
-      # Matrix Bot Secrets
-      mscbot_password = keyFor "matrix/bots/mscbot" "msclinkbot";
-      chessbot_password = keyFor "matrix/bots/chessbot" "matrix-chessbot";
-      standupbot_password = keyFor "matrix/bots/standupbot" "standupbot";
-      marshal_password = keyFor "matrix/bots/marshal" "mjolnir";
-      github_maubot_secrets_yaml = keyFor "matrix/bots/github.yaml" "maubot-github";
-      echobot_maubot_secrets_yaml = keyFor "matrix/bots/echobot.yaml" "maubot-echo";
-      meetbot_secret_env = keyFor "matrix/bots/meetbot.env" "meetbot";
-
-      # Matrix Server Secrets
-      nevarro_space_registration_shared_secret = keyFor "matrix/registration-shared-secret/nevarro.space" "matrix-synapse";
-      nevarro_space_shared_secret_auth = keyFor "matrix/shared-secret-auth/nevarro.space" "matrix-synapse";
-      nevarro_space_cleanup_synapse_environment_file = keyFor "matrix/cleanup-synapse/nevarro.space" "root";
-
-      # App Service Secrets
-      appservice_login_shared_secret_yaml = {
-        keyCommand = [ "cat" "../infrastructure-secrets/secrets/matrix/appservices/shared-secret-map.yaml" ];
-        user = "root";
-        group = "matrix";
-        permissions = "0640";
-      };
+  deployment.keys = let
+    keyFor = keyname: for: {
+      keyCommand = [ "cat" "../infrastructure-secrets/secrets/${keyname}" ];
+      user = for;
+      group = for;
     };
+  in {
+    # Backup Secrets
+    restic_password_file = keyFor "restic_password_file" "root";
+    restic_environment_file = keyFor "restic_environment_file" "root";
+
+    # Matrix Bot Secrets
+    mscbot_password = keyFor "matrix/bots/mscbot" "msclinkbot";
+    chessbot_password = keyFor "matrix/bots/chessbot" "matrix-chessbot";
+    standupbot_password = keyFor "matrix/bots/standupbot" "standupbot";
+    marshal_password = keyFor "matrix/bots/marshal" "mjolnir";
+    github_maubot_secrets_yaml =
+      keyFor "matrix/bots/github.yaml" "maubot-github";
+    echobot_maubot_secrets_yaml =
+      keyFor "matrix/bots/echobot.yaml" "maubot-echo";
+    meetbot_secret_env = keyFor "matrix/bots/meetbot.env" "meetbot";
+
+    # Matrix Server Secrets
+    nevarro_space_registration_shared_secret =
+      keyFor "matrix/registration-shared-secret/nevarro.space" "matrix-synapse";
+    nevarro_space_shared_secret_auth =
+      keyFor "matrix/shared-secret-auth/nevarro.space" "matrix-synapse";
+    nevarro_space_cleanup_synapse_environment_file =
+      keyFor "matrix/cleanup-synapse/nevarro.space" "root";
+
+    # App Service Secrets
+    appservice_login_shared_secret_yaml = {
+      keyCommand = [
+        "cat"
+        "../infrastructure-secrets/secrets/matrix/appservices/shared-secret-map.yaml"
+      ];
+      user = "root";
+      group = "matrix";
+      permissions = "0640";
+    };
+  };
 
   networking.hostName = "matrix";
   systemd.network.networks = {
@@ -49,8 +53,16 @@
     enable = true;
     checkId = "d7eae3e9-de4c-452b-9142-60e7831874c3";
     disks = [
-      { path = "/"; threshold = 95; checkId = "5406129d-1352-4a24-b2db-6daa0c0a3d8f"; }
-      { path = "/mnt/postgresql-data"; threshold = 95; checkId = "2b04d70f-f432-4359-aab3-f0d2ba6d8995"; }
+      {
+        path = "/";
+        threshold = 95;
+        checkId = "5406129d-1352-4a24-b2db-6daa0c0a3d8f";
+      }
+      {
+        path = "/mnt/postgresql-data";
+        threshold = 95;
+        checkId = "2b04d70f-f432-4359-aab3-f0d2ba6d8995";
+      }
     ];
   };
 
@@ -151,13 +163,16 @@
   # Synapse
   services.matrix-synapse-custom = {
     enable = true;
-    registrationSharedSecretConfigFile = "/run/keys/nevarro_space_registration_shared_secret";
+    registrationSharedSecretConfigFile =
+      "/run/keys/nevarro_space_registration_shared_secret";
     sharedSecretAuthConfigFile = "/run/keys/nevarro_space_shared_secret_auth";
   };
-  services.cleanup-synapse.environmentFile = "/run/keys/nevarro_space_cleanup_synapse_environment_file";
+  services.cleanup-synapse.environmentFile =
+    "/run/keys/nevarro_space_cleanup_synapse_environment_file";
 
   # PosgreSQL
   services.postgresql.enable = true;
-  services.postgresql.dataDir = "/mnt/postgresql-data/${config.services.postgresql.package.psqlSchema}";
+  services.postgresql.dataDir =
+    "/mnt/postgresql-data/${config.services.postgresql.package.psqlSchema}";
   services.postgresqlBackup.enable = true;
 }

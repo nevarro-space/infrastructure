@@ -1,13 +1,9 @@
 { config, lib, ... }:
-let
-  lokiCfg = config.services.loki;
-in
-lib.mkIf lokiCfg.enable {
+let lokiCfg = config.services.loki;
+in lib.mkIf lokiCfg.enable {
   services.loki.configuration = {
     auth_enabled = false;
-    server = {
-      http_listen_port = 3100;
-    };
+    server = { http_listen_port = 3100; };
     ingester = {
       lifecycler.ring = {
         kvstore.store = "inmemory";
@@ -18,15 +14,16 @@ lib.mkIf lokiCfg.enable {
       max_transfer_retries = 0;
     };
     schema_config = {
-      configs = [
-        {
-          from = "2022-03-03";
-          store = "boltdb-shipper";
-          object_store = "filesystem";
-          schema = "v11";
-          index = { prefix = "index_"; period = "24h"; };
-        }
-      ];
+      configs = [{
+        from = "2022-03-03";
+        store = "boltdb-shipper";
+        object_store = "filesystem";
+        schema = "v11";
+        index = {
+          prefix = "index_";
+          period = "24h";
+        };
+      }];
     };
     storage_config = {
       boltdb_shipper = {

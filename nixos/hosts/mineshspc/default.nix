@@ -1,16 +1,15 @@
 { config, lib, pkgs, ... }:
-let
-  dataDir = "/var/lib/mineshspc";
-in
-{
-  imports = [
-    ./hardware-configuration.nix
-  ];
+let dataDir = "/var/lib/mineshspc";
+in {
+  imports = [ ./hardware-configuration.nix ];
 
   deployment.keys = {
-    mineshspc_env.keyCommand = [ "cat" "../infrastructure-secrets/secrets/mineshspc_env" ];
-    restic_password_file.keyCommand = [ "cat" "../infrastructure-secrets/secrets/restic_password_file" ];
-    restic_environment_file.keyCommand = [ "cat" "../infrastructure-secrets/secrets/restic_environment_file" ];
+    mineshspc_env.keyCommand =
+      [ "cat" "../infrastructure-secrets/secrets/mineshspc_env" ];
+    restic_password_file.keyCommand =
+      [ "cat" "../infrastructure-secrets/secrets/restic_password_file" ];
+    restic_environment_file.keyCommand =
+      [ "cat" "../infrastructure-secrets/secrets/restic_environment_file" ];
   };
 
   networking.hostName = "mineshspc";
@@ -37,10 +36,7 @@ in
 
   systemd.services."mineshspc.com" = {
     description = "Mines HSPC Website service";
-    after = [
-      "network-online.target"
-      "mineshspc_env-key.service"
-    ];
+    after = [ "network-online.target" "mineshspc_env-key.service" ];
     wantedBy = [ "multi-user.target" ];
     serviceConfig = {
       WorkingDirectory = dataDir;
@@ -78,8 +74,10 @@ in
 
   services.healthcheck = {
     enable = true;
-    disks = [
-      { path = "/"; threshold = 95; checkId = "b05f5eb0-ac9e-480e-982e-85a42a505e02"; }
-    ];
+    disks = [{
+      path = "/";
+      threshold = 95;
+      checkId = "b05f5eb0-ac9e-480e-982e-85a42a505e02";
+    }];
   };
 }

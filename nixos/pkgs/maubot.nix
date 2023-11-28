@@ -1,9 +1,4 @@
-{ lib
-, fetchpatch
-, fetchPypi
-, fetchFromGitHub
-, python3
-}:
+{ lib, fetchpatch, fetchPypi, fetchFromGitHub, python3 }:
 python3.pkgs.buildPythonPackage rec {
   pname = "maubot";
   version = "unstable-2023-06-02";

@@ -12,7 +12,8 @@ let
   adminV1Url = "http://localhost:8008/_synapse/admin/v1";
   adminV2Url = "http://localhost:8008/_synapse/admin/v2";
   adminMediaRepoUrl = "http://localhost:8011/_synapse/admin/v1";
-  adminCurl = ''${curl}/bin/curl --header "Authorization: Bearer $CLEANUP_ACCESS_TOKEN"'';
+  adminCurl =
+    ''${curl}/bin/curl --header "Authorization: Bearer $CLEANUP_ACCESS_TOKEN"'';
 
   # Delete old cached remote media
   purgeRemoteMedia = writeShellScriptBin "purge-remote-media" ''
@@ -176,14 +177,12 @@ in
     # };
 
     # Allow root to manage matrix-synapse database.
-    services.postgresql.ensureUsers = [
-      {
-        name = "root";
-        ensurePermissions = {
-          "DATABASE \"matrix-synapse\"" = "ALL PRIVILEGES";
-          "ALL TABLES IN SCHEMA public" = "ALL PRIVILEGES";
-        };
-      }
-    ];
+    services.postgresql.ensureUsers = [{
+      name = "root";
+      ensurePermissions = {
+        "DATABASE \"matrix-synapse\"" = "ALL PRIVILEGES";
+        "ALL TABLES IN SCHEMA public" = "ALL PRIVILEGES";
+      };
+    }];
   };
 }

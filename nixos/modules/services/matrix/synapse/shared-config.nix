@@ -1,6 +1,6 @@
 # This is organized to match the sections in
 # https://github.com/matrix-org/synapse/blob/develop/docs/sample_config.yaml
-{ config, lib, pkgs }: with lib;
+{ config, lib, pkgs }:
 let
   cfg = config.services.matrix-synapse-custom;
   yamlFormat = pkgs.formats.yaml { };
@@ -18,9 +18,15 @@ let
       filters = [ "context" ];
       SYSLOG_IDENTIFIER = "synapse";
     };
-    root = { level = "INFO"; handlers = [ "journal" ]; };
+    root = {
+      level = "INFO";
+      handlers = [ "journal" ];
+    };
     loggers = {
-      shared_secret_authenticator = { level = "INFO"; handlers = [ "journal" ]; };
+      shared_secret_authenticator = {
+        level = "INFO";
+        handlers = [ "journal" ];
+      };
     };
     disable_existing_loggers = false;
   };
@@ -46,9 +52,10 @@ in
       bind_address = "0.0.0.0";
       tls = false;
       x_forwarded = true;
-      resources = [
-        { names = [ "federation" "client" ]; compress = false; }
-      ];
+      resources = [{
+        names = [ "federation" "client" ];
+        compress = false;
+      }];
     }
 
     # Metrics
@@ -76,7 +83,10 @@ in
   # Database
   database = {
     name = "psycopg2";
-    args = { user = "matrix-synapse"; database = "matrix-synapse"; };
+    args = {
+      user = "matrix-synapse";
+      database = "matrix-synapse";
+    };
   };
 
   # Logging
@@ -99,13 +109,13 @@ in
     "fc00::/7"
   ];
 
-  media_retention = {
-    remote_media_lifetime = "90d";
-  };
+  media_retention = { remote_media_lifetime = "90d"; };
 
   url_preview_url_blacklist = [
     # blacklist any URL with a username in its URI
-    { username = "*"; }
+    {
+      username = "*";
+    }
 
     # Don't try previews for Linear.
     { netloc = "linear.app"; }
@@ -134,17 +144,12 @@ in
 
   # Signing Keys
   signing_key_path = "${cfg.dataDir}/homeserver.signing.key";
-  trusted_key_servers = [
-    { server_name = "matrix.org"; }
-  ];
+  trusted_key_servers = [{ server_name = "matrix.org"; }];
   suppress_key_server_warning = true;
 
   # Workers
   send_federation = false;
-  federation_sender_instances = [
-    "federation_sender1"
-    "federation_sender2"
-  ];
+  federation_sender_instances = [ "federation_sender1" "federation_sender2" ];
   instance_map = {
     main = {
       host = "localhost";
@@ -160,11 +165,7 @@ in
     };
   };
 
-  stream_writers = {
-    events = "event_persister1";
-  };
+  stream_writers = { events = "event_persister1"; };
 
-  redis = {
-    enabled = true;
-  };
+  redis = { enabled = true; };
 }

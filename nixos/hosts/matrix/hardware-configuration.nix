@@ -7,7 +7,8 @@
       fsType = "ext4";
     };
     "/mnt/postgresql-data" = {
-      device = terraform-outputs.matrix_server_postgresql_data_linux_device.value;
+      device =
+        terraform-outputs.matrix_server_postgresql_data_linux_device.value;
       fsType = "ext4";
     };
   };

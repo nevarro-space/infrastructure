@@ -20,34 +20,32 @@
       colmena = import ./nixos/colmena.nix (inputs // {
         terraform-outputs = nixpkgs.lib.importJSON ./terraform-output.json;
       });
-    } // (flake-utils.lib.eachDefaultSystem
-      (system:
-        let
-          pkgs = import nixpkgs {
-            inherit system;
-            config.allowUnfree = true;
-          };
-        in
-        {
-          devShells.default = pkgs.mkShell {
-            packages = with pkgs; [
-              cargo
-              colmena
-              git-crypt
-              nodePackages.bash-language-server
-              openssl
-              pre-commit
-              rnix-lsp
-              sops
+    } // (flake-utils.lib.eachDefaultSystem (system:
+      let
+        pkgs = import nixpkgs {
+          inherit system;
+          config.allowUnfree = true;
+        };
+      in {
+        devShells.default = pkgs.mkShell {
+          packages = with pkgs; [
+            cargo
+            colmena
+            git-crypt
+            nixfmt
+            nodePackages.bash-language-server
+            openssl
+            pre-commit
+            rnix-lsp
+            sops
 
-              # Terraform + Linters
-              terraform
-              terraform-docs
-              terraform-lsp
-              tflint
-              tfsec
-            ];
-          };
-        }
-      ));
+            # Terraform + Linters
+            terraform
+            terraform-docs
+            terraform-lsp
+            tflint
+            tfsec
+          ];
+        };
+      }));
 }

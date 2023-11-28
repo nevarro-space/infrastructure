@@ -1,4 +1,6 @@
-{ config, lib, pkgs, ... }: with lib; let
+{ config, lib, pkgs, ... }:
+with lib;
+let
   cfg = config.services.mautrix-discord;
 
   mautrix-discord = pkgs.callPackage ../../../pkgs/mautrix-discord.nix { };
@@ -14,8 +16,14 @@
     push_ephemeral = true;
     namespaces = {
       users = [
-        { regex = "^@discord_[0-9]+:nevarro.space$"; exclusive = true; }
-        { regex = "^@discordbot:nevarro.space$"; exclusive = true; }
+        {
+          regex = "^@discord_[0-9]+:nevarro.space$";
+          exclusive = true;
+        }
+        {
+          regex = "^@discordbot:nevarro.space$";
+          exclusive = true;
+        }
       ];
       aliases = [ ];
       rooms = [ ];
@@ -24,7 +32,9 @@
 
   yamlFormat = pkgs.formats.yaml { };
 
-  mautrixDiscordAppserviceConfigYaml = yamlFormat.generate "mautrix-discord-registration.yaml" mautrixDiscordAppserviceConfig;
+  mautrixDiscordAppserviceConfigYaml =
+    yamlFormat.generate "mautrix-discord-registration.yaml"
+      mautrixDiscordAppserviceConfig;
 
   mautrixDiscordConfig = {
     homeserver = {
@@ -59,8 +69,10 @@
 
     bridge = {
       username_template = "discord_{{.}}";
-      displayname_template = "{{or .GlobalName .Username}}{{if .Bot}} (bot){{end}}";
-      channel_name_template = "{{if or (eq .Type 3) (eq .Type 4)}}{{.Name}}{{else}}#{{.Name}}{{end}}";
+      displayname_template =
+        "{{or .GlobalName .Username}}{{if .Bot}} (bot){{end}}";
+      channel_name_template =
+        "{{if or (eq .Type 3) (eq .Type 4)}}{{.Name}}{{else}}#{{.Name}}{{end}}";
       guild_name_template = "{{.Name}}";
       private_chat_portal_meta = false;
       portal_message_buffer = 128;
@@ -91,13 +103,15 @@
 
     logging = {
       min_level = "debug";
-      writers = [
-        { type = "stdout"; format = "json"; }
-      ];
+      writers = [{
+        type = "stdout";
+        format = "json";
+      }];
     };
   };
 
-  mautrixDiscordConfigYaml = yamlFormat.generate "mautrix-discord-config.yaml" mautrixDiscordConfig;
+  mautrixDiscordConfigYaml =
+    yamlFormat.generate "mautrix-discord-config.yaml" mautrixDiscordConfig;
 in
 {
   options = {
@@ -126,7 +140,8 @@ in
       botUsername = mkOption {
         type = types.str;
         default = "discordbot";
-        description = "The localpart of the mautrix-discord admin bot's username.";
+        description =
+          "The localpart of the mautrix-discord admin bot's username.";
       };
       appServiceToken = mkOption {
         type = types.str;
@@ -153,19 +168,17 @@ in
   config = mkIf cfg.enable {
     meta.maintainers = [ maintainers.sumnerevans ];
 
-    assertions = [
-      {
-        assertion = cfg.useLocalSynapse -> config.services.matrix-synapse-custom.enable;
-        message = ''
-          Mautrix-Discord must be running on the same server as Synapse if
-          'useLocalSynapse' is enabled.
-        '';
-      }
-    ];
+    assertions = [{
+      assertion = cfg.useLocalSynapse
+        -> config.services.matrix-synapse-custom.enable;
+      message = ''
+        Mautrix-Discord must be running on the same server as Synapse if
+        'useLocalSynapse' is enabled.
+      '';
+    }];
 
-    services.matrix-synapse-custom.appServiceConfigFiles = mkIf cfg.useLocalSynapse [
-      mautrixDiscordAppserviceConfigYaml
-    ];
+    services.matrix-synapse-custom.appServiceConfigFiles =
+      mkIf cfg.useLocalSynapse [ mautrixDiscordAppserviceConfigYaml ];
 
     # Create a user for mautrix-discord.
     users = {
@@ -181,9 +194,8 @@ in
     systemd.services.mautrix-discord = {
       description = "Discord <-> Matrix Bridge";
       wantedBy = [ "multi-user.target" ];
-      after = [
-        "appservice_login_shared_secret_yaml-key.service"
-      ] ++ optional cfg.useLocalSynapse "matrix-synapse.target";
+      after = [ "appservice_login_shared_secret_yaml-key.service" ]
+        ++ optional cfg.useLocalSynapse "matrix-synapse.target";
       preStart = ''
         ${pkgs.yq-go}/bin/yq ea '. as $item ireduce ({}; . * $item )' \
           ${mautrixDiscordConfigYaml} ${cfg.secretYAML} > config.yaml
@@ -201,19 +213,15 @@ in
     # TODO make this work
     services.prometheus = {
       enable = true;
-      scrapeConfigs = [
-        {
-          job_name = "mautrixdiscord";
-          scrape_interval = "15s";
-          metrics_path = "/";
-          static_configs = [{ targets = [ "0.0.0.0:9011" ]; }];
-        }
-      ];
+      scrapeConfigs = [{
+        job_name = "mautrixdiscord";
+        scrape_interval = "15s";
+        metrics_path = "/";
+        static_configs = [{ targets = [ "0.0.0.0:9011" ]; }];
+      }];
     };
 
     # Add a backup service.
-    services.backup.backups.mautrix-discord = {
-      path = cfg.dataDir;
-    };
+    services.backup.backups.mautrix-discord = { path = cfg.dataDir; };
   };
 }

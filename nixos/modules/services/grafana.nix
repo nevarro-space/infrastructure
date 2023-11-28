@@ -1,11 +1,11 @@
-{ config, lib, options, pkgs, ... }: with lib; let
+{ config, lib, options, pkgs, ... }:
+with lib;
+let
   serverName = "grafana.${config.networking.domain}";
   cfg = config.services.grafana;
 in
 mkIf cfg.enable {
-  services.grafana.settings = {
-    server.domain = serverName;
-  };
+  services.grafana.settings = { server.domain = serverName; };
 
   services.nginx = {
     enable = true;
@@ -15,7 +15,8 @@ mkIf cfg.enable {
       forceSSL = true;
 
       locations."/" = {
-        proxyPass = with cfg.settings.server; "http://${http_addr}:${toString http_port}";
+        proxyPass = with cfg.settings.server;
+          "http://${http_addr}:${toString http_port}";
         proxyWebsockets = true;
         extraConfig = ''
           access_log /var/log/nginx/grafana.access.log;

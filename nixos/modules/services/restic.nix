@@ -12,7 +12,9 @@
 #    This service can be set as a prerequisite for starting up other services
 #    that depend on that data.
 
-{ config, lib, pkgs, ... }: with lib; let
+{ config, lib, pkgs, ... }:
+with lib;
+let
   cfg = config.services.backup;
   bucket = "nevarro-backups";
   frequency = "0/6:0"; # Run backup every six hours
@@ -31,20 +33,21 @@
 
   # Scripts
   # ===========================================================================
-  resticBackupScript = paths: exclude: pkgs.writeScriptBin "restic-backup" ''
-    #!${pkgs.stdenv.shell}
-    set -xe
+  resticBackupScript = paths: exclude:
+    pkgs.writeScriptBin "restic-backup" ''
+      #!${pkgs.stdenv.shell}
+      set -xe
 
-    ${pkgs.curl}/bin/curl -fsS --retry 10 https://hc-ping.com/${cfg.healthcheckId}/start
+      ${pkgs.curl}/bin/curl -fsS --retry 10 https://hc-ping.com/${cfg.healthcheckId}/start
 
-    # Perfrom the backup
-    ${resticCmd} backup \
-      ${concatStringsSep " " paths} \
-      ${concatMapStringsSep " " (e: "-e \"${e}\"") exclude}
+      # Perfrom the backup
+      ${resticCmd} backup \
+        ${concatStringsSep " " paths} \
+        ${concatMapStringsSep " " (e: ''-e "${e}"'') exclude}
 
-    # Ping healthcheck.io
-    ${pkgs.curl}/bin/curl -fsS --retry 10 https://hc-ping.com/${cfg.healthcheckId}
-  '';
+      # Ping healthcheck.io
+      ${pkgs.curl}/bin/curl -fsS --retry 10 https://hc-ping.com/${cfg.healthcheckId}
+    '';
 
   resticPruneScript = pkgs.writeScriptBin "restic-prune" ''
     #!${pkgs.stdenv.shell}
@@ -77,10 +80,12 @@
   resticBackupService = backups: exclude:
     let
       paths = mapAttrsToList (n: { path, ... }: path) backups;
-      script = resticBackupScript paths (exclude ++ [ ".restic-backup-restored" ]);
+      script =
+        resticBackupScript paths (exclude ++ [ ".restic-backup-restored" ]);
     in
     {
-      description = "Backup ${concatStringsSep ", " paths} to ${resticRepository}";
+      description =
+        "Backup ${concatStringsSep ", " paths} to ${resticRepository}";
       environment = resticEnvironment;
       startAt = frequency;
       serviceConfig = {

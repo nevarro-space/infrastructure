@@ -1,4 +1,6 @@
-{ config, lib, pkgs, ... }: with lib; let
+{ config, lib, pkgs, ... }:
+with lib;
+let
   cfg = config.services.msclinkbot;
   msclinkbot = pkgs.callPackage ../../../pkgs/msclinkbot.nix { };
 
@@ -16,13 +18,15 @@
 
     logging = {
       min_level = "debug";
-      writers = [
-        { type = "stdout"; format = "json"; }
-      ];
+      writers = [{
+        type = "stdout";
+        format = "json";
+      }];
     };
   };
   format = pkgs.formats.yaml { };
-  mscLinkBotConfigFile = format.generate "msclinkbot.config.yaml" mscLinkBotConfig;
+  mscLinkBotConfigFile =
+    format.generate "msclinkbot.config.yaml" mscLinkBotConfig;
 in
 {
   options = {
@@ -41,10 +45,7 @@ in
   config = mkIf cfg.enable {
     systemd.services.msclinkbot = {
       description = "MSC Link Bot";
-      after = [
-        "matrix-synapse.target"
-        "mscbot_password-key.service"
-      ];
+      after = [ "matrix-synapse.target" "mscbot_password-key.service" ];
       wantedBy = [ "multi-user.target" ];
       serviceConfig = {
         ExecStart = ''
@@ -68,8 +69,6 @@ in
     };
 
     # Add a backup service.
-    services.backup.backups.msclinkbot = {
-      path = cfg.dataDir;
-    };
+    services.backup.backups.msclinkbot = { path = cfg.dataDir; };
   };
 }

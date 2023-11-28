@@ -11,13 +11,9 @@ buildGoModule rec {
     hash = "sha256-lg3lw9PhvcNWGYEEaVJwwIt80QR3DvDcy4RXdLeuvh4=";
   };
 
-  buildInputs = [
-    olm
-  ];
+  buildInputs = [ olm ];
 
-  propagatedBuildInputs = [
-    imagemagick
-  ];
+  propagatedBuildInputs = [ imagemagick ];
 
   vendorSha256 = "sha256-wNA4s8DCWfxh1z0cnOn0mHKqbN0BHR7AkgUuK+Fzp9U=";
 

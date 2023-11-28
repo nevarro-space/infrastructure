@@ -1,8 +1,7 @@
-{ lib, fetchFromGitHub, python3 }: with python3.pkgs;
-let
-  linkedin-messaging = callPackage ./linkedin-messaging.nix { };
-in
-buildPythonPackage rec {
+{ lib, fetchFromGitHub, python3 }:
+with python3.pkgs;
+let linkedin-messaging = callPackage ./linkedin-messaging.nix { };
+in buildPythonPackage rec {
   pname = "linkedin-matrix";
   version = "0.5.5a1";
 
@@ -19,14 +18,9 @@ buildPythonPackage rec {
       --replace 'version=version' 'version="${version}"'
   '';
 
+  nativeBuildInputs = [ pythonRelaxDepsHook ];
 
-  nativeBuildInputs = [
-    pythonRelaxDepsHook
-  ];
-
-  pythonRelaxDeps = [
-    "asyncpg"
-  ];
+  pythonRelaxDeps = [ "asyncpg" ];
 
   propagatedBuildInputs = [
     aiohttp

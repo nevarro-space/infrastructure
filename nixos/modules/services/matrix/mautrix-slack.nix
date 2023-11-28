@@ -1,6 +1,7 @@
-{ config, lib, pkgs, ... }: with lib; let
+{ config, lib, pkgs, ... }:
+with lib;
+let
   cfg = config.services.mautrix-slack;
-  synapseCfg = config.services.matrix-synapse-custom;
 
   mautrix-slack = pkgs.callPackage ../../../pkgs/mautrix-slack.nix { };
 
@@ -15,8 +16,14 @@
     push_ephemeral = true;
     namespaces = {
       users = [
-        { regex = "^@slack_.+:nevarro.space$"; exclusive = true; }
-        { regex = "^@slackbot:nevarro.space$"; exclusive = true; }
+        {
+          regex = "^@slack_.+:nevarro.space$";
+          exclusive = true;
+        }
+        {
+          regex = "^@slackbot:nevarro.space$";
+          exclusive = true;
+        }
       ];
       aliases = [ ];
       rooms = [ ];
@@ -25,7 +32,9 @@
 
   yamlFormat = pkgs.formats.yaml { };
 
-  mautrixSlackAppserviceConfigYaml = yamlFormat.generate "mautrix-slack-registration.yaml" mautrixSlackAppserviceConfig;
+  mautrixSlackAppserviceConfigYaml =
+    yamlFormat.generate "mautrix-slack-registration.yaml"
+      mautrixSlackAppserviceConfig;
 
   mautrixSlackConfig = {
     homeserver = {
@@ -102,13 +111,15 @@
 
     logging = {
       min_level = "debug";
-      writers = [
-        { type = "stdout"; format = "json"; }
-      ];
+      writers = [{
+        type = "stdout";
+        format = "json";
+      }];
     };
   };
 
-  mautrixSlackConfigYaml = yamlFormat.generate "mautrix-slack-config.yaml" mautrixSlackConfig;
+  mautrixSlackConfigYaml =
+    yamlFormat.generate "mautrix-slack-config.yaml" mautrixSlackConfig;
 in
 {
   options = {
@@ -137,7 +148,8 @@ in
       botUsername = mkOption {
         type = types.str;
         default = "slackbot";
-        description = "The localpart of the mautrix-slack admin bot's username.";
+        description =
+          "The localpart of the mautrix-slack admin bot's username.";
       };
       appServiceToken = mkOption {
         type = types.str;
@@ -164,19 +176,17 @@ in
   config = mkIf cfg.enable {
     meta.maintainers = [ maintainers.sumnerevans ];
 
-    assertions = [
-      {
-        assertion = cfg.useLocalSynapse -> config.services.matrix-synapse-custom.enable;
-        message = ''
-          Mautrix-Slack must be running on the same server as Synapse if
-          'useLocalSynapse' is enabled.
-        '';
-      }
-    ];
+    assertions = [{
+      assertion = cfg.useLocalSynapse
+        -> config.services.matrix-synapse-custom.enable;
+      message = ''
+        Mautrix-Slack must be running on the same server as Synapse if
+        'useLocalSynapse' is enabled.
+      '';
+    }];
 
-    services.matrix-synapse-custom.appServiceConfigFiles = mkIf cfg.useLocalSynapse [
-      mautrixSlackAppserviceConfigYaml
-    ];
+    services.matrix-synapse-custom.appServiceConfigFiles =
+      mkIf cfg.useLocalSynapse [ mautrixSlackAppserviceConfigYaml ];
 
     # Create a user for mautrix-slack.
     users = {
@@ -192,9 +202,8 @@ in
     systemd.services.mautrix-slack = {
       description = "Slack <-> Matrix Bridge";
       wantedBy = [ "multi-user.target" ];
-      after = [
-        "appservice_login_shared_secret_yaml-key.service"
-      ] ++ optional cfg.useLocalSynapse "matrix-synapse.target";
+      after = [ "appservice_login_shared_secret_yaml-key.service" ]
+        ++ optional cfg.useLocalSynapse "matrix-synapse.target";
       preStart = ''
         ${pkgs.yq-go}/bin/yq ea '. as $item ireduce ({}; . * $item )' \
           ${mautrixSlackConfigYaml} ${cfg.secretYAML} > config.yaml
@@ -211,14 +220,12 @@ in
 
     services.prometheus = {
       enable = true;
-      scrapeConfigs = [
-        {
-          job_name = "mautrixslack";
-          scrape_interval = "15s";
-          metrics_path = "/";
-          static_configs = [{ targets = [ "0.0.0.0:9012" ]; }];
-        }
-      ];
+      scrapeConfigs = [{
+        job_name = "mautrixslack";
+        scrape_interval = "15s";
+        metrics_path = "/";
+        static_configs = [{ targets = [ "0.0.0.0:9012" ]; }];
+      }];
     };
   };
 }

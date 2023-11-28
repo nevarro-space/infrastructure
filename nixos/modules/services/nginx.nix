@@ -1,8 +1,6 @@
 { config, lib, ... }:
-let
-  nginxCfg = config.services.nginx;
-in
-lib.mkIf nginxCfg.enable {
+let nginxCfg = config.services.nginx;
+in lib.mkIf nginxCfg.enable {
   services.nginx = {
     enableReload = true;
     clientMaxBodySize = "250m";

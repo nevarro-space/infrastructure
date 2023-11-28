@@ -14,15 +14,9 @@ buildPythonPackage rec {
     hash = "sha256-Bn/yxv+RZrBtvpyotWhEY2HafIRTaWxiTexP4AVTJ0A=";
   };
 
-  nativeBuildInputs = [
-    python3.pkgs.flit-core
-  ];
+  nativeBuildInputs = [ python3.pkgs.flit-core ];
 
-  propagatedBuildInputs = [
-    aiohttp
-    beautifulsoup4
-    dataclasses-json
-  ];
+  propagatedBuildInputs = [ aiohttp beautifulsoup4 dataclasses-json ];
 
   pythonImportsCheck = [ "linkedin_messaging" ];
 

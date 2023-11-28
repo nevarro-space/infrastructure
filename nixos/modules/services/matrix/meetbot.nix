@@ -1,4 +1,6 @@
-{ config, lib, pkgs, ... }: with lib; let
+{ config, lib, pkgs, ... }:
+with lib;
+let
   cfg = config.services.meetbot;
 
   meetbotConfig = {
@@ -17,9 +19,10 @@
 
     logging = {
       min_level = "debug";
-      writers = [
-        { type = "stdout"; format = "json"; }
-      ];
+      writers = [{
+        type = "stdout";
+        format = "json";
+      }];
     };
   };
   format = pkgs.formats.yaml { };
@@ -42,10 +45,7 @@ in
   config = mkIf cfg.enable {
     systemd.services.meetbot = {
       description = "Meetbot";
-      after = [
-        "matrix-synapse.target"
-        "meetbot_secret_env-key.service"
-      ];
+      after = [ "matrix-synapse.target" "meetbot_secret_env-key.service" ];
       wantedBy = [ "multi-user.target" ];
       serviceConfig = {
         ExecStart = ''
@@ -86,8 +86,6 @@ in
     };
 
     # Add a backup service.
-    services.backup.backups.meetbot = {
-      path = cfg.dataDir;
-    };
+    services.backup.backups.meetbot = { path = cfg.dataDir; };
   };
 }

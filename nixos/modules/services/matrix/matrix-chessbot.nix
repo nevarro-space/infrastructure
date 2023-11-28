@@ -1,4 +1,6 @@
-{ config, lib, pkgs, ... }: with lib; let
+{ config, lib, pkgs, ... }:
+with lib;
+let
   cfg = config.services.matrix-chessbot;
   matrix-chessbot = pkgs.callPackage ../../../pkgs/matrix-chessbot.nix { };
 
@@ -8,7 +10,8 @@
     password_file = cfg.passwordFile;
   };
   format = pkgs.formats.yaml { };
-  configYaml = format.generate "matrix-chessbot.config.yaml" matrixChessbotConfig;
+  configYaml =
+    format.generate "matrix-chessbot.config.yaml" matrixChessbotConfig;
 in
 {
   options = {
@@ -27,10 +30,7 @@ in
   config = mkIf cfg.enable {
     systemd.services.matrix-chessbot = {
       description = "Matrix Chessbot";
-      after = [
-        "matrix-synapse.target"
-        "chessbot_password-key.service"
-      ];
+      after = [ "matrix-synapse.target" "chessbot_password-key.service" ];
       wantedBy = [ "multi-user.target" ];
       path = [ pkgs.imagemagick ];
       serviceConfig = {
@@ -57,8 +57,6 @@ in
     };
 
     # Add a backup service.
-    services.backup.backups.matrix-chessbot = {
-      path = cfg.dataDir;
-    };
+    services.backup.backups.matrix-chessbot = { path = cfg.dataDir; };
   };
 }

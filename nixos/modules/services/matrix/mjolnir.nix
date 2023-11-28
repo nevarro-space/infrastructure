@@ -1,7 +1,7 @@
-{ config, lib, pkgs, ... }: with lib; let
-  mjolnirCfg = config.services.mjolnir;
-in
-mkIf mjolnirCfg.enable {
+{ config, lib, pkgs, ... }:
+with lib;
+let mjolnirCfg = config.services.mjolnir;
+in mkIf mjolnirCfg.enable {
   services.mjolnir = {
     pantalaimon = {
       enable = true;
@@ -17,10 +17,7 @@ mkIf mjolnirCfg.enable {
     };
   };
   systemd.services.mjolnir = {
-    after = [
-      "matrix-synapse.target"
-      "marshal_password-key.service"
-    ];
+    after = [ "matrix-synapse.target" "marshal_password-key.service" ];
     serviceConfig.SupplementaryGroups = [ "keys" ];
   };
   services.pantalaimon-headless.instances.mjolnir = {

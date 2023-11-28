@@ -1,7 +1,5 @@
 {
-  imports = [
-    ./zsh.nix
-  ];
+  imports = [ ./zsh.nix ];
 
   programs.htop.enable = true;
 }

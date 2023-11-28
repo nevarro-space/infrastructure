@@ -17,7 +17,8 @@ buildGoModule rec {
 
   meta = with lib; {
     homepage = "https://git.hnitbjorg.xyz/~edwargix/msc-link-bot";
-    description = "A re-write of @msclinkbot:matrix.org with support for encrypted rooms.";
+    description =
+      "A re-write of @msclinkbot:matrix.org with support for encrypted rooms.";
     license = licenses.mit;
     maintainers = with maintainers; [ sumnerevans ];
   };

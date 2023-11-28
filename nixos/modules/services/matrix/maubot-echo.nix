@@ -1,4 +1,6 @@
-{ config, lib, pkgs, ... }: with lib; let
+{ config, lib, pkgs, ... }:
+with lib;
+let
   cfg = config.services.maubot-echo;
   maubot = pkgs.callPackage ../../../pkgs/maubot.nix { };
 
@@ -54,10 +56,8 @@ in
   config = mkIf cfg.enable {
     systemd.services.maubot-echo = {
       description = "Echo Maubot";
-      after = [
-        "matrix-synapse.target"
-        "echo_maubot_secrets_yaml-key.service"
-      ];
+      after =
+        [ "matrix-synapse.target" "echo_maubot_secrets_yaml-key.service" ];
       wantedBy = [ "multi-user.target" ];
       preStart = ''
         ${pkgs.git}/bin/git clone https://github.com/maubot/echo src

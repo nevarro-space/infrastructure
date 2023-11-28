@@ -1,6 +1,5 @@
 { config, lib, pkgs, ... }: with lib; let
   cfg = config.services.mautrix-signal;
-  synapseCfg = config.services.matrix-synapse-custom;
 
   mautrix-signal = pkgs.callPackage ../../../pkgs/mautrix-signal.nix { };
 

@@ -1,5 +1,6 @@
 # See: https://nixos.org/nixos/manual/index.html#module-services-matrix-synapse
-{ config, lib, pkgs, ... }: with lib;
+{ config, lib, pkgs, ... }:
+with lib;
 let
   matrixDomain = "matrix.${config.networking.domain}";
   cfg = config.services.matrix-synapse-custom;
@@ -18,39 +19,40 @@ let
       "user-search"
       "user-search"
     ];
-    plugins = [
-      pkgs.matrix-synapse-plugins.matrix-synapse-shared-secret-auth
-    ];
+    plugins = [ pkgs.matrix-synapse-plugins.matrix-synapse-shared-secret-auth ];
   };
 
   yamlFormat = pkgs.formats.yaml { };
 
-  sharedConfig = recursiveUpdate (import ./shared-config.nix ({ inherit config lib pkgs; })) cfg.extraConfig;
-  sharedConfigFile = yamlFormat.generate
-    "matrix-synapse-config.yaml"
-    sharedConfig;
+  sharedConfig =
+    recursiveUpdate (import ./shared-config.nix ({ inherit config lib pkgs; }))
+      cfg.extraConfig;
+  sharedConfigFile =
+    yamlFormat.generate "matrix-synapse-config.yaml" sharedConfig;
 
-  configFiles = [
-    sharedConfigFile
-  ] ++ optional (cfg.sharedSecretAuthConfigFile != null) cfg.sharedSecretAuthConfigFile
-  ++ optional (cfg.registrationSharedSecretConfigFile != null) cfg.registrationSharedSecretConfigFile;
+  configFiles = [ sharedConfigFile ]
+    ++ optional (cfg.sharedSecretAuthConfigFile != null)
+    cfg.sharedSecretAuthConfigFile
+    ++ optional (cfg.registrationSharedSecretConfigFile != null)
+    cfg.registrationSharedSecretConfigFile;
   configPaths = concatMapStringsSep " " (p: " --config-path ${p} ") configFiles;
 
-  mkSynapseWorkerService = config: recursiveUpdate config {
-    after = [ "matrix-synapse.service" ];
-    partOf = [ "matrix-synapse.target" ];
-    wantedBy = [ "matrix-synapse.target" ];
-    serviceConfig = {
-      Type = "notify";
-      User = "matrix-synapse";
-      Group = "matrix-synapse";
-      WorkingDirectory = cfg.dataDir;
-      ExecReload = "${pkgs.util-linux}/bin/kill -HUP $MAINPID";
-      Restart = "on-failure";
-      UMask = "0077";
-      SupplementaryGroups = [ "keys" ];
+  mkSynapseWorkerService = config:
+    recursiveUpdate config {
+      after = [ "matrix-synapse.service" ];
+      partOf = [ "matrix-synapse.target" ];
+      wantedBy = [ "matrix-synapse.target" ];
+      serviceConfig = {
+        Type = "notify";
+        User = "matrix-synapse";
+        Group = "matrix-synapse";
+        WorkingDirectory = cfg.dataDir;
+        ExecReload = "${pkgs.util-linux}/bin/kill -HUP $MAINPID";
+        Restart = "on-failure";
+        UMask = "0077";
+        SupplementaryGroups = [ "keys" ];
+      };
     };
-  };
 
   mkSynapseWorkerConfig = port: config:
     let
@@ -58,32 +60,27 @@ let
         # Default to generic worker.
         worker_app = "synapse.app.generic_worker";
       } // config;
-      newWorkerListeners = (config.worker_listeners or [ ]) ++ [
-        {
-          type = "metrics";
-          bind_address = "";
-          port = port;
-        }
-      ];
+      newWorkerListeners = (config.worker_listeners or [ ]) ++ [{
+        type = "metrics";
+        bind_address = "";
+        port = port;
+      }];
     in
     newConfig // { worker_listeners = newWorkerListeners; };
 
-  federationSender1ConfigFile = yamlFormat.generate
-    "federation-sender-1.yaml"
+  federationSender1ConfigFile = yamlFormat.generate "federation-sender-1.yaml"
     (mkSynapseWorkerConfig 9101 {
       worker_app = "synapse.app.federation_sender";
       worker_name = "federation_sender1";
     });
 
-  federationSender2ConfigFile = yamlFormat.generate
-    "federation-sender-2.yaml"
+  federationSender2ConfigFile = yamlFormat.generate "federation-sender-2.yaml"
     (mkSynapseWorkerConfig 9106 {
       worker_app = "synapse.app.federation_sender";
       worker_name = "federation_sender2";
     });
 
-  federationReader1ConfigFile = yamlFormat.generate
-    "federation-reader-1.yaml"
+  federationReader1ConfigFile = yamlFormat.generate "federation-reader-1.yaml"
     (mkSynapseWorkerConfig 9102 {
       worker_name = "federation_reader1";
       worker_listeners = [
@@ -94,76 +91,63 @@ let
           bind_address = "0.0.0.0";
           tls = false;
           x_forwarded = true;
-          resources = [
-            { names = [ "federation" ]; compress = false; }
-          ];
+          resources = [{
+            names = [ "federation" ];
+            compress = false;
+          }];
         }
       ];
     });
 
-  eventPersister1ConfigFile = yamlFormat.generate
-    "event-persister-1.yaml"
+  eventPersister1ConfigFile = yamlFormat.generate "event-persister-1.yaml"
     (mkSynapseWorkerConfig 9103 {
       worker_name = "event_persister1";
       # The event persister needs a replication listener
-      worker_listeners = [
-        {
-          type = "http";
-          port = 9091;
-          bind_address = "127.0.0.1";
-          resources = [{ names = [ "replication" ]; }];
-        }
-      ];
+      worker_listeners = [{
+        type = "http";
+        port = 9091;
+        bind_address = "127.0.0.1";
+        resources = [{ names = [ "replication" ]; }];
+      }];
     });
 
-  eventPersister2ConfigFile = yamlFormat.generate
-    "event-persister-2.yaml"
+  eventPersister2ConfigFile = yamlFormat.generate "event-persister-2.yaml"
     (mkSynapseWorkerConfig 9107 {
       worker_name = "event_persister2";
       # The event persister needs a replication listener
-      worker_listeners = [
-        {
-          type = "http";
-          port = 9092;
-          bind_address = "127.0.0.1";
-          resources = [{ names = [ "replication" ]; }];
-        }
-      ];
+      worker_listeners = [{
+        type = "http";
+        port = 9092;
+        bind_address = "127.0.0.1";
+        resources = [{ names = [ "replication" ]; }];
+      }];
     });
 
-  synchotron1ConfigFile = yamlFormat.generate
-    "synchotron-1.yaml"
+  synchotron1ConfigFile = yamlFormat.generate "synchotron-1.yaml"
     (mkSynapseWorkerConfig 9104 {
       worker_name = "synchotron1";
-      worker_listeners = [
-        {
-          type = "http";
-          port = 8010;
-          bind_address = "0.0.0.0";
-          resources = [{ names = [ "client" ]; }];
-        }
-      ];
+      worker_listeners = [{
+        type = "http";
+        port = 8010;
+        bind_address = "0.0.0.0";
+        resources = [{ names = [ "client" ]; }];
+      }];
     });
 
-  mediaRepo1ConfigFile = yamlFormat.generate
-    "media-repo-1.yaml"
+  mediaRepo1ConfigFile = yamlFormat.generate "media-repo-1.yaml"
     (mkSynapseWorkerConfig 9105 {
       worker_name = "media_repo1";
       worker_app = "synapse.app.media_repository";
-      worker_listeners = [
-        {
-          type = "http";
-          port = 8011;
-          bind_address = "0.0.0.0";
-          resources = [{ names = [ "media" ]; }];
-        }
-      ];
+      worker_listeners = [{
+        type = "http";
+        port = 8011;
+        bind_address = "0.0.0.0";
+        resources = [{ names = [ "media" ]; }];
+      }];
     });
 in
 {
-  imports = [
-    ./cleanup-synapse.nix
-  ];
+  imports = [ ./cleanup-synapse.nix ];
 
   options = {
     services.matrix-synapse-custom = {
@@ -219,9 +203,7 @@ in
       uid = config.ids.uids.matrix-synapse;
     };
 
-    users.groups.matrix-synapse = {
-      gid = config.ids.gids.matrix-synapse;
-    };
+    users.groups.matrix-synapse = { gid = config.ids.gids.matrix-synapse; };
 
     systemd.targets.matrix-synapse = {
       description = "Synapse processes";
@@ -264,36 +246,39 @@ in
     };
 
     # Run the federation sender worker
-    systemd.services.matrix-synapse-federation-sender1 = mkSynapseWorkerService {
-      description = "Synapse Matrix federation sender 1";
-      serviceConfig.ExecStart = ''
-        ${wrapped}/bin/synapse_worker \
-          ${configPaths} \
-          --config-path ${federationSender1ConfigFile} \
-          --keys-directory ${cfg.dataDir}
-      '';
-    };
+    systemd.services.matrix-synapse-federation-sender1 =
+      mkSynapseWorkerService {
+        description = "Synapse Matrix federation sender 1";
+        serviceConfig.ExecStart = ''
+          ${wrapped}/bin/synapse_worker \
+            ${configPaths} \
+            --config-path ${federationSender1ConfigFile} \
+            --keys-directory ${cfg.dataDir}
+        '';
+      };
 
-    systemd.services.matrix-synapse-federation-sender2 = mkSynapseWorkerService {
-      description = "Synapse Matrix federation sender 2";
-      serviceConfig.ExecStart = ''
-        ${wrapped}/bin/synapse_worker \
-          ${configPaths} \
-          --config-path ${federationSender2ConfigFile} \
-          --keys-directory ${cfg.dataDir}
-      '';
-    };
+    systemd.services.matrix-synapse-federation-sender2 =
+      mkSynapseWorkerService {
+        description = "Synapse Matrix federation sender 2";
+        serviceConfig.ExecStart = ''
+          ${wrapped}/bin/synapse_worker \
+            ${configPaths} \
+            --config-path ${federationSender2ConfigFile} \
+            --keys-directory ${cfg.dataDir}
+        '';
+      };
 
     # Run the federation reader worker
-    systemd.services.matrix-synapse-federation-reader1 = mkSynapseWorkerService {
-      description = "Synapse Matrix federation reader 1";
-      serviceConfig.ExecStart = ''
-        ${wrapped}/bin/synapse_worker \
-          ${configPaths} \
-          --config-path ${federationReader1ConfigFile} \
-          --keys-directory ${cfg.dataDir}
-      '';
-    };
+    systemd.services.matrix-synapse-federation-reader1 =
+      mkSynapseWorkerService {
+        description = "Synapse Matrix federation reader 1";
+        serviceConfig.ExecStart = ''
+          ${wrapped}/bin/synapse_worker \
+            ${configPaths} \
+            --config-path ${federationReader1ConfigFile} \
+            --keys-directory ${cfg.dataDir}
+        '';
+      };
 
     # Run the event persister worker
     systemd.services.matrix-synapse-event-persister1 = mkSynapseWorkerService {
@@ -354,7 +339,8 @@ in
     services.redis.servers."".enable = true;
 
     # Allow scraping of prom metrics
-    networking.firewall.allowedTCPPorts = [ 9009 9101 9106 9102 9103 9107 9104 9105 ];
+    networking.firewall.allowedTCPPorts =
+      [ 9009 9101 9106 9102 9103 9107 9104 9105 ];
 
     # Set up nginx to forward requests properly.
     services.nginx = {
@@ -386,12 +372,13 @@ in
               access_log /var/log/nginx/matrix-synchotron.access.log;
             '';
           };
-          locations."~ ^/(_matrix/media|_synapse/admin/v1/(purge_media_cache|(room|user)/.*/media.*|media/.*|quarantine_media/.*|users/.*/media))" = {
-            proxyPass = "http://0.0.0.0:8011"; # without a trailing /
-            extraConfig = ''
-              access_log /var/log/nginx/matrix-media-repo.access.log;
-            '';
-          };
+          locations."~ ^/(_matrix/media|_synapse/admin/v1/(purge_media_cache|(room|user)/.*/media.*|media/.*|quarantine_media/.*|users/.*/media))" =
+            {
+              proxyPass = "http://0.0.0.0:8011"; # without a trailing /
+              extraConfig = ''
+                access_log /var/log/nginx/matrix-media-repo.access.log;
+              '';
+            };
         };
       };
     };

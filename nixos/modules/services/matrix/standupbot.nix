@@ -1,4 +1,6 @@
-{ config, lib, pkgs, ... }: with lib; let
+{ config, lib, pkgs, ... }:
+with lib;
+let
   cfg = config.services.standupbot;
   standupbot = pkgs.callPackage ../../../pkgs/standupbot.nix { };
 
@@ -8,7 +10,8 @@
     PasswordFile = cfg.passwordFile;
   };
   format = pkgs.formats.json { };
-  standupbotConfigJson = format.generate "standupbot.config.json" standupbotConfig;
+  standupbotConfigJson =
+    format.generate "standupbot.config.json" standupbotConfig;
 in
 {
   options = {
@@ -50,8 +53,6 @@ in
     };
 
     # Add a backup service.
-    services.backup.backups.standupbot = {
-      path = cfg.dataDir;
-    };
+    services.backup.backups.standupbot = { path = cfg.dataDir; };
   };
 }

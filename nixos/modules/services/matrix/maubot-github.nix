@@ -1,4 +1,6 @@
-{ config, lib, pkgs, ... }: with lib; let
+{ config, lib, pkgs, ... }:
+with lib;
+let
   cfg = config.services.maubot-github;
   maubot = pkgs.callPackage ../../../pkgs/maubot.nix { };
 
@@ -49,7 +51,8 @@
       };
       templates = {
         repo_prefix = "<strong>[{{ repo_link(repository) }}]</strong>";
-        repo_sender_prefix = "{{ templates.repo_prefix }} {{ user_link(sender) }}";
+        repo_sender_prefix =
+          "{{ templates.repo_prefix }} {{ user_link(sender) }}";
         issue_link = "{{ issueish_link(issue) }}";
         pr_link = "{{ issueish_link(pull_request, pull_request=True) }}";
         label_aggregation = ''
@@ -129,8 +132,10 @@
       messages = {
         ping = "";
         create = "";
-        star = "{{ templates.repo_sender_prefix }} {% if action == DELETED %}un{% endif %}starred the repo";
-        fork = "{{ templates.repo_prefix }} Repo forked into {{ repo_link(forkee) }}";
+        star =
+          "{{ templates.repo_sender_prefix }} {% if action == DELETED %}un{% endif %}starred the repo";
+        fork =
+          "{{ templates.repo_prefix }} Repo forked into {{ repo_link(forkee) }}";
         issues = ''
           {{ templates.repo_sender_prefix }}
           {% if action == OPENED %}
@@ -312,8 +317,7 @@
   };
   format = pkgs.formats.yaml { };
   configYaml = format.generate "config.yaml" maubotGitHubStandaloneCfg;
-in
-{
+in {
   options = {
     services.maubot-github = {
       enable = mkEnableOption "GitHub maubot";
@@ -331,10 +335,8 @@ in
   config = mkIf cfg.enable {
     systemd.services.maubot-github = {
       description = "GitHub Maubot";
-      after = [
-        "matrix-synapse.target"
-        "github_maubot_secrets_yaml-key.service"
-      ];
+      after =
+        [ "matrix-synapse.target" "github_maubot_secrets_yaml-key.service" ];
       wantedBy = [ "multi-user.target" ];
       preStart = ''
         ${pkgs.git}/bin/git clone https://github.com/maubot/github src
@@ -380,8 +382,6 @@ in
     };
 
     # Add a backup service.
-    services.backup.backups.maubot-github = {
-      path = cfg.dataDir;
-    };
+    services.backup.backups.maubot-github = { path = cfg.dataDir; };
   };
 }

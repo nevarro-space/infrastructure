@@ -1,4 +1,6 @@
-{ config, lib, pkgs, ... }: with lib; let
+{ config, lib, pkgs, ... }:
+with lib;
+let
   cfg = config.services.linkedin-matrix;
 
   linkedin-matrix = pkgs.callPackage ../../../pkgs/linkedin-matrix.nix { };
@@ -9,13 +11,20 @@
     as_token = cfg.appServiceToken;
     hs_token = cfg.homeserverToken;
     rate_limited = false;
-    sender_localpart = "XDUsekmAmWcmL1FWrgZ8E7ih-p0vffI3kMiezV43Sw29GLBQAQ-0_GRJXMQXlVb0";
+    sender_localpart =
+      "XDUsekmAmWcmL1FWrgZ8E7ih-p0vffI3kMiezV43Sw29GLBQAQ-0_GRJXMQXlVb0";
     "de.sorunome.msc2409.push_ephemeral" = true;
     push_ephemeral = true;
     namespaces = {
       users = [
-        { regex = "@li_.*:nevarro.space"; exclusive = true; }
-        { regex = "@linkedinbot:nevarro.space"; exclusive = true; }
+        {
+          regex = "@li_.*:nevarro.space";
+          exclusive = true;
+        }
+        {
+          regex = "@linkedinbot:nevarro.space";
+          exclusive = true;
+        }
       ];
       aliases = [ ];
       rooms = [ ];
@@ -24,7 +33,9 @@
 
   yamlFormat = pkgs.formats.yaml { };
 
-  linkedinMatrixAppserviceConfigYaml = yamlFormat.generate "linkedin-matrix-registration.yaml" linkedinMatrixAppserviceConfig;
+  linkedinMatrixAppserviceConfigYaml =
+    yamlFormat.generate "linkedin-matrix-registration.yaml"
+      linkedinMatrixAppserviceConfig;
 
   linkedinMatrixConfig = {
     homeserver = {
@@ -45,8 +56,12 @@
       hostname = cfg.listenAddress;
       port = cfg.listenPort;
       max_body_size = 1;
-      database = "postgresql://linkedinmatrix:linkedinmatrix@localhost/linkedin-matrix";
-      database_opts = { min_size = 5; max_size = 10; };
+      database =
+        "postgresql://linkedinmatrix:linkedinmatrix@localhost/linkedin-matrix";
+      database_opts = {
+        min_size = 5;
+        max_size = 10;
+      };
       id = "linkedin";
       bot_username = cfg.botUsername;
       bot_displayname = "LinkedIn bridge bot";
@@ -117,16 +132,21 @@
         paho.level = "DEBUG";
         root.level = "DEBUG";
       };
-      root = { level = "DEBUG"; handlers = [ "journal" ]; };
+      root = {
+        level = "DEBUG";
+        handlers = [ "journal" ];
+      };
     };
   };
 
-  linkedinMatrixConfigYaml = yamlFormat.generate "linkedin-config.yaml" linkedinMatrixConfig;
+  linkedinMatrixConfigYaml =
+    yamlFormat.generate "linkedin-config.yaml" linkedinMatrixConfig;
 in
 {
   options = {
     services.linkedin-matrix = {
-      enable = mkEnableOption "linkedin-matrix, a LinkedIn Messaging <-> Matrix bridge";
+      enable = mkEnableOption
+        "linkedin-matrix, a LinkedIn Messaging <-> Matrix bridge";
       useLocalSynapse = mkOption {
         type = types.bool;
         default = true;
@@ -149,7 +169,8 @@ in
       botUsername = mkOption {
         type = types.str;
         default = "linkedinbot";
-        description = "The localpart of the linkedin-matrix admin bot's username.";
+        description =
+          "The localpart of the linkedin-matrix admin bot's username.";
       };
       secretYAML = mkOption { type = types.path; };
       dataDir = mkOption {
@@ -176,19 +197,17 @@ in
   config = mkIf cfg.enable {
     meta.maintainers = [ maintainers.sumnerevans ];
 
-    assertions = [
-      {
-        assertion = cfg.useLocalSynapse -> config.services.matrix-synapse-custom.enable;
-        message = ''
-          LinkedIn must be running on the same server as Synapse if
-          'useLocalSynapse' is enabled.
-        '';
-      }
-    ];
+    assertions = [{
+      assertion = cfg.useLocalSynapse
+        -> config.services.matrix-synapse-custom.enable;
+      message = ''
+        LinkedIn must be running on the same server as Synapse if
+        'useLocalSynapse' is enabled.
+      '';
+    }];
 
-    services.matrix-synapse-custom.appServiceConfigFiles = mkIf cfg.useLocalSynapse [
-      linkedinMatrixAppserviceConfigYaml
-    ];
+    services.matrix-synapse-custom.appServiceConfigFiles =
+      mkIf cfg.useLocalSynapse [ linkedinMatrixAppserviceConfigYaml ];
 
     # Create a user for linkedin-matrix.
     users.users.linkedinmatrix = {
@@ -201,21 +220,18 @@ in
 
     # Create a database user for linkedin-matrix
     services.postgresql.ensureDatabases = [ "linkedin-matrix" ];
-    services.postgresql.ensureUsers = [
-      {
-        name = "linkedinmatrix";
-        ensurePermissions = {
-          "DATABASE \"linkedin-matrix\"" = "ALL PRIVILEGES";
-          "ALL TABLES IN SCHEMA public" = "ALL PRIVILEGES";
-        };
-      }
-    ];
+    services.postgresql.ensureUsers = [{
+      name = "linkedinmatrix";
+      ensurePermissions = {
+        "DATABASE \"linkedin-matrix\"" = "ALL PRIVILEGES";
+        "ALL TABLES IN SCHEMA public" = "ALL PRIVILEGES";
+      };
+    }];
 
     systemd.services.linkedin-matrix = {
       description = "LinkedIn Messaging <-> Matrix Bridge";
-      after = [
-        "appservice_login_shared_secret_yaml-key.service"
-      ] ++ optional cfg.useLocalSynapse "matrix-synapse.target";
+      after = [ "appservice_login_shared_secret_yaml-key.service" ]
+        ++ optional cfg.useLocalSynapse "matrix-synapse.target";
       wantedBy = [ "multi-user.target" ];
       preStart = ''
         ${pkgs.yq-go}/bin/yq ea '. as $item ireduce ({}; . * $item )' \
@@ -234,14 +250,12 @@ in
     # TODO this probably doesn't work
     services.prometheus = {
       enable = true;
-      scrapeConfigs = [
-        {
-          job_name = "linkedinmatirx";
-          scrape_interval = "15s";
-          metrics_path = "/";
-          static_configs = [{ targets = [ "0.0.0.0:9010" ]; }];
-        }
-      ];
+      scrapeConfigs = [{
+        job_name = "linkedinmatirx";
+        scrape_interval = "15s";
+        metrics_path = "/";
+        static_configs = [{ targets = [ "0.0.0.0:9010" ]; }];
+      }];
     };
   };
 }
