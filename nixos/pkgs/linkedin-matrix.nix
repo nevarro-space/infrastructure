@@ -1,33 +1,33 @@
 { lib, fetchFromGitHub, python3 }:
 with python3.pkgs;
-let linkedin-messaging = callPackage ./linkedin-messaging.nix { };
-in buildPythonPackage rec {
+buildPythonPackage rec {
   pname = "linkedin-matrix";
-  version = "0.5.5a1";
+  version = "0.5.5a2";
 
   src = fetchFromGitHub {
     owner = "beeper";
     repo = "linkedin";
-    rev = "2cae15ee08e64bdba876f33d31404c04bde29823";
-    hash = "sha256-/N7QYD7WEjULRop3U5TTm+bCDzyPMBGQQKA5eNYrL7I=";
+    rev = "79d3b4cecf118c27a7492c0d349b3665ea563af3";
+    hash = "sha256-jPiA5RbQC6l2eKHLypK+XbKRPPR/RLc3G8DEuQEzlMU=";
   };
 
   postPatch = ''
-    # the version mangling in mautrix_signal/get_version.py interacts badly with pythonRelaxDepsHook
+    # the version mangling in linkedin_matrix/get_version.py interacts badly with pythonRelaxDepsHook
     substituteInPlace setup.py \
       --replace 'version=version' 'version="${version}"'
   '';
 
   nativeBuildInputs = [ pythonRelaxDepsHook ];
 
-  pythonRelaxDeps = [ "asyncpg" ];
+  pythonRelaxDeps = [ "asyncpg" "dataclasses-json" ];
 
   propagatedBuildInputs = [
     aiohttp
     aiosqlite
     asyncpg
+    beautifulsoup4
     CommonMark
-    linkedin-messaging
+    dataclasses-json
     mautrix
     pillow
     prometheus_client
@@ -55,7 +55,7 @@ in buildPythonPackage rec {
       --set PYTHONPATH "$PYTHONPATH"
   '';
 
-  pythonImportsCheck = [ "linkedin_matrix" ];
+  pythonImportsCheck = [ "linkedin_matrix" "linkedin_messaging" ];
 
   meta = with lib; {
     description = "A LinkedIn Messaging <-> Matrix bridge.";
