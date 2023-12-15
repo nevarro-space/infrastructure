@@ -1,19 +1,18 @@
-{ lib, fetchFromGitHub, buildGoModule, olm }:
-
-buildGoModule rec {
+{ lib, fetchFromGitHub, buildGoModule }:
+buildGoModule {
   pname = "msclinkbot";
-  version = "unstable-2023-04-28";
+  version = "unstable-2023-12-15";
 
   src = fetchFromGitHub {
     owner = "beeper";
     repo = "msc-link-bot";
-    rev = "2c4807dd3c9c001a0b90bf9ed1fe2a8d07b76ce5";
-    hash = "sha256-/AVRIZTunByy8iTrB4Gfs6tRsKqrDtl9NILgxfSYXYE=";
+    rev = "5319f21e3e696fca4bef4d566f7ae377c767180b";
+    hash = "sha256-xYKJ+IJgr2vQKSlIQT1wUdJo8nHOi7eFg4+gDZfqZ8U=";
   };
 
-  buildInputs = [ olm ];
+  tags = [ "goolm" ];
 
-  vendorSha256 = "sha256-GyY1z6R/IImCHtomg2qx7E8tn+hFXIGgDWbbKRHvkIM=";
+  vendorHash = "sha256-foQaIMW0W3UQrPDQyb7utWEB+zsibKPk8o7dRol3AKA=";
 
   meta = with lib; {
     homepage = "https://git.hnitbjorg.xyz/~edwargix/msc-link-bot";

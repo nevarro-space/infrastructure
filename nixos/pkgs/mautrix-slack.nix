@@ -1,6 +1,6 @@
 { lib, fetchFromGitHub, buildGoModule, olm }:
 
-buildGoModule rec {
+buildGoModule {
   pname = "mautrix-slack";
   version = "unstable-2023-07-26";
 
@@ -13,7 +13,7 @@ buildGoModule rec {
 
   buildInputs = [ olm ];
 
-  vendorSha256 = "sha256-Adfz6mHYa22OqEZZHrvst31XdZFo7LuxQI20whq3Zes=";
+  vendorHash = "sha256-Adfz6mHYa22OqEZZHrvst31XdZFo7LuxQI20whq3Zes=";
 
   meta = with lib; {
     homepage = "https://github.com/mautrix/slack";

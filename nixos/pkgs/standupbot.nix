@@ -1,6 +1,6 @@
 { lib, fetchFromGitHub, buildGoModule, olm }:
 
-buildGoModule rec {
+buildGoModule {
   pname = "standupbot";
   version = "unstable-2023-06-02";
 
@@ -13,7 +13,7 @@ buildGoModule rec {
 
   buildInputs = [ olm ];
 
-  vendorSha256 = "sha256-X5D38xyde8zwYZg4RIKbz9v5mFU7inKLMPI9iVbifYI=";
+  vendorHash = "sha256-X5D38xyde8zwYZg4RIKbz9v5mFU7inKLMPI9iVbifYI=";
 
   meta = with lib; {
     homepage = "https://github.com/beeper/standupbot";

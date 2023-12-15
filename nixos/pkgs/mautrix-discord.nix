@@ -13,7 +13,7 @@ buildGoModule {
 
   buildInputs = [ olm ];
 
-  vendorSha256 = "sha256-rbz6bWBl2rmfHuszjKoWZP4/B4F90MUtR5nAIXCU3pg=";
+  vendorHash = "sha256-rbz6bWBl2rmfHuszjKoWZP4/B4F90MUtR5nAIXCU3pg=";
 
   meta = with lib; {
     homepage = "https://github.com/mautrix/discord";

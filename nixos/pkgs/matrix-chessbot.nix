@@ -1,6 +1,6 @@
 { lib, fetchFromGitHub, buildGoModule, olm, imagemagick }:
 
-buildGoModule rec {
+buildGoModule {
   pname = "matrix-chessbot";
   version = "unstable-2023-05-11";
 
@@ -15,7 +15,7 @@ buildGoModule rec {
 
   propagatedBuildInputs = [ imagemagick ];
 
-  vendorSha256 = "sha256-wNA4s8DCWfxh1z0cnOn0mHKqbN0BHR7AkgUuK+Fzp9U=";
+  vendorHash = "sha256-wNA4s8DCWfxh1z0cnOn0mHKqbN0BHR7AkgUuK+Fzp9U=";
 
   meta = with lib; {
     homepage = "https://github.com/nevarro-space/matrix-chessbot";
