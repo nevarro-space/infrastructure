@@ -1,4 +1,6 @@
-{ config, lib, pkgs, ... }: with lib; let
+{ config, lib, pkgs, ... }:
+with lib;
+let
   cfg = config.services.mautrix-signal;
 
   mautrix-signal = pkgs.callPackage ../../../pkgs/mautrix-signal.nix { };
@@ -14,8 +16,14 @@
     push_ephemeral = true;
     namespaces = {
       users = [
-        { regex = "^@signal_.+:nevarro.space$"; exclusive = true; }
-        { regex = "^@signalbot:nevarro.space$"; exclusive = true; }
+        {
+          regex = "^@signal_.+:nevarro.space$";
+          exclusive = true;
+        }
+        {
+          regex = "^@signalbot:nevarro.space$";
+          exclusive = true;
+        }
       ];
       aliases = [ ];
       rooms = [ ];
@@ -24,7 +32,9 @@
 
   yamlFormat = pkgs.formats.yaml { };
 
-  mautrixSignalAppserviceConfigYaml = yamlFormat.generate "mautrix-signal-registration.yaml" mautrixSignalAppserviceConfig;
+  mautrixSignalAppserviceConfigYaml =
+    yamlFormat.generate "mautrix-signal-registration.yaml"
+    mautrixSignalAppserviceConfig;
 
   mautrixSignalConfig = {
     homeserver = {
@@ -59,9 +69,8 @@
 
     bridge = {
       username_template = "signal_{{.}}";
-      displayname_template = "{{.RealName}} (S)";
-      bot_displayname_template = "{{.Name}} (bot)";
-      channel_name_template = "#{{.Name}}";
+      displayname_template =
+        ''{{or .ContactName .ProfileName .PhoneNumber "Unknown user"}}'';
       portal_message_buffer = 128;
       personal_filtering_spaces = true;
       delivery_receipts = true;
@@ -102,15 +111,16 @@
 
     logging = {
       min_level = "debug";
-      writers = [
-        { type = "stdout"; format = "json"; }
-      ];
+      writers = [{
+        type = "stdout";
+        format = "json";
+      }];
     };
   };
 
-  mautrixSignalConfigYaml = yamlFormat.generate "mautrix-signal-config.yaml" mautrixSignalConfig;
-in
-{
+  mautrixSignalConfigYaml =
+    yamlFormat.generate "mautrix-signal-config.yaml" mautrixSignalConfig;
+in {
   options = {
     services.mautrix-signal = {
       enable = mkEnableOption "mautrix-signal, a Signal <-> Matrix bridge.";
@@ -137,7 +147,8 @@ in
       botUsername = mkOption {
         type = types.str;
         default = "signalbot";
-        description = "The localpart of the mautrix-signal admin bot's username.";
+        description =
+          "The localpart of the mautrix-signal admin bot's username.";
       };
       appServiceToken = mkOption {
         type = types.str;
@@ -164,19 +175,17 @@ in
   config = mkIf cfg.enable {
     meta.maintainers = [ maintainers.sumnerevans ];
 
-    assertions = [
-      {
-        assertion = cfg.useLocalSynapse -> config.services.matrix-synapse-custom.enable;
-        message = ''
-          Mautrix-Signal must be running on the same server as Synapse if
-          'useLocalSynapse' is enabled.
-        '';
-      }
-    ];
+    assertions = [{
+      assertion = cfg.useLocalSynapse
+        -> config.services.matrix-synapse-custom.enable;
+      message = ''
+        Mautrix-Signal must be running on the same server as Synapse if
+        'useLocalSynapse' is enabled.
+      '';
+    }];
 
-    services.matrix-synapse-custom.appServiceConfigFiles = mkIf cfg.useLocalSynapse [
-      mautrixSignalAppserviceConfigYaml
-    ];
+    services.matrix-synapse-custom.appServiceConfigFiles =
+      mkIf cfg.useLocalSynapse [ mautrixSignalAppserviceConfigYaml ];
 
     # Create a user for mautrix-signal.
     users = {
@@ -192,9 +201,8 @@ in
     systemd.services.mautrix-signal = {
       description = "Signal <-> Matrix Bridge";
       wantedBy = [ "multi-user.target" ];
-      after = [
-        "appservice_login_shared_secret_yaml-key.service"
-      ] ++ optional cfg.useLocalSynapse "matrix-synapse.target";
+      after = [ "appservice_login_shared_secret_yaml-key.service" ]
+        ++ optional cfg.useLocalSynapse "matrix-synapse.target";
       preStart = ''
         ${pkgs.yq-go}/bin/yq ea '. as $item ireduce ({}; . * $item )' \
           ${mautrixSignalConfigYaml} ${cfg.secretYAML} > config.yaml
@@ -211,14 +219,12 @@ in
 
     services.prometheus = {
       enable = true;
-      scrapeConfigs = [
-        {
-          job_name = "mautrixsignal";
-          scrape_interval = "15s";
-          metrics_path = "/";
-          static_configs = [{ targets = [ "0.0.0.0:9012" ]; }];
-        }
-      ];
+      scrapeConfigs = [{
+        job_name = "mautrixsignal";
+        scrape_interval = "15s";
+        metrics_path = "/";
+        static_configs = [{ targets = [ "0.0.0.0:9012" ]; }];
+      }];
     };
   };
 }
