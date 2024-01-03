@@ -3,8 +3,6 @@ with lib;
 let
   cfg = config.services.mautrix-discord;
 
-  mautrix-discord = pkgs.callPackage ../../../pkgs/mautrix-discord.nix { };
-
   mautrixDiscordAppserviceConfig = {
     id = "discord";
     url = "http://${cfg.listenAddress}:${toString cfg.listenPort}";
@@ -203,7 +201,7 @@ in
       serviceConfig = {
         User = "mautrixdiscord";
         Group = "matrix";
-        ExecStart = "${mautrix-discord}/bin/mautrix-discord --no-update";
+        ExecStart = "${pkgs.mautrix-discord}/bin/mautrix-discord --no-update";
         WorkingDirectory = cfg.dataDir;
         Restart = "on-failure";
         SupplementaryGroups = [ "keys" ];
