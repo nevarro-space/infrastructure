@@ -63,6 +63,7 @@
       bot_displayname_template = "{{.Name}} (bot)";
       channel_name_template = "#{{.Name}}";
       portal_message_buffer = 128;
+      personal_filtering_spaces = true;
       delivery_receipts = true;
       message_error_notices = true;
       federate_rooms = false;
@@ -130,7 +131,7 @@ in
       };
       listenPort = mkOption {
         type = types.int;
-        default = 9891;
+        default = 9892;
         description = "The port for mautrix-signal to listen on.";
       };
       botUsername = mkOption {

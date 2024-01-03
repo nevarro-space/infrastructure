@@ -146,12 +146,12 @@
     secretYAML = "/run/keys/appservice_login_shared_secret_yaml";
   } // (import ../../../secrets/matrix/appservices/mautrix-discord.nix);
 
-  # # Signal <-> Matrix Bridge
-  # services.mautrix-signal = {
-  #   enable = true;
-  #   homeserver = "https://matrix.nevarro.space";
-  #   secretYAML = "/run/keys/appservice_login_shared_secret_yaml";
-  # } // (import ../../../secrets/matrix/appservices/mautrix-signal.nix);
+  # Signal <-> Matrix Bridge
+  services.mautrix-signal = {
+    enable = true;
+    homeserver = "https://matrix.nevarro.space";
+    secretYAML = "/run/keys/appservice_login_shared_secret_yaml";
+  } // (import ../../../secrets/matrix/appservices/mautrix-signal.nix);
 
   # Slack <-> Matrix Bridge
   services.mautrix-slack = {
