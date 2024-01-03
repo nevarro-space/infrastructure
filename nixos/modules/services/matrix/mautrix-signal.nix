@@ -74,23 +74,10 @@ let
       portal_message_buffer = 128;
       personal_filtering_spaces = true;
       delivery_receipts = true;
+      use_contact_avatars = true;
       message_error_notices = true;
       federate_rooms = false;
       command_prefix = "!signal";
-      backfill = {
-        enable = true;
-        unread_hours_threshold = -1;
-        immediate_messages = 10;
-        incremental = {
-          messages_per_batch = 100;
-          post_batch_delay = 20;
-          max_messages = {
-            channel = -1;
-            group_dm = -1;
-            dm = -1;
-          };
-        };
-      };
       encryption = {
         allow = true;
         default = true;
