@@ -23,7 +23,7 @@ let
       base_path = "/_matrix/maubot/plugin/github";
       public_url = cfg.publicUrl;
     };
-    database = "sqlite://${cfg.dataDir}/github.db";
+    database = "postgresql://maubot-github:github@localhost/maubot-github";
     logging = {
       version = 1;
       formatters.journal_fmt.format = "%(name)s: %(message)s";
@@ -335,8 +335,12 @@ in {
   config = mkIf cfg.enable {
     systemd.services.maubot-github = {
       description = "GitHub Maubot";
-      after =
-        [ "matrix-synapse.target" "github_maubot_secrets_yaml-key.service" ];
+      after = [
+        "network.target"
+        "postgresql.service"
+        "matrix-synapse.target"
+        "github_maubot_secrets_yaml-key.service"
+      ];
       wantedBy = [ "multi-user.target" ];
       preStart = ''
         ${pkgs.git}/bin/git clone https://github.com/maubot/github src
@@ -349,6 +353,7 @@ in {
         WorkingDirectory = cfg.dataDir;
         ExecStart = "${maubot}/bin/standalone";
         Restart = "on-failure";
+        RestartSec = "10";
         User = "maubot-github";
         Group = "maubot-github";
         SupplementaryGroups = [ "keys" ];
@@ -379,6 +384,16 @@ in {
         createHome = true;
       };
       groups.maubot-github = { };
+    };
+
+    services.postgresql = {
+      enable = true;
+      ensureUsers = [{
+        name = "maubot-github";
+        ensureDBOwnership = true;
+        ensureClauses = { login = true; };
+      }];
+      ensureDatabases = [ "maubot-github" ];
     };
 
     # Add a backup service.

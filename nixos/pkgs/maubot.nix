@@ -1,4 +1,4 @@
-{ lib, fetchpatch, fetchPypi, fetchFromGitHub, python3 }:
+{ lib, fetchPypi, fetchFromGitHub, python3 }:
 python3.pkgs.buildPythonPackage rec {
   pname = "maubot";
   version = "unstable-2023-06-02";
@@ -22,6 +22,7 @@ python3.pkgs.buildPythonPackage rec {
     jinja2
     mautrix
     packaging
+    psycopg2
     python-socks
     questionary
     ruamel-yaml

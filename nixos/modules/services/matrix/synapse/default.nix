@@ -10,7 +10,6 @@ let
       "jwt"
       "oidc"
       "postgres"
-      "postgres"
       "redis"
       "sentry"
       "systemd"

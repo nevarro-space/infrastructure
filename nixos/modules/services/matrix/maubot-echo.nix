@@ -38,8 +38,7 @@ let
   };
   format = pkgs.formats.yaml { };
   configYaml = format.generate "config.yaml" maubotEchoStandaloneCfg;
-in
-{
+in {
   options = {
     services.maubot-echo = {
       enable = mkEnableOption "Echo maubot";
@@ -70,6 +69,7 @@ in
         WorkingDirectory = cfg.dataDir;
         ExecStart = "${maubot}/bin/standalone";
         Restart = "on-failure";
+        RestartSec = "10";
         User = "maubot-echo";
         Group = "maubot-echo";
         SupplementaryGroups = [ "keys" ];
