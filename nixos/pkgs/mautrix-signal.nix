@@ -1,4 +1,4 @@
-{ pkgs, lib, buildGoModule, fetchFromGitHub, olm }:
+{ pkgs, lib, buildGoModule, fetchFromGitHub }:
 let libsignal-ffi = pkgs.callPackage ./libsignal-ffi { };
 in buildGoModule {
   pname = "mautrix-signal";
@@ -6,23 +6,24 @@ in buildGoModule {
   # which is broken for new devices, see https://github.com/mautrix/signal/issues/388.
   # The new Go version fixes this by using the official libsignal as a library and
   # can be upgraded to directly from the Python version.
-  version = "unstable-2023-12-30";
+  version = "unstable-2023-01-16";
 
   src = fetchFromGitHub {
     owner = "mautrix";
     repo = "signal";
-    rev = "5558469743463c3034b0d005f7d6b5592879b69d";
-    hash = "sha256-BN689DzW1sxJ5mTUtKsDFMQG4kGgAks8fOhXhNLrCoM=";
+    rev = "972b289887bc3b881cf7d1f60fe14676df9298cf";
+    hash = "sha256-TVSphdHO7/cs6IMhr3i+iFiMMIKKWCOgKwinCKJmaQ0=";
   };
 
+  tags = [ "goolm" ];
+
   buildInputs = [
-    olm
     # must match the version used in https://github.com/mautrix/signal/tree/main/pkg/libsignalgo
     # see https://github.com/mautrix/signal/issues/401
     libsignal-ffi
   ];
 
-  vendorHash = "sha256-k26gjsfB0iXZCKKDWgpfPXn9u+IayipiCElTZ1XCJFM=";
+  vendorHash = "sha256-LKs/9yCJ7alKQh1VYQsPEg7y+ugZwUnnJh2l4IEjbaQ=";
 
   doCheck = false;
 
