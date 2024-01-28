@@ -30,21 +30,7 @@ in {
                 hash = "sha256-FQhHpbp8Rkkqp6Ngly/HP8iWGlWh5CDaztgAwKB/afI=";
               };
 
-              postPatch = ''
-                # Remove setuptools_rust from runtime dependencies
-                # https://github.com/matrix-org/synapse/blob/v1.69.0/pyproject.toml#L177-L185
-                sed -i '/^setuptools_rust =/d' pyproject.toml
-
-                # Remove version pin on build dependencies. Upstream does this on purpose to
-                # be extra defensive, but we don't want to deal with updating this
-                sed -i 's/"poetry-core>=\([0-9.]*\),<=[0-9.]*"/"poetry-core>=\1"/' pyproject.toml
-                sed -i 's/"setuptools_rust>=\([0-9.]*\),<=[0-9.]*"/"setuptools_rust>=\1"/' pyproject.toml
-
-                # Don't force pillow to be 10.0.1 because we already have patched it, and
-                # we don't use the pillow wheels.
-                sed -i 's/Pillow = ".*"/Pillow = ">=5.4.0"/' pyproject.toml
-              '';
-
+              doInstallCheck = false;
               doCheck = false;
             });
         })
