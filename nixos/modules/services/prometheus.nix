@@ -1,4 +1,3 @@
-{ config, lib, ... }:
 let promPort = 9002;
 in {
   config = {

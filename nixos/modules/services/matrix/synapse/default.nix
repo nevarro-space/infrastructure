@@ -25,7 +25,7 @@ let
 
   sharedConfig =
     recursiveUpdate (import ./shared-config.nix ({ inherit config lib pkgs; }))
-      cfg.extraConfig;
+    cfg.extraConfig;
   sharedConfigFile =
     yamlFormat.generate "matrix-synapse-config.yaml" sharedConfig;
 
@@ -64,8 +64,7 @@ let
         bind_address = "";
         port = port;
       }];
-    in
-    newConfig // { worker_listeners = newWorkerListeners; };
+    in newConfig // { worker_listeners = newWorkerListeners; };
 
   federationSender1ConfigFile = yamlFormat.generate "federation-sender-1.yaml"
     (mkSynapseWorkerConfig 9101 {
@@ -144,8 +143,7 @@ let
         resources = [{ names = [ "media" ]; }];
       }];
     });
-in
-{
+in {
   imports = [ ./cleanup-synapse.nix ];
 
   options = {

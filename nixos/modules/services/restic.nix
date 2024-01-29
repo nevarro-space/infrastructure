@@ -82,8 +82,7 @@ let
       paths = mapAttrsToList (n: { path, ... }: path) backups;
       script =
         resticBackupScript paths (exclude ++ [ ".restic-backup-restored" ]);
-    in
-    {
+    in {
       description =
         "Backup ${concatStringsSep ", " paths} to ${resticRepository}";
       environment = resticEnvironment;
@@ -119,48 +118,45 @@ let
       ${resticCmd} snapshots || ${resticCmd} init
     '';
   };
-in
-{
-  options =
-    let
-      backupDirOpts = { name, ... }: {
-        options = {
-          path = mkOption {
-            type = types.str;
-            description = "The path to backup using restic.";
-          };
-        };
-      };
-    in
-    {
-      services.backup = {
-        backups = mkOption {
-          type = with types; attrsOf (submodule backupDirOpts);
-          description = "List of backup configurations.";
-          default = { };
-        };
-
-        exclude = mkOption {
-          type = with types; listOf str;
-          description = ''
-            List of patterns to exclude. `.restic-backup-restored` files are
-            already ignored.
-          '';
-          default = [ ];
-          example = [ ".git/*" ];
-        };
-
-        healthcheckId = mkOption {
+in {
+  options = let
+    backupDirOpts = { name, ... }: {
+      options = {
+        path = mkOption {
           type = types.str;
-          description = "Healthcheck ID for this server's backup job.";
-        };
-
-        healthcheckPruneId = mkOption {
-          type = types.str;
-          description = "Healthcheck ID for this server's prune job.";
+          description = "The path to backup using restic.";
         };
       };
     };
+  in {
+    services.backup = {
+      backups = mkOption {
+        type = with types; attrsOf (submodule backupDirOpts);
+        description = "List of backup configurations.";
+        default = { };
+      };
+
+      exclude = mkOption {
+        type = with types; listOf str;
+        description = ''
+          List of patterns to exclude. `.restic-backup-restored` files are
+          already ignored.
+        '';
+        default = [ ];
+        example = [ ".git/*" ];
+      };
+
+      healthcheckId = mkOption {
+        type = types.str;
+        description = "Healthcheck ID for this server's backup job.";
+      };
+
+      healthcheckPruneId = mkOption {
+        type = types.str;
+        description = "Healthcheck ID for this server's prune job.";
+      };
+    };
+  };
 
   config = mkIf (cfg.backups != { }) {
     systemd.services = {

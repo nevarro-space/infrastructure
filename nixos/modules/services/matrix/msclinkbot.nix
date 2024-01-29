@@ -27,8 +27,7 @@ let
   format = pkgs.formats.yaml { };
   mscLinkBotConfigFile =
     format.generate "msclinkbot.config.yaml" mscLinkBotConfig;
-in
-{
+in {
   options = {
     services.msclinkbot = {
       enable = mkEnableOption "MSC Link Bot";

@@ -105,8 +105,7 @@ let
 
     systemctl start matrix-synapse.target
   '';
-in
-{
+in {
   options.services.cleanup-synapse = {
     environmentFile = mkOption {
       type = types.path;

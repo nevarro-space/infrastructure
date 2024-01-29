@@ -27,8 +27,7 @@ let
   };
   format = pkgs.formats.yaml { };
   meetbotConfigFile = format.generate "meetbot.config.yaml" meetbotConfig;
-in
-{
+in {
   options = {
     services.meetbot = {
       enable = mkEnableOption "Meetbot";

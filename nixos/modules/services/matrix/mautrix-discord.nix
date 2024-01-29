@@ -32,7 +32,7 @@ let
 
   mautrixDiscordAppserviceConfigYaml =
     yamlFormat.generate "mautrix-discord-registration.yaml"
-      mautrixDiscordAppserviceConfig;
+    mautrixDiscordAppserviceConfig;
 
   mautrixDiscordConfig = {
     homeserver = {
@@ -110,8 +110,7 @@ let
 
   mautrixDiscordConfigYaml =
     yamlFormat.generate "mautrix-discord-config.yaml" mautrixDiscordConfig;
-in
-{
+in {
   options = {
     services.mautrix-discord = {
       enable = mkEnableOption "mautrix-discord, a Discord <-> Matrix bridge.";

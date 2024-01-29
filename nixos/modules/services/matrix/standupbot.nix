@@ -12,8 +12,7 @@ let
   format = pkgs.formats.json { };
   standupbotConfigJson =
     format.generate "standupbot.config.json" standupbotConfig;
-in
-{
+in {
   options = {
     services.standupbot = {
       enable = mkEnableOption "standupbot";

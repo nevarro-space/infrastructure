@@ -1,4 +1,4 @@
-{ config, lib, pkgs, ... }:
+{ config, lib, ... }:
 with lib;
 let mjolnirCfg = config.services.mjolnir;
 in mkIf mjolnirCfg.enable {

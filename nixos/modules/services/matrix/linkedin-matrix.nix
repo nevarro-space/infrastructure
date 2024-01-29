@@ -35,7 +35,7 @@ let
 
   linkedinMatrixAppserviceConfigYaml =
     yamlFormat.generate "linkedin-matrix-registration.yaml"
-      linkedinMatrixAppserviceConfig;
+    linkedinMatrixAppserviceConfig;
 
   linkedinMatrixConfig = {
     homeserver = {
@@ -141,8 +141,7 @@ let
 
   linkedinMatrixConfigYaml =
     yamlFormat.generate "linkedin-config.yaml" linkedinMatrixConfig;
-in
-{
+in {
   options = {
     services.linkedin-matrix = {
       enable = mkEnableOption

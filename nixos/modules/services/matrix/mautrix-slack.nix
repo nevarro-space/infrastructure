@@ -34,7 +34,7 @@ let
 
   mautrixSlackAppserviceConfigYaml =
     yamlFormat.generate "mautrix-slack-registration.yaml"
-      mautrixSlackAppserviceConfig;
+    mautrixSlackAppserviceConfig;
 
   mautrixSlackConfig = {
     homeserver = {
@@ -120,8 +120,7 @@ let
 
   mautrixSlackConfigYaml =
     yamlFormat.generate "mautrix-slack-config.yaml" mautrixSlackConfig;
-in
-{
+in {
   options = {
     services.mautrix-slack = {
       enable = mkEnableOption "mautrix-slack, a Slack <-> Matrix bridge.";

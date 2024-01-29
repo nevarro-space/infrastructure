@@ -1,10 +1,9 @@
-{ config, lib, options, pkgs, ... }:
+{ config, lib, ... }:
 with lib;
 let
   serverName = "grafana.${config.networking.domain}";
   cfg = config.services.grafana;
-in
-mkIf cfg.enable {
+in mkIf cfg.enable {
   services.grafana.settings = { server.domain = serverName; };
 
   services.nginx = {

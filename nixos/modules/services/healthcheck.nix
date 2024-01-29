@@ -43,8 +43,7 @@ let
       };
     };
   };
-in
-{
+in {
   options.services.healthcheck = {
     enable = mkEnableOption "the healthcheck ping service.";
     checkId = mkOption {

@@ -30,8 +30,7 @@ let
     };
     disable_existing_loggers = false;
   };
-in
-{
+in {
   # Experimental features
   experimental_features = {
     # Enable support for the suppressing edit notifications.

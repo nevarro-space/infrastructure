@@ -1,4 +1,4 @@
-{ config, lib, pkgs, ... }:
+{ pkgs, ... }:
 let dataDir = "/var/lib/mineshspc";
 in {
   imports = [ ./hardware-configuration.nix ];

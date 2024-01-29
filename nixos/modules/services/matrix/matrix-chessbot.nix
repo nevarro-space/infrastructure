@@ -12,8 +12,7 @@ let
   format = pkgs.formats.yaml { };
   configYaml =
     format.generate "matrix-chessbot.config.yaml" matrixChessbotConfig;
-in
-{
+in {
   options = {
     services.matrix-chessbot = {
       enable = mkEnableOption "matrix-chessbot";
