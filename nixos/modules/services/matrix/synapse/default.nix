@@ -2,7 +2,6 @@
 { config, lib, pkgs, ... }:
 with lib;
 let
-  matrixDomain = "matrix.${config.networking.domain}";
   cfg = config.services.matrix-synapse-custom;
 
   wrapped = pkgs.matrix-synapse.override {
@@ -332,6 +331,17 @@ in {
       '';
     };
 
+    # Run the sliding-sync proxy.
+    services.matrix-synapse.sliding-sync = {
+      enable = true;
+      createDatabase = true;
+      environmentFile = "/run/keys/nevarro_space_sliding_sync_environment_file";
+      settings = {
+        SYNCV3_SERVER = "https://matrix.nevarro.space";
+        SYNCV3_BINDADDR = "0.0.0.0:8012";
+      };
+    };
+
     # Ensure that Redis is setup for Synapse.
     services.redis.servers."".enable = true;
 
@@ -344,7 +354,7 @@ in {
       enable = true;
       virtualHosts = {
         # Reverse proxy for Matrix client-server and server-server communication
-        ${matrixDomain} = {
+        "matrix.${config.networking.domain}" = {
           enableACME = true;
           forceSSL = true;
 
@@ -376,6 +386,19 @@ in {
                 access_log /var/log/nginx/matrix-media-repo.access.log;
               '';
             };
+        };
+
+        "syncv3.${config.networking.domain}" = {
+          enableACME = true;
+          forceSSL = true;
+
+          locations."/".return = "301 https://${config.networking.domain}";
+          locations."/_matrix" = {
+            proxyPass = "http://0.0.0.0:8012"; # without a trailing /
+            extraConfig = ''
+              access_log /var/log/nginx/matrix.access.log;
+            '';
+          };
         };
       };
     };
