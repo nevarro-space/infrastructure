@@ -3,8 +3,6 @@ with lib;
 let
   cfg = config.services.mautrix-signal;
 
-  mautrix-signal = pkgs.callPackage ../../../pkgs/mautrix-signal.nix { };
-
   mautrixSignalAppserviceConfig = {
     id = "signal";
     url = "http://${cfg.listenAddress}:${toString cfg.listenPort}";
@@ -197,7 +195,7 @@ in {
       serviceConfig = {
         User = "mautrixsignal";
         Group = "matrix";
-        ExecStart = "${mautrix-signal}/bin/mautrix-signal --no-update";
+        ExecStart = "${pkgs.mautrix-signal}/bin/mautrix-signal --no-update";
         WorkingDirectory = cfg.dataDir;
         Restart = "on-failure";
         SupplementaryGroups = [ "keys" ];
