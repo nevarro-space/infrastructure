@@ -36,7 +36,6 @@
             nodePackages.bash-language-server
             openssl
             pre-commit
-            rnix-lsp
             sops
 
             # Terraform + Linters

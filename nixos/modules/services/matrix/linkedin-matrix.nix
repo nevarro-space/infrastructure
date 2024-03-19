@@ -221,10 +221,6 @@ in {
     services.postgresql.ensureDatabases = [ "linkedin-matrix" ];
     services.postgresql.ensureUsers = [{
       name = "linkedinmatrix";
-      ensurePermissions = {
-        "DATABASE \"linkedin-matrix\"" = "ALL PRIVILEGES";
-        "ALL TABLES IN SCHEMA public" = "ALL PRIVILEGES";
-      };
     }];
 
     systemd.services.linkedin-matrix = {

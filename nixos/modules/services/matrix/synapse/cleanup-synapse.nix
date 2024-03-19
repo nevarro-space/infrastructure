@@ -178,10 +178,6 @@ in {
     # Allow root to manage matrix-synapse database.
     services.postgresql.ensureUsers = [{
       name = "root";
-      ensurePermissions = {
-        "DATABASE \"matrix-synapse\"" = "ALL PRIVILEGES";
-        "ALL TABLES IN SCHEMA public" = "ALL PRIVILEGES";
-      };
     }];
   };
 }
