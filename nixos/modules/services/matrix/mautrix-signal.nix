@@ -186,7 +186,7 @@ in {
     systemd.services.mautrix-signal = {
       description = "Signal <-> Matrix Bridge";
       wantedBy = [ "multi-user.target" ];
-      after = [ "appservice_login_shared_secret_yaml-key.service" ]
+      requires = [ "appservice_login_shared_secret_yaml-key.service" ]
         ++ optional cfg.useLocalSynapse "matrix-synapse.target";
       preStart = ''
         ${pkgs.yq-go}/bin/yq ea '. as $item ireduce ({}; . * $item )' \

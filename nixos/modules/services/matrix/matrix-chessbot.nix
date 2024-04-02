@@ -29,7 +29,7 @@ in {
   config = mkIf cfg.enable {
     systemd.services.matrix-chessbot = {
       description = "Matrix Chessbot";
-      after = [ "matrix-synapse.target" "chessbot_password-key.service" ];
+      requires = [ "matrix-synapse.target" "chessbot_password-key.service" ];
       wantedBy = [ "multi-user.target" ];
       path = [ pkgs.imagemagick ];
       serviceConfig = {

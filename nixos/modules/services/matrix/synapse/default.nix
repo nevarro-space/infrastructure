@@ -203,7 +203,7 @@ in {
 
     systemd.targets.matrix-synapse = {
       description = "Synapse processes";
-      after = [ "network.target" "postgresql.service" ];
+      requires = [ "network.target" "postgresql.service" ];
       wantedBy = [ "multi-user.target" ];
     };
 

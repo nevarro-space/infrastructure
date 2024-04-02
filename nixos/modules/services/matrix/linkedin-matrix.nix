@@ -225,7 +225,7 @@ in {
 
     systemd.services.linkedin-matrix = {
       description = "LinkedIn Messaging <-> Matrix Bridge";
-      after = [ "appservice_login_shared_secret_yaml-key.service" ]
+      requires = [ "appservice_login_shared_secret_yaml-key.service" ]
         ++ optional cfg.useLocalSynapse "matrix-synapse.target";
       wantedBy = [ "multi-user.target" ];
       preStart = ''

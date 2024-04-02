@@ -36,7 +36,7 @@ in {
 
   systemd.services."mineshspc.com" = {
     description = "Mines HSPC Website service";
-    after = [ "network-online.target" "mineshspc_env-key.service" ];
+    requires = [ "network-online.target" "mineshspc_env-key.service" ];
     wantedBy = [ "multi-user.target" ];
     serviceConfig = {
       WorkingDirectory = dataDir;

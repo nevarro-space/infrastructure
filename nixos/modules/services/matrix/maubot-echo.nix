@@ -55,7 +55,7 @@ in {
   config = mkIf cfg.enable {
     systemd.services.maubot-echo = {
       description = "Echo Maubot";
-      after =
+      requires =
         [ "matrix-synapse.target" "echo_maubot_secrets_yaml-key.service" ];
       wantedBy = [ "multi-user.target" ];
       preStart = ''

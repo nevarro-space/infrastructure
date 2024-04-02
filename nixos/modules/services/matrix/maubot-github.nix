@@ -335,7 +335,7 @@ in {
   config = mkIf cfg.enable {
     systemd.services.maubot-github = {
       description = "GitHub Maubot";
-      after = [
+      requires = [
         "network.target"
         "postgresql.service"
         "matrix-synapse.target"
