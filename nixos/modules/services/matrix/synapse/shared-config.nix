@@ -73,7 +73,6 @@ in {
       resources = [{ names = [ "replication" ]; }];
     }
   ];
-  presence.enabled = false;
 
   # Caching
   event_cache_size = "25K";
