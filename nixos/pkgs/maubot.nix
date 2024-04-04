@@ -26,15 +26,7 @@ python3.pkgs.buildPythonPackage rec {
     python-socks
     questionary
     ruamel-yaml
-    (sqlalchemy.overridePythonAttrs (old: rec {
-      version = "1.4.48";
-      src = fetchPypi {
-        inherit (old) pname;
-        inherit version;
-        hash = "sha256-tHvChwltmJoIOM6W99jpZpFKJNqHftQadTHUS1XNuN8=";
-      };
-      doCheck = false;
-    }))
+    sqlalchemy
     systemd
     python-olm
     pycryptodome
