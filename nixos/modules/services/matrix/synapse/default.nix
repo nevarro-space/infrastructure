@@ -332,7 +332,7 @@ in {
     };
 
     # Run the sliding-sync proxy.
-    services.matrix-synapse.sliding-sync = {
+    services.matrix-sliding-sync = {
       enable = true;
       createDatabase = true;
       environmentFile = "/run/keys/nevarro_space_sliding_sync_environment_file";
