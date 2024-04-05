@@ -2,13 +2,13 @@
 
 buildGoModule {
   pname = "mautrix-slack";
-  version = "unstable-2024-03-19";
+  version = "unstable-2024-04-05";
 
   src = fetchFromGitHub {
     owner = "mautrix";
     repo = "slack";
-    rev = "a9ba2f9249bdc5df69a1349122d1769e7e48c9e1";
-    hash = "sha256-NE/YsiYm6t/6LNilATIvk0CcOFiQAqgw533WyhMZgvQ=";
+    rev = "9af0d73bee280af5858e4a36bbad721c95b73da8";
+    hash = "sha256-mEZBGYrFTa5mVq6TnZhEkgcOmWhn836Y6zJqGzK0jeM=";
   };
 
   buildInputs = [ olm ];
