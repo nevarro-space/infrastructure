@@ -32,8 +32,6 @@
             cargo
             colmena
             git-crypt
-            nixfmt
-            nodePackages.bash-language-server
             openssl
             pre-commit
             sops
