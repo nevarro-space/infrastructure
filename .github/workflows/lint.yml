@@ -13,6 +13,14 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - uses: nixbuild/nix-quick-install-action@v27
+
+      - name: Check Nix flake inputs
+        uses: DeterminateSystems/flake-checker-action@v5
+        with:
+          fail-mode: true
+
+      - name: Install Nix
+        uses: DeterminateSystems/nix-installer-action@v10
+
       - name: Run pre-commit
         run: nix develop --command pre-commit run --all --verbose
