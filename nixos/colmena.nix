@@ -14,20 +14,20 @@ in {
           matrix-synapse-unwrapped =
             super.matrix-synapse-unwrapped.overridePythonAttrs (old: rec {
               pname = "matrix-synapse";
-              version = "1.106.0";
+              version = "1.107.0";
               format = "pyproject";
 
               src = super.fetchFromGitHub {
                 owner = "element-hq";
                 repo = "synapse";
                 rev = "v${version}";
-                hash = "sha256-FnWYfFlzl6+K5dLhJ+mdphC6E6cA+HewGTUXakRHKEo=";
+                hash = "sha256-xT9DpBBLavI7QLuyqEtTyjHoP+pQ4wlNupJFWtppwh8=";
               };
 
               cargoDeps = super.rustPackages.rustPlatform.fetchCargoTarball {
                 inherit src;
                 name = "${pname}-${version}";
-                hash = "sha256-7X0lXiD+7irex8A3Tnfq65P6BinMje4Bc1MuCI3dSyg=";
+                hash = "sha256-bGRIzgFNHi/4jOWMTgwA7hVcvfHROHE+nnZtTPjwpmI=";
               };
 
               doInstallCheck = false;
