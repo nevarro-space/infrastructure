@@ -1,7 +1,7 @@
 { config, lib, pkgs, ... }:
 with lib;
 let
-  cfg = config.services.mautrix-signal;
+  cfg = config.services.mautrix-signal2;
 
   mautrixSignalAppserviceConfig = {
     id = "signal";
@@ -107,7 +107,7 @@ let
     yamlFormat.generate "mautrix-signal-config.yaml" mautrixSignalConfig;
 in {
   options = {
-    services.mautrix-signal = {
+    services.mautrix-signal2 = {
       enable = mkEnableOption "mautrix-signal, a Signal <-> Matrix bridge.";
       useLocalSynapse = mkOption {
         type = types.bool;
