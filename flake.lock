@@ -28,11 +28,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1705421208,
-        "narHash": "sha256-eyHiby7yfj34nDLzfn6feSFWf56NdvbSs7alMUxpvxA=",
+        "lastModified": 1720800821,
+        "narHash": "sha256-id8dCFYqQuZpgrLH2TSt0s6uRunKx9xWyGh7cVC0BvQ=",
         "owner": "beeper",
         "repo": "meetbot",
-        "rev": "e58652390b2f0a78ed135226081bf9b56e3982c4",
+        "rev": "914bcedb672e8556af4eac6c5164a070717d1d43",
         "type": "github"
       },
       "original": {
@@ -66,11 +66,11 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1718530797,
-        "narHash": "sha256-pup6cYwtgvzDpvpSCFh1TEUjw2zkNpk8iolbKnyFmmU=",
+        "lastModified": 1720542800,
+        "narHash": "sha256-ZgnNHuKV6h2+fQ5LuqnUaqZey1Lqqt5dTUAiAnqH0QQ=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "b60ebf54c15553b393d144357375ea956f89e9a9",
+        "rev": "feb2849fdeb70028c70d73b848214b00d324a497",
         "type": "github"
       },
       "original": {
