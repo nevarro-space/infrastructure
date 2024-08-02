@@ -139,7 +139,7 @@ let
         type = "http";
         port = 8011;
         bind_address = "0.0.0.0";
-        resources = [{ names = [ "media" ]; }];
+        resources = [{ names = [ "media" "client" "federation" ]; }];
       }];
     });
 in {
@@ -379,7 +379,7 @@ in {
               access_log /var/log/nginx/matrix-synchotron.access.log;
             '';
           };
-          locations."~ ^/(_matrix/media|_synapse/admin/v1/(purge_media_cache|(room|user)/.*/media.*|media/.*|quarantine_media/.*|users/.*/media))" =
+          locations."~ ^/(_matrix/media|_matrix/client/v1/media|_synapse/admin/v1/(purge_media_cache|(room|user)/.*/media.*|media/.*|quarantine_media/.*|users/.*/media))" =
             {
               proxyPass = "http://0.0.0.0:8011"; # without a trailing /
               extraConfig = ''
