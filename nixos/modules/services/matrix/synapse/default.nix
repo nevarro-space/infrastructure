@@ -379,7 +379,7 @@ in {
               access_log /var/log/nginx/matrix-synchotron.access.log;
             '';
           };
-          locations."~ ^/(_matrix/media/v3/upload|_matrix/client/v1/media|_synapse/admin/v1/(purge_media_cache|(room|user)/.*/media.*|media/.*|quarantine_media/.*|users/.*/media))" =
+          locations."~ ^/(_matrix/media/.*/upload|_matrix/client/v1/media|_synapse/admin/v1/(purge_media_cache|(room|user)/.*/media.*|media/.*|quarantine_media/.*|users/.*/media))" =
             {
               proxyPass = "http://0.0.0.0:8011"; # without a trailing /
               extraConfig = ''
@@ -388,7 +388,7 @@ in {
             };
 
           # black-hole old media
-          locations."~ ^/_matrix/media/v3/download" = { return = "404"; };
+          locations."~ ^/_matrix/media/.*/download" = { return = "404"; };
         };
 
         "syncv3.${config.networking.domain}" = {
