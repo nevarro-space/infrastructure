@@ -92,7 +92,8 @@ in {
   log_config = yamlFormat.generate "matrix-synapse-log-config.yaml" logConfig;
 
   # Media store
-  enable_media_repo = false;
+  enable_media_repo = false; # Disable media repo on the master worker
+  enable_authenticated_media = true;
   media_store_path = "${cfg.dataDir}/media";
   max_upload_size = "250M";
   url_preview_enabled = true;
