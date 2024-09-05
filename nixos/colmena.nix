@@ -4,6 +4,7 @@ in {
   meta = {
     nixpkgs = import nixpkgs {
       inherit system;
+      config.permittedInsecurePackages = [ "olm-3.2.16" ];
       overlays = [
         (self: super: {
           inherit (mineshspc.packages.${system}) mineshspc;
