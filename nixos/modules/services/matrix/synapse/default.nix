@@ -352,7 +352,15 @@ in {
     # Set up nginx to forward requests properly.
     services.nginx = {
       enable = true;
-      virtualHosts = {
+      virtualHosts = let
+        mediaRepoLocation = {
+          priority = 0; # media repo needs to be before federation
+          proxyPass = "http://0.0.0.0:8011"; # without a trailing /
+          extraConfig = ''
+            access_log /var/log/nginx/matrix-media-repo.access.log;
+          '';
+        };
+      in {
         # Reverse proxy for Matrix client-server and server-server communication
         "matrix.${config.networking.domain}" = {
           enableACME = true;
@@ -379,16 +387,13 @@ in {
               access_log /var/log/nginx/matrix-synchotron.access.log;
             '';
           };
-          locations."~ ^/(_matrix/media/.*/upload|_matrix/client/v1/media|_matrix/federation/v1/media|_synapse/admin/v1/(purge_media_cache|(room|user)/.*/media.*|media/.*|quarantine_media/.*|users/.*/media))" =
-            {
-              proxyPass = "http://0.0.0.0:8011"; # without a trailing /
-              extraConfig = ''
-                access_log /var/log/nginx/matrix-media-repo.access.log;
-              '';
-            };
 
-          # black-hole old media
-          locations."~ ^/_matrix/media/.*/download" = { return = "404"; };
+          # Media locations
+          locations."~ ^/_matrix/media/" = mediaRepoLocation;
+          locations."~ ^/_matrix/client/.*/media/" = mediaRepoLocation;
+          locations."~ ^/_matrix/federation/.*/media/" = mediaRepoLocation;
+          locations."~ ^/_synapse/admin/v1/(purge_media_cache|(room|user)/.*/media.*|media/.*|quarantine_media/.*|users/.*/media)" =
+            mediaRepoLocation;
         };
 
         "syncv3.${config.networking.domain}" = {
