@@ -4,8 +4,19 @@
   systemd.network = {
     enable = true;
     networks = {
-      "10-wan".networkConfig.DHCP = "ipv4";
-      "10-nevarronet".networkConfig.DHCP = "ipv4";
+      "10-wan" = {
+        networkConfig = {
+          DHCP = "yes";
+          IPv6AcceptRA = true;
+        };
+        routes = [{ routeConfig.Gateway = "fe80::1"; }];
+      };
+      "10-nevarronet" = {
+        networkConfig = {
+          DHCP = "yes";
+          IPv6AcceptRA = true;
+        };
+      };
     };
   };
 
