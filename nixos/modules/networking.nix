@@ -9,7 +9,7 @@
           DHCP = "yes";
           IPv6AcceptRA = true;
         };
-        routes = [{ routeConfig.Gateway = "fe80::1"; }];
+        routes = [{ Gateway = "fe80::1"; }];
       };
       "10-nevarronet" = {
         networkConfig = {
