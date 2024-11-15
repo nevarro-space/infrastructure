@@ -331,17 +331,6 @@ in {
       '';
     };
 
-    # Run the sliding-sync proxy.
-    services.matrix-sliding-sync = {
-      enable = true;
-      createDatabase = true;
-      environmentFile = "/run/keys/nevarro_space_sliding_sync_environment_file";
-      settings = {
-        SYNCV3_SERVER = "https://matrix.nevarro.space";
-        SYNCV3_BINDADDR = "0.0.0.0:8012";
-      };
-    };
-
     # Ensure that Redis is setup for Synapse.
     services.redis.servers."".enable = true;
 

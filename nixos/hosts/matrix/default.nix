@@ -30,8 +30,6 @@
       keyFor "matrix/shared-secret-auth/nevarro.space" "matrix-synapse";
     nevarro_space_cleanup_synapse_environment_file =
       keyFor "matrix/cleanup-synapse/nevarro.space" "root";
-    nevarro_space_sliding_sync_environment_file =
-      keyFor "matrix/sliding-sync/nevarro.space" "root";
 
     # App Service Secrets
     appservice_login_shared_secret_yaml = {

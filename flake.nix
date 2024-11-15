@@ -1,6 +1,7 @@
 {
   description = "Nevarro Infrastructure NixOS deployments";
   inputs = {
+    colmena.url = "github:zhaofengli/colmena";
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     flake-utils.url = "github:numtide/flake-utils";
     mineshspc = {
@@ -15,8 +16,9 @@
     };
   };
 
-  outputs = inputs@{ nixpkgs, flake-utils, ... }:
+  outputs = inputs@{ self, colmena, nixpkgs, flake-utils, ... }:
     {
+      colmenaHive = colmena.lib.makeHive self.outputs.colmena;
       colmena = import ./nixos/colmena.nix (inputs // {
         terraform-outputs = nixpkgs.lib.importJSON ./terraform-output.json;
       });
@@ -30,7 +32,7 @@
         devShells.default = pkgs.mkShell {
           packages = with pkgs; [
             cargo
-            colmena
+            colmena.packages.${system}.colmena
             git-crypt
             openssl
             pre-commit
