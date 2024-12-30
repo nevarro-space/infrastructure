@@ -1,5 +1,5 @@
 { pkgs, ... }:
-let dataDir = "/var/lib/mineshspc";
+let minesHSPCDataDir = "/var/lib/mineshspc";
 in {
   imports = [ ./hardware-configuration.nix ];
 
@@ -37,25 +37,87 @@ in {
     };
   };
 
-  systemd.services."mineshspc.com" = {
-    description = "Mines HSPC Website service";
-    requires = [ "network-online.target" "mineshspc_env-key.service" ];
-    wantedBy = [ "multi-user.target" ];
-    serviceConfig = {
-      WorkingDirectory = dataDir;
-      User = "mineshspc";
-      Group = "mineshspc";
-      ExecStart = "${pkgs.mineshspc}/bin/mineshspc";
-      Restart = "on-failure";
-      EnvironmentFile = "/run/keys/mineshspc_env";
-    };
-    environment = {
-      MINESHSPC_DOMAIN = "https://mineshspc.com";
-      MINESHSPC_HOSTED_BY_HTML = ''
+  systemd.services = let
+    yamlFormat = pkgs.formats.yaml { };
+    siteConfig = {
+      database = {
+        type = "sqlite3";
+        uri = "${minesHSPCDataDir}/mineshspc.db?_txlock=immediate";
+      };
+      sendgrid_api_key = "$MINESHSPC_SENDGRID_API_KEY";
+      healthcheck_url = "$MINESHSPC_HEALTHCHECK_URL";
+      hosted_by_html = ''
         Hosting provided by <a href="https://nevarro.space" target="_blank">Nevarro LLC</a>.
-        Check the <a href="https://status.mineshspc.com/" target="_blank">site status</a>.
+          Check the <a href="https://status.mineshspc.com/" target="_blank">site status</a>.
       '';
-      # MINESHSPC_REGISTRATION_ENABLED = "1";
+      domain = "https://mineshspc.com";
+
+      jwt_secret_key = "$MINESHSPC_JWT_SECRET_KEY";
+
+      recaptcha = {
+        site_key = "$MINESHSPC_RECAPTCHA_SITE_KEY";
+        secret_key = "$MINESHSPC_RECAPTCHA_SECRET_KEY";
+      };
+
+      logging = {
+        min_level = "debug";
+        writers = [{
+          type = "stdout";
+          format = "pretty-colored";
+        }];
+      };
+    };
+    unsubstituted =
+      yamlFormat.generate "mineshspc.com.unsubstituted.config" siteConfig;
+  in {
+    "mineshspc.com.config" = {
+      description = "Mines HSPC website config generation service";
+      path = [ pkgs.yq pkgs.envsubst ];
+      serviceConfig = {
+        Type = "oneshot";
+
+        User = "mineshspc";
+        Group = "mineshspc";
+
+        SystemCallFilter = [ "@system-service" ];
+
+        ProtectSystem = "strict";
+        ProtectHome = true;
+
+        ReadWritePaths = minesHSPCDataDir;
+        StateDirectory = minesHSPCDataDir;
+        EnvironmentFile = "/run/keys/mineshspc_env";
+      };
+      script = ''
+        envsubst \
+            -o '${minesHSPCDataDir}/config.yaml' \
+            -i '${unsubstituted}'
+      '';
+      restartTriggers = [ unsubstituted ];
+    };
+    "mineshspc.com" = {
+      description = "Mines HSPC Website service";
+      requires = [
+        "network-online.target"
+        "mineshspc_env-key.service"
+        "mineshspc.com.config.service"
+      ];
+      after = [
+        "network-online.target"
+        "mineshspc_env-key.service"
+        "mineshspc.com.config.service"
+      ];
+      wantedBy = [ "multi-user.target" ];
+      serviceConfig = {
+        WorkingDirectory = minesHSPCDataDir;
+        User = "mineshspc";
+        Group = "mineshspc";
+        ExecStart =
+          "${pkgs.mineshspc}/bin/mineshspc -config ${minesHSPCDataDir}/config.yaml";
+        Restart = "on-failure";
+        EnvironmentFile = "/run/keys/mineshspc_env";
+      };
+      restartTriggers = [ unsubstituted ];
     };
   };
 
@@ -63,7 +125,7 @@ in {
     users.mineshspc = {
       group = "mineshspc";
       isSystemUser = true;
-      home = dataDir;
+      home = minesHSPCDataDir;
       createHome = true;
     };
     groups.mineshspc = { };
@@ -72,7 +134,7 @@ in {
   services.backup = {
     healthcheckId = "e3b7948f-42cd-4571-a400-f77401d7dc56";
     healthcheckPruneId = "197d3821-bbf0-4081-b388-8d9dc1c2f11f";
-    backups.mineshspc.path = dataDir;
+    backups.mineshspc.path = minesHSPCDataDir;
   };
 
   services.healthcheck = {
