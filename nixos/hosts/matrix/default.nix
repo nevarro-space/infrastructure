@@ -149,6 +149,13 @@
     secretYAML = "/run/keys/appservice_login_shared_secret_yaml";
   } // (import ../../../secrets/matrix/appservices/mautrix-discord.nix);
 
+  # Google Messages <-> Matrix Bridge
+  services.mautrix-gmessages = {
+    enable = true;
+    settings = {};
+environmentFile = "";
+  };
+
   # Synapse
   services.matrix-synapse-custom = {
     enable = true;
