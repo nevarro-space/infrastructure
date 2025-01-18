@@ -167,14 +167,14 @@ in {
 
     assertions = [{
       assertion = cfg.useLocalSynapse
-        -> config.services.matrix-synapse-custom.enable;
+        -> config.services.matrix-synapse.enable;
       message = ''
         Mautrix-Discord must be running on the same server as Synapse if
         'useLocalSynapse' is enabled.
       '';
     }];
 
-    services.matrix-synapse-custom.appServiceConfigFiles =
+    services.matrix-synapse.settings.app_service_config_files =
       mkIf cfg.useLocalSynapse [ mautrixDiscordAppserviceConfigYaml ];
 
     # Create a user for mautrix-discord.

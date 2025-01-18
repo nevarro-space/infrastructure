@@ -7,7 +7,7 @@ with pkgs;
 with lib;
 let
   cfg = config.services.cleanup-synapse;
-  synapseCfg = config.services.matrix-synapse-custom;
+  synapseCfg = config.services.matrix-synapse;
 
   adminV1Url = "http://localhost:8008/_synapse/admin/v1";
   adminV2Url = "http://localhost:8008/_synapse/admin/v2";

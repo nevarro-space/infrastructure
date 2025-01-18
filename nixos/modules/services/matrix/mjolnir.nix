@@ -17,6 +17,7 @@ in mkIf mjolnirCfg.enable {
     };
   };
   systemd.services.mjolnir = {
+    after = [ "matrix-synapse.target" "marshal_password-key.service" ];
     requires = [ "matrix-synapse.target" "marshal_password-key.service" ];
     serviceConfig.SupplementaryGroups = [ "keys" ];
   };

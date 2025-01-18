@@ -1,5 +1,6 @@
 {
   imports = [
+    ./cleanup-synapse.nix
     ./linkedin-matrix.nix
     ./matrix-chessbot.nix
     ./maubot-echo.nix
@@ -9,6 +10,6 @@
     ./mjolnir.nix
     ./msclinkbot.nix
     ./standupbot.nix
-    ./synapse
+    ./synapse.nix
   ];
 }

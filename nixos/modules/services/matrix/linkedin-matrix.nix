@@ -197,15 +197,14 @@ in {
     meta.maintainers = [ maintainers.sumnerevans ];
 
     assertions = [{
-      assertion = cfg.useLocalSynapse
-        -> config.services.matrix-synapse-custom.enable;
+      assertion = cfg.useLocalSynapse -> config.services.matrix-synapse.enable;
       message = ''
         LinkedIn must be running on the same server as Synapse if
         'useLocalSynapse' is enabled.
       '';
     }];
 
-    services.matrix-synapse-custom.appServiceConfigFiles =
+    services.matrix-synapse.settings.app_service_config_files =
       mkIf cfg.useLocalSynapse [ linkedinMatrixAppserviceConfigYaml ];
 
     # Create a user for linkedin-matrix.
@@ -219,9 +218,7 @@ in {
 
     # Create a database user for linkedin-matrix
     services.postgresql.ensureDatabases = [ "linkedin-matrix" ];
-    services.postgresql.ensureUsers = [{
-      name = "linkedinmatrix";
-    }];
+    services.postgresql.ensureUsers = [{ name = "linkedinmatrix"; }];
 
     systemd.services.linkedin-matrix = {
       description = "LinkedIn Messaging <-> Matrix Bridge";

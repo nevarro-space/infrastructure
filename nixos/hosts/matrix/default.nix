@@ -1,4 +1,4 @@
-{ config, ... }: {
+{ config, pkgs, ... }: {
   imports = [ ./hardware-configuration.nix ];
 
   deployment.keys = let
@@ -150,12 +150,7 @@
   } // (import ../../../secrets/matrix/appservices/mautrix-discord.nix);
 
   # Synapse
-  services.matrix-synapse-custom = {
-    enable = true;
-    registrationSharedSecretConfigFile =
-      "/run/keys/nevarro_space_registration_shared_secret";
-    sharedSecretAuthConfigFile = "/run/keys/nevarro_space_shared_secret_auth";
-  };
+  services.matrix-synapse.enable = true;
   services.cleanup-synapse.environmentFile =
     "/run/keys/nevarro_space_cleanup_synapse_environment_file";
 
