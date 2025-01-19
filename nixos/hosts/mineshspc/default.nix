@@ -40,6 +40,8 @@ in {
   systemd.services = let
     yamlFormat = pkgs.formats.yaml { };
     siteConfig = {
+      registration_enabled = true;
+
       database = {
         type = "sqlite3";
         uri = "${minesHSPCDataDir}/mineshspc.db?_txlock=immediate";
