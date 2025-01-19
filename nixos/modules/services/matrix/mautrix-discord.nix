@@ -97,6 +97,12 @@ let
         "@sumner:sumnerevans.com" = "admin";
         "@sumner:nevarro.space" = "admin";
       };
+      direct_media = {
+        enabled = true;
+        server_name = "discord-media.nevarro.space";
+        server_key =
+          "ed25519 Eh81nA EkQgQPrpncdecK1Yh/Is7H1iII1ibn67CZFWhleEkh0";
+      };
     };
 
     logging = {
@@ -166,8 +172,7 @@ in {
     meta.maintainers = [ maintainers.sumnerevans ];
 
     assertions = [{
-      assertion = cfg.useLocalSynapse
-        -> config.services.matrix-synapse.enable;
+      assertion = cfg.useLocalSynapse -> config.services.matrix-synapse.enable;
       message = ''
         Mautrix-Discord must be running on the same server as Synapse if
         'useLocalSynapse' is enabled.
@@ -186,6 +191,22 @@ in {
         createHome = true;
       };
       groups.matrix = { };
+    };
+
+    services.nginx = {
+      enable = true;
+
+      virtualHosts."discord-media.nevarro.space" = {
+        enableACME = true;
+        forceSSL = true;
+
+        locations."/" = {
+          proxyPass = "http://${cfg.listenAddress}:${toString cfg.listenPort}";
+          extraConfig = ''
+            access_log /var/log/nginx/mautrix-discord.access.log;
+          '';
+        };
+      };
     };
 
     systemd.services.mautrix-discord = {
