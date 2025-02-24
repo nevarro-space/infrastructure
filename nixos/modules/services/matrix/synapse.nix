@@ -42,6 +42,9 @@ lib.mkIf config.services.matrix-synapse.enable {
         };
       };
 
+      # MSC2815 (allow room moderators to view redacted event content)
+      experimental_features.msc2815_enabled = true;
+
       # Registration
       enable_registration = true;
       registration_requires_token = true;
