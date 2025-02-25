@@ -100,7 +100,7 @@
 
   # Mjolnir
   services.mjolnir = {
-    enable = true;
+    enable = false;
     homeserverUrl = "https://matrix.nevarro.space";
     managementRoom = "#mjolnir:nevarro.space";
 

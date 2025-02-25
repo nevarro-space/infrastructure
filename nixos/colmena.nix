@@ -15,24 +15,28 @@ in {
           matrix-synapse-unwrapped =
             super.matrix-synapse-unwrapped.overridePythonAttrs (old: rec {
               pname = "matrix-synapse";
-              version = "1.124.0";
+              version = "1.125.0";
 
               src = super.fetchFromGitHub {
                 owner = "element-hq";
                 repo = "synapse";
                 rev = "v${version}";
-                hash = "sha256-hL1MdngaAVqgdN8GS9m3jn4twsbX0GPFa5cq+SCJ1oI=";
+                hash = "sha256-eo4JxNhVdAUeUmh0yUDE7+6csNbgdrYvf7UU/AMce7U=";
               };
 
               cargoDeps = super.rustPlatform.fetchCargoVendor {
                 inherit src;
                 name = "${pname}-${version}";
-                hash = "sha256-OIrjBhjSavJubpcMtHLrfuK7uhfNd+AHKUmHno32yo4=";
+                hash = "sha256-eAlybi5yDlnhdvVet5Xab4s1emyJrlQuEf3YzusU2M4=";
               };
 
               doInstallCheck = false;
               doCheck = false;
             });
+        })
+        (self: super: {
+          pantalaimon = super.pantalaimon.overridePythonAttrs
+            (old: { nativeBuildInputs = old ++ [ self.pytest-asyncio ]; });
         })
       ];
     };
