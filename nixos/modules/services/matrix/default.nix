@@ -7,7 +7,7 @@
     ./maubot-github.nix
     ./mautrix-discord.nix
     ./meetbot.nix
-    ./mjolnir.nix
+    ./meowlnir.nix
     ./msclinkbot.nix
     ./standupbot.nix
     ./synapse.nix

@@ -1,4 +1,4 @@
-{ config, pkgs, ... }: {
+{ config, ... }: {
   imports = [ ./hardware-configuration.nix ];
 
   deployment.keys = let
@@ -16,7 +16,7 @@
     mscbot_password = keyFor "matrix/bots/mscbot" "msclinkbot";
     chessbot_password = keyFor "matrix/bots/chessbot" "matrix-chessbot";
     standupbot_password = keyFor "matrix/bots/standupbot" "standupbot";
-    marshal_password = keyFor "matrix/bots/marshal" "mjolnir";
+    meowlnir_env = keyFor "matrix/meowlnir_env" "meowlnir";
     github_maubot_secrets_yaml =
       keyFor "matrix/bots/github.yaml" "maubot-github";
     echobot_maubot_secrets_yaml =
@@ -98,17 +98,47 @@
     passwordFile = "/run/keys/standupbot_password";
   };
 
-  # Mjolnir
-  services.mjolnir = {
-    enable = false;
-    homeserverUrl = "https://matrix.nevarro.space";
-    managementRoom = "#mjolnir:nevarro.space";
+  # Meowlnir
+  services.meowlnir = {
+    enable = true;
+    settings = {
+      homeserver = {
+        address = "http://localhost:8008";
+        domain = "nevarro.space";
+      };
 
-    pantalaimon = {
-      username = "marshal";
-      passwordFile = "/run/keys/marshal_password";
+      meowlnir = {
+        id = "meowlnir";
+        as_token = "$MEOWLNIR_AS_TOKEN";
+        hs_token = "$MEOWLNIR_HS_TOKEN";
+        pickle_key = "$MEOWLNIR_PICKLE_KEY";
+        management_secret = "$MEOWLNIR_MANAGEMENT_SECRET";
+        report_room = "!jbWwxAnPTAvGkjQjXh:nevarro.space";
+      };
+
+      synapse_db = {
+        type = "postgres";
+        uri =
+          "postgres://meowlnir:meowlnir@localhost/matrix-synapse?sslmode=disable";
+      };
     };
+    registration = {
+      as_token = "$MEOWLNIR_AS_TOKEN";
+      hs_token = "$MEOWLNIR_HS_TOKEN";
+      sender_localpart = "mohMex1ro0zaeraimeem";
+      namespaces = {
+        users = [{
+          regex = "@marshal:nevarro.space";
+          exclusive = true;
+        }];
+      };
+    };
+    environmentFile = "/run/keys/meowlnir_env";
+    registerToSynapse = true;
+    serviceDependencies =
+      [ config.services.matrix-synapse.serviceUnit "meowlnir_env-key.service" ];
   };
+  systemd.services.meowlnir.serviceConfig.SupplementaryGroups = [ "keys" ];
 
   # GitHub Maubot
   services.maubot-github = {
