@@ -2,8 +2,7 @@
   imports = [
     ./cleanup-synapse.nix
     ./matrix-chessbot.nix
-    ./maubot-echo.nix
-    ./maubot-github.nix
+    ./maubot.nix
     ./mautrix-discord.nix
     ./meetbot.nix
     ./meowlnir.nix

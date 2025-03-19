@@ -13,15 +13,12 @@
     restic_environment_file = keyFor "restic_environment_file" "root";
 
     # Matrix Bot Secrets
-    mscbot_password = keyFor "matrix/bots/mscbot" "msclinkbot";
     chessbot_password = keyFor "matrix/bots/chessbot" "matrix-chessbot";
-    standupbot_password = keyFor "matrix/bots/standupbot" "standupbot";
-    meowlnir_env = keyFor "matrix/meowlnir_env" "meowlnir";
-    github_maubot_secrets_yaml =
-      keyFor "matrix/bots/github.yaml" "maubot-github";
-    echobot_maubot_secrets_yaml =
-      keyFor "matrix/bots/echobot.yaml" "maubot-echo";
+    maubot_yaml = keyFor "matrix/bots/maubot.yaml" "maubot";
     meetbot_secret_env = keyFor "matrix/bots/meetbot.env" "meetbot";
+    meowlnir_env = keyFor "matrix/meowlnir_env" "meowlnir";
+    mscbot_password = keyFor "matrix/bots/mscbot" "msclinkbot";
+    standupbot_password = keyFor "matrix/bots/standupbot" "standupbot";
 
     # Matrix Server Secrets
     nevarro_space_registration_shared_secret =
@@ -131,22 +128,8 @@
   };
   systemd.services.meowlnir.serviceConfig.SupplementaryGroups = [ "keys" ];
 
-  # GitHub Maubot
-  services.maubot-github = {
-    enable = true;
-    username = "@github:nevarro.space";
-    homeserver = "https://matrix.nevarro.space";
-    publicUrl = "https://matrix.nevarro.space";
-    secretYAML = "/run/keys/github_maubot_secrets_yaml";
-  };
-
-  # Echo Maubot
-  services.maubot-echo = {
-    enable = true;
-    username = "@ping:nevarro.space";
-    homeserver = "https://matrix.nevarro.space";
-    secretYAML = "/run/keys/echobot_maubot_secrets_yaml";
-  };
+  # Maubot
+  services.maubot.enable = true;
 
   # Meetbot
   services.meetbot = {
