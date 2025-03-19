@@ -44,8 +44,19 @@ in {
   config = mkIf cfg.enable {
     systemd.services.meetbot = {
       description = "Meetbot";
-      requires = [ "matrix-synapse.target" "meetbot_secret_env-key.service" ];
       wantedBy = [ "multi-user.target" ];
+      after = [
+        config.services.matrix-synapse.serviceUnit
+        "meetbot_secret_env-key.service"
+      ];
+      requires = [
+        config.services.matrix-synapse.serviceUnit
+        "meetbot_secret_env-key.service"
+      ];
+      wants = [
+        config.services.matrix-synapse.serviceUnit
+        "meetbot_secret_env-key.service"
+      ];
       serviceConfig = {
         ExecStart = ''
           ${pkgs.meetbot}/bin/meetbot --config ${meetbotConfigFile}
