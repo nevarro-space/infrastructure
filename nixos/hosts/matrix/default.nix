@@ -26,8 +26,8 @@
     # Matrix Server Secrets
     nevarro_space_registration_shared_secret =
       keyFor "matrix/registration-shared-secret/nevarro.space" "matrix-synapse";
-    nevarro_space_shared_secret_auth =
-      keyFor "matrix/shared-secret-auth/nevarro.space" "matrix-synapse";
+    module_config =
+      keyFor "matrix/module-config/nevarro.space" "matrix-synapse";
     nevarro_space_cleanup_synapse_environment_file =
       keyFor "matrix/cleanup-synapse/nevarro.space" "root";
   };
@@ -104,6 +104,8 @@
         management_secret = "$MEOWLNIR_MANAGEMENT_SECRET";
         report_room = "!jbWwxAnPTAvGkjQjXh:nevarro.space";
       };
+
+      antispam.secret = "$MEOWLNIR_ANTISPAM_SECRET";
 
       synapse_db = {
         type = "postgres";

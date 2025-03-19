@@ -35,8 +35,19 @@ in {
             });
         })
         (self: super: {
-          pantalaimon = super.pantalaimon.overridePythonAttrs
-            (old: { nativeBuildInputs = old ++ [ self.pytest-asyncio ]; });
+          meowlnir = super.meowlnir.overrideAttrs (old: rec {
+            pname = "meowlnir";
+            version = "0.3.0";
+
+            src = super.fetchFromGitHub {
+              owner = "maunium";
+              repo = "meowlnir";
+              tag = "v${version}";
+              hash = "sha256-ig803e4onU3E4Nj5aJo2+QfwZt12iKIJ7fS/BjXsojc=";
+            };
+
+            vendorHash = "sha256-+P7tlpGTo9N+uSn22uAlzyB36hu3re+KfOe3a/uzLZE=";
+          });
         })
       ];
     };

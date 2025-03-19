@@ -31,8 +31,7 @@ let
       min_level = "debug";
       writers = [{
         type = "stdout";
-        format = "pretty-colored";
-        time_format = " ";
+        format = "json";
       }];
     };
   };
@@ -67,6 +66,9 @@ in {
           management_secret = "$MEOWLNIR_MANAGEMENT_SECRET";
           report_room = "!reportroom:example.com";
         };
+
+        antispam.secret = "$MEOWLNIR_ANTISPAM_SECRET";
+
         synapse_db = {
           type = "postgres";
           uri =
