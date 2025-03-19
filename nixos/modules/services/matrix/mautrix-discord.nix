@@ -94,7 +94,6 @@ let
       };
       permissions = {
         "nevarro.space" = "user";
-        "@sumner:sumnerevans.com" = "admin";
         "@sumner:nevarro.space" = "admin";
       };
       direct_media = {

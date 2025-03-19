@@ -165,13 +165,6 @@
     secretEnv = "/run/keys/meetbot_secret_env";
   };
 
-  # LinkedIn <-> Matrix Bridge
-  services.linkedin-matrix = {
-    enable = true;
-    homeserver = "https://matrix.nevarro.space";
-    secretYAML = "/run/keys/appservice_login_shared_secret_yaml";
-  } // (import ../../../secrets/matrix/appservices/linkedin-matrix.nix);
-
   # Discord <-> Matrix Bridge
   services.mautrix-discord = {
     enable = true;
