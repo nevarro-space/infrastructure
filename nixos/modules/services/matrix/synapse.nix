@@ -210,7 +210,7 @@ lib.mkIf config.services.matrix-synapse.enable {
         config.services.matrix-synapse.workers);
   in builtins.listToAttrs (map (name: {
     inherit name;
-    value = { serviceConfig.SupplementaryGroups = [ "keys" ]; };
+    value = { serviceConfig.SupplementaryGroups = [ "keys" "meowlnir" ]; };
   }) services);
 
   # Allow scraping of prom metrics
