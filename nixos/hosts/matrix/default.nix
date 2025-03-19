@@ -14,7 +14,6 @@
 
     # Matrix Bot Secrets
     chessbot_password = keyFor "matrix/bots/chessbot" "matrix-chessbot";
-    maubot_yaml = keyFor "matrix/bots/maubot.yaml" "maubot";
     meetbot_secret_env = keyFor "matrix/bots/meetbot.env" "meetbot";
     meowlnir_env = keyFor "matrix/meowlnir_env" "meowlnir";
     mscbot_password = keyFor "matrix/bots/mscbot" "msclinkbot";
@@ -127,9 +126,6 @@
       [ config.services.matrix-synapse.serviceUnit "meowlnir_env-key.service" ];
   };
   systemd.services.meowlnir.serviceConfig.SupplementaryGroups = [ "keys" ];
-
-  # Maubot
-  services.maubot.enable = true;
 
   # Meetbot
   services.meetbot = {
