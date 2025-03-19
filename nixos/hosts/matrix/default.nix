@@ -30,17 +30,6 @@
       keyFor "matrix/shared-secret-auth/nevarro.space" "matrix-synapse";
     nevarro_space_cleanup_synapse_environment_file =
       keyFor "matrix/cleanup-synapse/nevarro.space" "root";
-
-    # App Service Secrets
-    appservice_login_shared_secret_yaml = {
-      keyCommand = [
-        "cat"
-        "../infrastructure-secrets/secrets/matrix/appservices/shared-secret-map.yaml"
-      ];
-      user = "root";
-      group = "matrix";
-      permissions = "0640";
-    };
   };
 
   networking.hostName = "matrix";
@@ -169,7 +158,6 @@
   services.mautrix-discord = {
     enable = true;
     homeserver = "https://matrix.nevarro.space";
-    secretYAML = "/run/keys/appservice_login_shared_secret_yaml";
   } // (import ../../../secrets/matrix/appservices/mautrix-discord.nix);
 
   # Synapse

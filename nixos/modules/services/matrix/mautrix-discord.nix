@@ -102,6 +102,9 @@ let
         server_key =
           "ed25519 Eh81nA EkQgQPrpncdecK1Yh/Is7H1iII1ibn67CZFWhleEkh0";
       };
+      login_shared_secret_map = {
+        "nevarro.space" = "as_token:${cfg.appServiceToken}";
+      };
     };
 
     logging = {
@@ -163,7 +166,6 @@ in {
         type = types.path;
         default = "/var/lib/mautrix-discord";
       };
-      secretYAML = mkOption { type = types.path; };
     };
   };
 
@@ -211,12 +213,9 @@ in {
     systemd.services.mautrix-discord = {
       description = "Discord <-> Matrix Bridge";
       wantedBy = [ "multi-user.target" ];
-      requires = [ "appservice_login_shared_secret_yaml-key.service" ]
-        ++ optional cfg.useLocalSynapse "matrix-synapse.target";
-      preStart = ''
-        ${pkgs.yq-go}/bin/yq ea '. as $item ireduce ({}; . * $item )' \
-          ${mautrixDiscordConfigYaml} ${cfg.secretYAML} > config.yaml
-      '';
+      wants = [ "network-online.target" ] ++ optional cfg.useLocalSynapse config.services.matrix-synapse.serviceUnit;
+      after = [ "network-online.target" ] ++ optional cfg.useLocalSynapse config.services.matrix-synapse.serviceUnit;
+      requires = [ "network-online.target" ] ++ optional cfg.useLocalSynapse config.services.matrix-synapse.serviceUnit;
       serviceConfig = {
         User = "mautrixdiscord";
         Group = "matrix";
