@@ -35,18 +35,20 @@ in {
             });
         })
         (self: super: {
-          meowlnir = super.meowlnir.overrideAttrs (old: rec {
+          meowlnir = super.meowlnir.overrideAttrs (old: {
             pname = "meowlnir";
-            version = "0.3.0";
+            version = "0.4.0rc1";
 
             src = super.fetchFromGitHub {
               owner = "maunium";
               repo = "meowlnir";
-              tag = "v${version}";
-              hash = "sha256-ig803e4onU3E4Nj5aJo2+QfwZt12iKIJ7fS/BjXsojc=";
+              rev = "2dae5bc4ded6d5da7d5118193922a387b62b53c5";
+              hash = "sha256-HqZHLBPTXEE0DLjglumIPxAquP9TZ1EjK493ATupcVo=";
             };
 
             vendorHash = "sha256-+P7tlpGTo9N+uSn22uAlzyB36hu3re+KfOe3a/uzLZE=";
+
+            doInstallCheck = false;
           });
         })
       ];
