@@ -280,6 +280,11 @@ in lib.mkIf config.services.matrix-synapse.enable {
         locations."~ ^/_matrix/federation/.*/media/" = mediaRepoLocation;
         locations."~ ^/_synapse/admin/v1/(purge_media_cache|(room|user)/.*/media.*|media/.*|quarantine_media/.*|users/.*/media)" =
           mediaRepoLocation;
+
+        # Event reporting locations
+        locations."~ ^/_matrix/client/v3/rooms/.*/report/.*" = {
+          proxyPass = config.services.meowlnir.settings.meowlnir.address;
+        };
       };
     };
   };
