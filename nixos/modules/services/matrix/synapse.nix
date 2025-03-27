@@ -285,6 +285,9 @@ in lib.mkIf config.services.matrix-synapse.enable {
         locations."~ ^/_matrix/client/v3/rooms/.*/report/.*" = {
           proxyPass = config.services.meowlnir.settings.meowlnir.address;
         };
+        locations."~ ^/_matrix/client/v3/users/.*/report" = {
+          proxyPass = config.services.meowlnir.settings.meowlnir.address;
+        };
       };
     };
   };
