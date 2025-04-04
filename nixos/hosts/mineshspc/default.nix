@@ -134,17 +134,22 @@ in {
   };
 
   services.backup = {
-    healthcheckId = "e3b7948f-42cd-4571-a400-f77401d7dc56";
-    healthcheckPruneId = "197d3821-bbf0-4081-b388-8d9dc1c2f11f";
+    backupCompleteURL =
+      "https://heartbeat.uptimerobot.com/m798927779-61646bda63fc510bcc1c1db7d12c2ab067e9d2eb";
+    pruneCompleteURL =
+      "https://heartbeat.uptimerobot.com/m798927806-16cf1c565d3b00c18818acca77df8fa81352a95e";
     backups.mineshspc.path = minesHSPCDataDir;
   };
 
   services.healthcheck = {
     enable = true;
+    url =
+      "https://heartbeat.uptimerobot.com/m798927178-0ebe5c13b70802d93227618c51f24b88ab4cb9d6";
     disks = [{
       path = "/";
       threshold = 95;
-      checkId = "b05f5eb0-ac9e-480e-982e-85a42a505e02";
+      url =
+        "https://heartbeat.uptimerobot.com/m798927657-92bfbbf168e47d51043c596f53e73b2df7d1e57a";
     }];
   };
 }

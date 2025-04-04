@@ -114,11 +114,12 @@ in {
 
   services.healthcheck = {
     enable = true;
-    checkId = "30252d36-5283-4fb1-89c4-ad392f817e81";
+    url =
+      "https://heartbeat.uptimerobot.com/m798927859-250faf0ac3b6657ccc5f90b1923aa6afc3719748";
     disks = [{
       path = "/";
       threshold = 95;
-      checkId = "eb00bb37-af3c-4f4e-8eab-e14cdc9ebe97";
+      url = "https://heartbeat.uptimerobot.com/m798927865-2e9fa771d33b4450dca50d0a0d0ea33b1685d3d8";
     }];
   };
 }

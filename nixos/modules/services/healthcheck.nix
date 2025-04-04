@@ -14,7 +14,7 @@ let
 
   # https://blog.healthchecks.io/2023/05/monitor-disk-space-on-servers-without-installing-monitoring-agents/
   diskCheckScript = with pkgs;
-    { path, threshold, checkId }:
+    { path, threshold, url }:
     writeShellScriptBin "diskcheck" ''
       set -xe
       pct=$(${coreutils}/bin/df --output=pcent ${path} | ${coreutils}/bin/tail -n 1 | ${coreutils}/bin/tr -d '% ')
@@ -23,12 +23,8 @@ let
         echo "Used space on ${path} is $pct% which is over ${
           toString threshold
         }%"
-        ${curlCmd} https://hc-ping.com/${checkId}/fail \
-          --data-raw "Used space on ${path} is $pct% which is over ${
-            toString threshold
-          }%"
       else
-        ${curlCmd} https://hc-ping.com/${checkId}
+        ${curlCmd} ${url}
       fi
     '';
 
@@ -45,12 +41,11 @@ let
   };
 in {
   options.services.healthcheck = {
-    enable = mkEnableOption "the healthcheck ping service.";
-    checkId = mkOption {
+    enable = mkEnableOption "pinging an endpoint veery 30 seconds";
+    url = mkOption {
       type = with types; nullOr str;
       default = null;
-      description =
-        "The healthchecks.io check ID for determining if the server is up.";
+      description = "The URL to GET.";
     };
     disks = mkOption {
       type = with types;
@@ -65,9 +60,9 @@ in {
               default = 90;
               description = "The threshold percentage for alerting.";
             };
-            checkId = mkOption {
+            url = mkOption {
               type = str;
-              description = "The healthcheck ID for this disk.";
+              description = "The URL to ping when the threshold is exceeded.";
             };
           };
         });
@@ -78,14 +73,13 @@ in {
 
   config = mkIf healthcheckCfg.enable {
     systemd.services = mkMerge [
-      (mkIf (healthcheckCfg.checkId != null) {
+      (mkIf (healthcheckCfg.url != null) {
         healthcheck = {
           description = "Healthcheck server up service";
           startAt =
             "*-*-* *:*:00/30"; # Send a healthcheck ping every 30 seconds.
           serviceConfig = {
-            ExecStart =
-              "${curlCmd} https://hc-ping.com/${healthcheckCfg.checkId}";
+            ExecStart = "${curlCmd} ${healthcheckCfg.url}";
             TimeoutSec = 10;
           };
         };

@@ -38,22 +38,16 @@ let
       #!${pkgs.stdenv.shell}
       set -xe
 
-      ${pkgs.curl}/bin/curl -fsS --retry 10 https://hc-ping.com/${cfg.healthcheckId}/start
-
-      # Perfrom the backup
       ${resticCmd} backup \
         ${concatStringsSep " " paths} \
         ${concatMapStringsSep " " (e: ''-e "${e}"'') exclude}
 
-      # Ping healthcheck.io
-      ${pkgs.curl}/bin/curl -fsS --retry 10 https://hc-ping.com/${cfg.healthcheckId}
+      ${pkgs.curl}/bin/curl -fsS --retry 10 ${cfg.backupCompleteURL}
     '';
 
   resticPruneScript = pkgs.writeScriptBin "restic-prune" ''
     #!${pkgs.stdenv.shell}
     set -xe
-
-    ${pkgs.curl}/bin/curl -fsS --retry 10 https://hc-ping.com/${cfg.healthcheckPruneId}/start
 
     # Check the validity of the repository.
     ${resticCmd} check
@@ -71,8 +65,7 @@ let
       --keep-monthly 24 \
       --keep-yearly 20
 
-    # Ping healthcheck.io
-    ${pkgs.curl}/bin/curl -fsS --retry 10 https://hc-ping.com/${cfg.healthcheckPruneId}
+    ${pkgs.curl}/bin/curl -fsS --retry 10 ${cfg.pruneCompleteURL}
   '';
 
   # Services
@@ -146,14 +139,14 @@ in {
         example = [ ".git/*" ];
       };
 
-      healthcheckId = mkOption {
+      backupCompleteURL = mkOption {
         type = types.str;
-        description = "Healthcheck ID for this server's backup job.";
+        description = "URL to ping on completion of this server's backup job.";
       };
 
-      healthcheckPruneId = mkOption {
+      pruneCompleteURL = mkOption {
         type = types.str;
-        description = "Healthcheck ID for this server's prune job.";
+        description = "URL to ping on completion of this server's prune job.";
       };
     };
   };
