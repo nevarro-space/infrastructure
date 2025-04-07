@@ -17,7 +17,6 @@
     meetbot_secret_env = keyFor "matrix/bots/meetbot.env" "meetbot";
     meowlnir_env = keyFor "matrix/meowlnir_env" "meowlnir";
     mscbot_password = keyFor "matrix/bots/mscbot" "msclinkbot";
-    standupbot_password = keyFor "matrix/bots/standupbot" "standupbot";
 
     # Matrix Server Secrets
     nevarro_space_registration_shared_secret =
@@ -70,14 +69,6 @@
     username = "@mscbot:nevarro.space";
     homeserver = "https://matrix.nevarro.space";
     passwordFile = "/run/keys/mscbot_password";
-  };
-
-  # Standupbot
-  services.standupbot = {
-    enable = true;
-    username = "@standupbot:nevarro.space";
-    homeserver = "https://matrix.nevarro.space";
-    passwordFile = "/run/keys/standupbot_password";
   };
 
   # Meowlnir

@@ -6,7 +6,6 @@
     ./meetbot.nix
     ./meowlnir.nix
     ./msclinkbot.nix
-    ./standupbot.nix
     ./synapse.nix
   ];
 }
