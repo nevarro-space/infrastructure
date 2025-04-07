@@ -43,43 +43,6 @@ let
       done
   '';
 
-  # Delete non-local room history that is older than a month in some of the
-  # large rooms where I really don't care about the history.
-  #
-  # Best way to generate this list is:
-  #
-  #    > select count(*) c, room_id from events group by room_id order by c desc;
-  #
-  # within the matrix-synapse database.
-  # roomList = concatStringsSep "\n" [
-  #   "!KqkRjyTEzAGRiZFBYT:nixos.org" # #nix:nixos.org
-  #   "!XPxwZVXpPnNWmrJQwB:beeper.com" # beeper commits
-  #   "!wcajitOCLVswYZViyZ:beeper.com" # bc-infra-alerts
-  #   "!ping-v10.1:maunium.net" # #ping:maunium.net
-  #   "!aUhETchlgthwWVQzhi:matrix.org" # #gtk:gnome.org
-  #   "!YTvKGNlinIzlkMTVRl:matrix.org" # #element-web:matrix.org
-  #   "!NUhzqvfxHSIzJfxoVw:beeper.com" # bc-issues
-  #   "!QQpfJfZvqxbCfeDgCj:matrix.org" # #thisweekinmatrix:matrix.org
-  #   "!SMloEYlhCiqKwRLAgY:fachschaften.org" # #conduit:fachschaften.org
-  #   "!UbCmIlGTHNIgIRZcpt:nheko.im" # #nheko:nheko.im
-  #   "!KlacjKWnARbprTLuRM:nova.chat" # #beeper:beeper.com
-  #   "!iupBrYlVdqKLEkWtDs:tapenet.org" # #go-lang:matrix.org
-  #   "!NasysSDfxKxZBzJJoE:matrix.org" # #matrix-spec:matrix.org
-  #   "!kjdutkOsheZdjqYmqp:nixos.org" # #dev:nixos.org
-  # ];
-  # purgeHistoryOfLargeRooms = writeShellScriptBin "purge-history" ''
-  #   set -xe
-
-  #   before_ts=$(date +%s%3N --date='1 month ago')
-
-  #   echo '${roomList}' | while read room_id; do
-  #     echo "purging history for $room_id..."
-  #     ${adminCurl} -X POST -H "Content-Type: application/json" \
-  #       -d "{ \"delete_local_events\": false, \"purge_up_to_ts\": $before_ts }" \
-  #       "${adminV1Url}/purge_history/$room_id"
-  #   done
-  # '';
-
   compressState = writeShellScriptBin "compress-state" ''
     set -xe
 
