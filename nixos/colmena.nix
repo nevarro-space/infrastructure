@@ -1,4 +1,4 @@
-{ nixpkgs, terraform-outputs, mineshspc, meetbot, ... }:
+{ nixpkgs, terraform-outputs, mineshspc, ... }:
 let system = "x86_64-linux";
 in {
   meta = {
@@ -6,10 +6,7 @@ in {
       inherit system;
       config.permittedInsecurePackages = [ "olm-3.2.16" ];
       overlays = [
-        (self: super: {
-          inherit (mineshspc.packages.${system}) mineshspc;
-          inherit (meetbot.packages.${system}) meetbot;
-        })
+        (self: super: { inherit (mineshspc.packages.${system}) mineshspc; })
         (self: super: {
           # Custom package that tracks with the latest release of Synapse.
           matrix-synapse-unwrapped =

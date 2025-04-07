@@ -14,7 +14,6 @@
 
     # Matrix Bot Secrets
     maubot_yaml = keyFor "matrix/bots/maubot.yaml" "root";
-    meetbot_secret_env = keyFor "matrix/bots/meetbot.env" "meetbot";
     meowlnir_env = keyFor "matrix/meowlnir_env" "meowlnir";
     mscbot_password = keyFor "matrix/bots/mscbot" "msclinkbot";
 
@@ -117,14 +116,6 @@
 
   # Maubot
   services.maubot-docker.enable = true;
-
-  # Meetbot
-  services.meetbot = {
-    enable = true;
-    username = "@meetbot:nevarro.space";
-    homeserver = "https://matrix.nevarro.space";
-    secretEnv = "/run/keys/meetbot_secret_env";
-  };
 
   # Discord <-> Matrix Bridge
   services.mautrix-discord = {

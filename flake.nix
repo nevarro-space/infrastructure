@@ -12,11 +12,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.flake-utils.follows = "flake-utils";
     };
-    meetbot = {
-      url = "github:beeper/meetbot";
-      inputs.nixpkgs.follows = "nixpkgs";
-      inputs.flake-utils.follows = "flake-utils";
-    };
   };
 
   outputs = inputs@{ self, colmena, nixpkgs, flake-utils, ... }:

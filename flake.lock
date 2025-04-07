@@ -73,29 +73,6 @@
         "type": "github"
       }
     },
-    "meetbot": {
-      "inputs": {
-        "flake-utils": [
-          "flake-utils"
-        ],
-        "nixpkgs": [
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "lastModified": 1720800821,
-        "narHash": "sha256-id8dCFYqQuZpgrLH2TSt0s6uRunKx9xWyGh7cVC0BvQ=",
-        "owner": "beeper",
-        "repo": "meetbot",
-        "rev": "914bcedb672e8556af4eac6c5164a070717d1d43",
-        "type": "github"
-      },
-      "original": {
-        "owner": "beeper",
-        "repo": "meetbot",
-        "type": "github"
-      }
-    },
     "mineshspc": {
       "inputs": {
         "flake-utils": [
@@ -160,7 +137,6 @@
       "inputs": {
         "colmena": "colmena",
         "flake-utils": "flake-utils_2",
-        "meetbot": "meetbot",
         "mineshspc": "mineshspc",
         "nixpkgs": "nixpkgs"
       }
