@@ -3,5 +3,5 @@
 
   programs.htop.enable = true;
 
-  environment.defaultPackages = with pkgs; [ jq ];
+  environment.defaultPackages = with pkgs; [ jq vim ];
 }

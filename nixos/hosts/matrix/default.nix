@@ -13,7 +13,6 @@
     restic_environment_file = keyFor "restic_environment_file" "root";
 
     # Matrix Bot Secrets
-    chessbot_password = keyFor "matrix/bots/chessbot" "matrix-chessbot";
     maubot_yaml = keyFor "matrix/bots/maubot.yaml" "root";
     meetbot_secret_env = keyFor "matrix/bots/meetbot.env" "meetbot";
     meowlnir_env = keyFor "matrix/meowlnir_env" "meowlnir";
@@ -63,14 +62,6 @@
       "https://heartbeat.uptimerobot.com/m798927916-29b2ae22a7f2eed0332a7173c33764624f47634b";
     pruneCompleteURL =
       "https://heartbeat.uptimerobot.com/m798927922-54c59fccda5de4c32704d116a912c2cbf2b5611f";
-  };
-
-  # Chessbot
-  services.matrix-chessbot = {
-    enable = true;
-    username = "@chessbot:nevarro.space";
-    homeserver = "https://matrix.nevarro.space";
-    passwordFile = "/run/keys/chessbot_password";
   };
 
   # MSC Link Bot
