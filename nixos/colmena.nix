@@ -34,13 +34,13 @@ in {
         (self: super: {
           meowlnir = super.meowlnir.overrideAttrs (old: {
             pname = "meowlnir";
-            version = "0.4.0rc1";
+            version = "0.4.0rc2";
 
             src = super.fetchFromGitHub {
               owner = "maunium";
               repo = "meowlnir";
-              rev = "2dae5bc4ded6d5da7d5118193922a387b62b53c5";
-              hash = "sha256-HqZHLBPTXEE0DLjglumIPxAquP9TZ1EjK493ATupcVo=";
+              rev = "a5fd8ffe78577371b95274366ad44fc6f156f92e";
+              hash = "sha256-MUycnf1TSLCTk7A72QbCS0ChSVwZP1jH1Ry5Q0L+L2I=";
             };
 
             vendorHash = "sha256-+P7tlpGTo9N+uSn22uAlzyB36hu3re+KfOe3a/uzLZE=";
