@@ -2,6 +2,8 @@
 let system = "x86_64-linux";
 in {
   meta = {
+    description = "Nevarro Infrastructure";
+
     nixpkgs = import nixpkgs {
       inherit system;
       config.permittedInsecurePackages = [ "olm-3.2.16" ];
@@ -50,7 +52,6 @@ in {
         })
       ];
     };
-    description = "Nevarro Infrastructure";
   };
 
   defaults = { config, ... }: {

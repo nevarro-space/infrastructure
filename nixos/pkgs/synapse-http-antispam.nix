@@ -8,7 +8,7 @@
 
 python3.pkgs.buildPythonPackage rec {
   pname = "synapse-http-antispam";
-  version = "0.2.0";
+  version = "0.3.0";
   pyproject = true;
 
   src = fetchFromGitHub {
@@ -23,7 +23,7 @@ python3.pkgs.buildPythonPackage rec {
   pythonImportsCheck = [ "synapse_http_antispam" ];
 
   buildInputs = [ matrix-synapse-unwrapped ];
-  propagatedBuildInputs = [ python3.pkgs.twisted ];
+  dependencies = [ python3.pkgs.twisted ];
 
   passthru.updateScript = nix-update-script { };
 
