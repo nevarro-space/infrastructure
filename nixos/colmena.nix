@@ -36,16 +36,16 @@ in {
         (self: super: {
           meowlnir = super.meowlnir.overrideAttrs (old: {
             pname = "meowlnir";
-            version = "0.4.0rc2";
+            version = "0.4.0";
 
             src = super.fetchFromGitHub {
               owner = "maunium";
               repo = "meowlnir";
-              rev = "a5fd8ffe78577371b95274366ad44fc6f156f92e";
-              hash = "sha256-MUycnf1TSLCTk7A72QbCS0ChSVwZP1jH1Ry5Q0L+L2I=";
+              rev = "v0.4.0";
+              hash = "sha256-wPPL/4ky7AAR6gL0EIdfpkpdOGPIAZ7pm8NEZDT6hv0=";
             };
 
-            vendorHash = "sha256-+P7tlpGTo9N+uSn22uAlzyB36hu3re+KfOe3a/uzLZE=";
+            vendorHash = "sha256-s6GlTES+h+0HpthTXN7V/ddPtIeEmtJ83xn7QVQknLA=";
 
             doInstallCheck = false;
           });
