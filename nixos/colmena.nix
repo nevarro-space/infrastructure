@@ -34,6 +34,23 @@ in {
             });
         })
         (self: super: {
+          mautrix-discord = super.mautrix-discord.overrideAttrs (old: rec {
+            pname = "mautrix-discord";
+            version = "0.7.3";
+
+            src = super.fetchFromGitHub {
+              owner = "mautrix";
+              repo = "discord";
+              rev = "v${version}";
+              hash = "sha256-q6FpeGWoeIVVeomKMHpXUntMWsMJMV73FDiBfbMQ6Oc=";
+            };
+
+            vendorHash = "sha256-6R5ryzjAAAI3YtTMlHjrLOXkid2kCe8+ZICnNUjtxaQ=";
+
+            doInstallCheck = false;
+          });
+        })
+        (self: super: {
           meowlnir = super.meowlnir.overrideAttrs (old: {
             pname = "meowlnir";
             version = "0.4.0";
