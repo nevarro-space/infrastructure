@@ -40,7 +40,7 @@ in {
   systemd.services = let
     yamlFormat = pkgs.formats.yaml { };
     siteConfig = {
-      registration_enabled = true;
+      registration_enabled = false;
 
       database = {
         type = "sqlite3";
