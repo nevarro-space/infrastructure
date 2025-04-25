@@ -1,0 +1,27 @@
+name: Flake Update
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 0 * * 0' # runs weekly on Sunday at 00:00
+
+jobs:
+  update-flake:
+    name: Update Flake
+    runs-on: ubuntu-latest
+    environment: production
+    env:
+      GIT_CRYPT_SECRET: ${{ secrets.GIT_CRYPT_SECRET }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: nixbuild/nix-quick-install-action@v30
+
+      - name: Update flake.lock
+        uses: DeterminateSystems/update-flake-lock@main
+        with:
+          pr-title: "Update flake.lock"
+          pr-labels: |
+            dependencies
+            nix
