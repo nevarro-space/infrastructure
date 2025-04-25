@@ -10,8 +10,6 @@ jobs:
     name: Update Flake
     runs-on: ubuntu-latest
     environment: production
-    env:
-      GIT_CRYPT_SECRET: ${{ secrets.GIT_CRYPT_SECRET }}
 
     steps:
       - uses: actions/checkout@v4
