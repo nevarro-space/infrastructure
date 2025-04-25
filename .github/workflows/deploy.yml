@@ -1,35 +1,20 @@
 name: Deploy Infrastructure
 
-on: workflow_dispatch
+on:
+  push:
+    branches:
+      - master
 
 jobs:
-  colmena-build:
-    name: Colmena Build
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v4
-      - uses: nixbuild/nix-quick-install-action@v30
-      - name: Install dependencies
-        run: nix develop --command "echo dependencies installed"
-      - name: colmena build
-        run: nix develop --command "colmena build"
-
   colmena-apply:
     name: Colmena Apply
-    needs:
-      - colmena-build
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/master'
     environment: production
     env:
       GIT_CRYPT_SECRET: ${{ secrets.GIT_CRYPT_SECRET }}
 
     steps:
       - uses: actions/checkout@v4
-        with:
-          path: infrastructure
-
       - uses: actions/checkout@v4
         with:
           repository: nevarro-space/infrastructure-secrets
@@ -38,12 +23,11 @@ jobs:
 
       - uses: nixbuild/nix-quick-install-action@v30
 
-      - name: Unlock git crypt
-        run: |
-          echo "$GIT_CRYPT_SECRET" | base64 -d > "$HOME/git-crypt-secret"
-          cd infrastructure-secrets
-          nix develop --command "git crypt unlock $HOME/git-crypt-secret"
-          rm $HOME/git-crypt-secret
+      - name: Unlock secrets
+        uses: sliteteam/github-action-git-crypt-unlock@1.2.0
+        env:
+          GIT_CRYPT_KEY: ${{ secrets.GIT_CRYPT_SECRET }}
+          RUN_DIR: infrastructure-secrets
 
       - name: Install SSH Key
         uses: shimataro/ssh-key-action@v2.7.0
@@ -51,12 +35,10 @@ jobs:
           key: ${{ secrets.DEPLOY_SSH_KEY }}
           known_hosts: ${{ secrets.MINESHSPC_KNOWN_HOSTS }}
 
-      - name: Install dependencies
-        run: |
-          cd infrastructure
-          nix develop --command "echo dependencies installed"
-
       - name: colmena apply
-        run: |
-          cd infrastructure
-          nix develop --command "colmena apply"
+        uses: workflow/nix-shell-action@v3.4.0
+        with:
+          flakes-from-devshell: true
+          script: |
+            cd infrastructure
+            colmena apply
