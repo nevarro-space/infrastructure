@@ -3,7 +3,7 @@
 
   deployment.keys = let
     keyFor = keyname: for: {
-      keyCommand = [ "cat" "../infrastructure-secrets/secrets/${keyname}" ];
+      keyCommand = [ "cat" "./secrets/${keyname}" ];
       user = for;
       group = for;
     };

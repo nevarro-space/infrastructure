@@ -4,12 +4,11 @@ in {
   imports = [ ./hardware-configuration.nix ];
 
   deployment.keys = {
-    mineshspc_env.keyCommand =
-      [ "cat" "../infrastructure-secrets/secrets/mineshspc_env" ];
+    mineshspc_env.keyCommand = [ "cat" "./secrets/mineshspc_env" ];
     restic_password_file.keyCommand =
-      [ "cat" "../infrastructure-secrets/secrets/restic_password_file" ];
+      [ "cat" "./secrets/restic_password_file" ];
     restic_environment_file.keyCommand =
-      [ "cat" "../infrastructure-secrets/secrets/restic_environment_file" ];
+      [ "cat" "./secrets/restic_environment_file" ];
   };
 
   networking.hostName = "mineshspc";

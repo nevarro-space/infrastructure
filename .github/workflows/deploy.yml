@@ -10,16 +10,9 @@ jobs:
     name: Colmena Apply
     runs-on: ubuntu-latest
     environment: production
-    env:
-      GIT_CRYPT_SECRET: ${{ secrets.GIT_CRYPT_SECRET }}
 
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/checkout@v4
-        with:
-          repository: nevarro-space/infrastructure-secrets
-          token: ${{ secrets.SECRET_REPO_CLONE_TOKEN }}
-          path: infrastructure-secrets
 
       - uses: nixbuild/nix-quick-install-action@v30
 
@@ -27,7 +20,6 @@ jobs:
         uses: sliteteam/github-action-git-crypt-unlock@1.2.0
         env:
           GIT_CRYPT_KEY: ${{ secrets.GIT_CRYPT_SECRET }}
-          RUN_DIR: infrastructure-secrets
 
       - name: Install SSH Key
         uses: shimataro/ssh-key-action@v2.7.0
@@ -39,6 +31,4 @@ jobs:
         uses: workflow/nix-shell-action@v3.4.0
         with:
           flakes-from-devshell: true
-          script: |
-            cd infrastructure
-            colmena apply
+          script: colmena apply
