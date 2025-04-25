@@ -9,12 +9,3 @@ repos:
         exclude: terraform-output.json
       - id: check-yaml
       - id: check-added-large-files
-
-  - repo: https://github.com/antonbabenko/pre-commit-terraform
-    rev: v1.83.3
-    hooks:
-      - id: terraform_fmt
-      - id: terraform_docs
-      - id: terraform_tflint
-      - id: terraform_tfsec
-      - id: terraform_validate
