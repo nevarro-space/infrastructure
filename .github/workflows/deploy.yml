@@ -3,52 +3,6 @@ name: Deploy Infrastructure
 on: workflow_dispatch
 
 jobs:
-  terraform-plan:
-    name: Terraform Plan
-    runs-on: ubuntu-latest
-    outputs:
-      exit_code: ${{ steps.terraform_plan.outputs.exit_code }}
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
-        with:
-          cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
-
-      - name: Terraform Init
-        run: terraform init
-
-      - name: Terraform Plan
-        id: terraform_plan
-        run: |
-          terraform plan -input=false -detailed-exitcode
-          echo "exit_code=$?" >> $GITHUB_OUTPUT
-
-  terraform-apply:
-    name: Terraform Apply
-    needs:
-      - lint
-      - terraform-plan
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/master' && needs.terraform-plan.outputs.exit_code == 2
-    environment: terraform
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
-        with:
-          cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
-
-      - name: Terraform Init
-        run: terraform init
-
-      - name: Terraform Apply
-        run: terraform apply -auto-approve -input=false
-
   colmena-build:
     name: Colmena Build
     runs-on: ubuntu-latest
