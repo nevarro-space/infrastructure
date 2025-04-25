@@ -37,11 +37,11 @@
             sops
 
             # Terraform + Linters
-            terraform
-            terraform-docs
-            terraform-lsp
-            tflint
-            tfsec
+            # terraform
+            # terraform-docs
+            # terraform-lsp
+            # tflint
+            # tfsec
           ];
         };
       }));
