@@ -83,11 +83,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1745679666,
-        "narHash": "sha256-SUHE8u5GDScrrXJnnA5/sRLm8zfpOfM0J8Yp7kw83ts=",
+        "lastModified": 1745683220,
+        "narHash": "sha256-51xyvEYsTwUTO6nvKIw9jRE+fcmEOM4QaXXEglnbQBw=",
         "owner": "ColoradoSchoolOfMines",
         "repo": "mineshspc.com",
-        "rev": "11648a827cad7d646b18c9b51d6cec4dd2686f64",
+        "rev": "8b47d59fb108f9931315dc81ba3572f798d9e79f",
         "type": "github"
       },
       "original": {
