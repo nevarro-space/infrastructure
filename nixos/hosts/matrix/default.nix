@@ -1,4 +1,4 @@
-{ config, lib, ... }: {
+{ config, ... }: {
   imports = [ ./hardware-configuration.nix ];
 
   deployment.keys = let
@@ -120,11 +120,71 @@
   # Discord <-> Matrix Bridge
   services.mautrix-discord = {
     enable = true;
-    homeserver = "https://matrix.nevarro.space";
-    appServiceToken = lib.readFile
-      "secrets/matrix/appservices/mautrix-discord/appservice-token";
-    homeserverToken = lib.readFile
-      "secrets/matrix/appservices/mautrix-discord/homeserver-token";
+    settings = {
+      homeserver = {
+        address = "http://localhost:8008";
+        domain = "nevarro.space";
+      };
+      appservice = {
+        database = {
+          type = "sqlite3-fk-wal";
+          uri =
+            "file:/var/lib/mautrix-discord/mautrix-discord.db?_txlock=immediate";
+        };
+        as_token = "$MEOWLNIR_AS_TOKEN";
+        hs_token = "$MEOWLNIR_HS_TOKEN";
+      };
+      bridge = {
+        delivery_receipts = true;
+        delete_portal_on_channel_delete = true;
+        federate_rooms = false;
+        encryption = {
+          allow = true;
+          default = true;
+          require = true;
+          allow_key_sharing = true;
+          verification_levels = {
+            receive = "unverified";
+            send = "cross-signed-tofu";
+            share = "unverified";
+          };
+          permissions = {
+            "nevarro.space" = "user";
+            "@sumner:nevarro.space" = "admin";
+          };
+          direct_media = {
+            enabled = true;
+            server_name = "discord-media.nevarro.space";
+            server_key =
+              "ed25519 Eh81nA EkQgQPrpncdecK1Yh/Is7H1iII1ibn67CZFWhleEkh0";
+          };
+          login_shared_secret_map = {
+            "nevarro.space" = "as_token:$MEOWLNIR_AS_TOKEN";
+          };
+        };
+      };
+      logging = {
+        min_level = "debug";
+        writers = [{
+          type = "stdout";
+          format = "json";
+        }];
+      };
+    };
+  };
+  services.nginx = {
+    enable = true;
+
+    virtualHosts."discord-media.nevarro.space" = {
+      enableACME = true;
+      forceSSL = true;
+      locations."/" = {
+        proxyPass = "http://localhost:29334";
+        extraConfig = ''
+          access_log /var/log/nginx/mautrix-discord.access.log;
+        '';
+      };
+    };
   };
 
   # Synapse

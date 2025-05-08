@@ -1,243 +1,316 @@
-{ config, lib, pkgs, ... }:
-with lib;
+{ lib, config, pkgs, ... }:
 let
+  dataDir = "/var/lib/mautrix-discord";
+  registrationFile = "${dataDir}/discord-registration.yaml";
   cfg = config.services.mautrix-discord;
-
-  mautrixDiscordAppserviceConfig = {
-    id = "discord";
-    url = "http://${cfg.listenAddress}:${toString cfg.listenPort}";
-    as_token = cfg.appServiceToken;
-    hs_token = cfg.homeserverToken;
-    rate_limited = false;
-    sender_localpart = "LI6W2mH43X68rSiZ1YLAQCSLtuSZlPBt";
-    "de.sorunome.msc2409.push_ephemeral" = true;
-    push_ephemeral = true;
-    namespaces = {
-      users = [
-        {
-          regex = "^@discord_[0-9]+:nevarro.space$";
-          exclusive = true;
-        }
-        {
-          regex = "^@discordbot:nevarro.space$";
-          exclusive = true;
-        }
-      ];
-      aliases = [ ];
-      rooms = [ ];
-    };
-  };
-
-  yamlFormat = pkgs.formats.yaml { };
-
-  mautrixDiscordAppserviceConfigYaml =
-    yamlFormat.generate "mautrix-discord-registration.yaml"
-    mautrixDiscordAppserviceConfig;
-
-  mautrixDiscordConfig = {
-    homeserver = {
-      address = cfg.homeserver;
-      domain = config.networking.domain;
-    };
-
-    metrics = {
-      enabled = true;
-      listen_port = 9011;
-    };
-
-    appservice = {
-      address = "http://${cfg.listenAddress}:${toString cfg.listenPort}";
-      hostname = cfg.listenAddress;
-      port = cfg.listenPort;
-      max_body_size = 1;
-      database = {
-        type = "sqlite3-fk-wal";
-        uri = "file:${cfg.dataDir}/mautrix-discord.db?_txlock=immediate";
-        max_open_conns = 20;
-        max_idle_cons = 2;
-      };
-      id = "discord";
-      bot_username = cfg.botUsername;
-      bot_displayname = "Discord bridge bot";
-      bot_avatar = "mxc://nevarro.space/LWsPMGFektATJpgbSyfULDKR";
-      as_token = cfg.appServiceToken;
-      hs_token = cfg.homeserverToken;
-      ephemeral_events = true;
-    };
-
-    bridge = {
-      username_template = "discord_{{.}}";
-      displayname_template =
-        "{{or .GlobalName .Username}}{{if .Bot}} (bot){{end}}";
-      channel_name_template =
-        "{{if or (eq .Type 3) (eq .Type 4)}}{{.Name}}{{else}}#{{.Name}}{{end}}";
-      guild_name_template = "{{.Name}}";
-      private_chat_portal_meta = false;
-      portal_message_buffer = 128;
-      startup_private_channel_create_limit = 5;
-      delivery_receipts = true;
-      message_error_notices = true;
-      restricted_rooms = true;
-      delete_portal_on_channel_delete = true;
-      federate_rooms = false;
-      command_prefix = "!dis";
-      encryption = {
-        allow = true;
-        default = true;
-        require = true;
-        allow_key_sharing = true;
-        verification_levels = {
-          receive = "unverified";
-          send = "cross-signed-tofu";
-          share = "unverified";
-        };
-      };
-      permissions = {
-        "nevarro.space" = "user";
-        "@sumner:nevarro.space" = "admin";
-      };
-      direct_media = {
-        enabled = true;
-        server_name = "discord-media.nevarro.space";
-        server_key =
-          "ed25519 Eh81nA EkQgQPrpncdecK1Yh/Is7H1iII1ibn67CZFWhleEkh0";
-      };
-      login_shared_secret_map = {
-        "nevarro.space" = "as_token:${cfg.appServiceToken}";
-      };
-    };
-
-    logging = {
-      min_level = "debug";
-      writers = [{
-        type = "stdout";
-        format = "json";
-      }];
-    };
-  };
-
-  mautrixDiscordConfigYaml =
-    yamlFormat.generate "mautrix-discord-config.yaml" mautrixDiscordConfig;
+  settingsFormat = pkgs.formats.json { };
+  settingsFile = "${dataDir}/config.json";
+  settingsFileUnformatted =
+    settingsFormat.generate "${dataDir}/config.yaml" cfg.settings;
+  port = 29334;
 in {
   options = {
     services.mautrix-discord = {
-      enable = mkEnableOption "mautrix-discord, a Discord <-> Matrix bridge.";
-      useLocalSynapse = mkOption {
-        type = types.bool;
-        default = true;
-        description = "Whether or not to use the local synapse instance.";
-      };
-      homeserver = mkOption {
-        type = types.str;
-        default = "http://localhost:8008";
-        description = "The URL of the Matrix homeserver.";
-      };
-      listenAddress = mkOption {
-        type = types.str;
-        default = "127.0.0.1";
-        description = "The address for mautrix-discord to listen on.";
-      };
-      listenPort = mkOption {
-        type = types.int;
-        default = 9890;
-        description = "The port for mautrix-discord to listen on.";
-      };
-      botUsername = mkOption {
-        type = types.str;
-        default = "discordbot";
-        description =
-          "The localpart of the mautrix-discord admin bot's username.";
-      };
-      appServiceToken = mkOption {
-        type = types.str;
+      enable = lib.mkEnableOption
+        "Mautrix-Discord, a Matrix-Discord puppeting/relay-bot bridge";
+
+      settings = lib.mkOption rec {
+        apply = lib.recursiveUpdate default;
+        inherit (settingsFormat) type;
+        default = {
+          homeserver = {
+            software = "standard";
+            status_endpoint = null;
+            message_send_checkpoint_endpoint = null;
+            async_media = false;
+            websocket = false;
+            ping_interval_seconds = 0;
+          };
+
+          appservice = {
+            hostname = "0.0.0.0";
+            port = port;
+            address = "http://localhost:${toString port}";
+
+            database = {
+              type = "postgres";
+              uri = "postgres://user:password@host/database?sslmode=disable";
+              max_open_conns = 20;
+              max_idle_conns = 2;
+              max_conn_idle_time = null;
+              max_conn_lifetime = null;
+            };
+
+            id = "discord";
+
+            bot = {
+              username = "discordbot";
+              displayname = "Discord bridge bot";
+              avatar = "mxc://maunium.net/nIdEykemnwdisvHbpxflpDlC";
+            };
+
+            ephemeral_events = true;
+
+            async_transactions = false;
+          };
+
+          bridge = {
+            username_template = "discord_{{.}}";
+            displayname_template =
+              "'{{or .GlobalName .Username}}{{if .Bot}} (bot){{end}}'";
+            channel_name_template =
+              "'{{if or (eq .Type 3) (eq .Type 4)}}{{.Name}}{{else}}#{{.Name}}{{end}}'";
+            guild_name_template = "'{{.Name}}'";
+            private_chat_portal_meta = "default";
+
+            public_address = null;
+            avatar_proxy_key = "generate";
+
+            portal_message_buffer = 128;
+
+            startup_private_channel_create_limit = 5;
+            delivery_receipts = false;
+            message_status_events = false;
+            message_error_notices = true;
+            restricted_rooms = true;
+            autojoin_thread_on_open = true;
+            embed_fields_as_tables = true;
+            mute_channels_on_create = false;
+            sync_direct_chat_list = false;
+            resend_bridge_info = false;
+            custom_emoji_reactions = true;
+            delete_portal_on_channel_delete = false;
+            delete_guild_on_leave = true;
+            federate_rooms = true;
+            prefix_webhook_messages = false;
+            enable_webhook_avatars = true;
+            use_discord_cdn_upload = true;
+            cache_media = "unencrypted";
+            direct_media = {
+              enabled = false;
+              server_name = "discord-media.example.com";
+              allow_proxy = true;
+              server_key = "generate";
+            };
+            animated_sticker = {
+              target = "webp";
+              args = {
+                width = 320;
+                height = 320;
+                fps = 25;
+              };
+            };
+            command_prefix = "'!discord'";
+            management_room_text = {
+              welcome = "Hello, I'm a Discord bridge bot.";
+              welcome_connected = "Use `help` for help.";
+              welcome_unconnected = "Use `help` for help or `login` to log in.";
+              additional_help = "";
+            };
+            backfill = {
+              forward_limits = {
+                initial = {
+                  dm = 0;
+                  channel = 0;
+                  thread = 0;
+                };
+                missed = {
+                  dm = 0;
+                  channel = 0;
+                  thread = 0;
+                };
+                max_guild_members = -1;
+              };
+            };
+            encryption = {
+              allow = false;
+              default = false;
+              appservice = false;
+              msc4190 = false;
+              require = false;
+              allow_key_sharing = false;
+              plaintext_mentions = false;
+              delete_keys = {
+                delete_outbound_on_ack = false;
+                dont_store_outbound = false;
+                ratchet_on_decrypt = false;
+                delete_fully_used_on_decrypt = false;
+                delete_prev_on_new_session = false;
+                delete_on_device_delete = false;
+                periodically_delete_expired = false;
+                delete_outdated_inbound = false;
+              };
+              verification_levels = {
+                receive = "unverified";
+                send = "unverified";
+                share = "cross-signed-tofu";
+              };
+              rotation = {
+                enable_custom = false;
+                milliseconds = 604800000;
+                messages = 100;
+                disable_device_change_key_rotation = false;
+              };
+            };
+            provisioning = {
+              prefix = "/_matrix/provision";
+              shared_secret = "generate";
+              debug_endpoints = false;
+            };
+            permissions = {
+              "*" = "relay";
+              #	"example.com" = "user";
+              #	"@admin:example.com": "admin";
+            };
+          };
+        };
+        example = lib.literalExpression ''
+          {
+            homeserver = {
+              address = "http://localhost:8008";
+              domain = "public-domain.tld";
+            };
+
+            appservice.public = {
+              prefix = "/public";
+              external = "https://public-appservice-address/public";
+            };
+
+            bridge.permissions = {
+              "example.com" = "full";
+              "@admin:example.com" = "admin";
+            };
+          }
+        '';
         description = ''
-          This is the token that the app service should use as its access_token
-          when using the Client-Server API. This can be anything you want.
+          {file}`config.yaml` configuration as a Nix attribute set
+          Configuration options should match those described in
+          [example-config.yaml](https://github.com/mautrix/discord/blob/main/example-config.yaml).
         '';
       };
-      homeserverToken = mkOption {
-        type = types.str;
+
+      serviceDependencies = lib.mkOption {
+        type = with lib.types; listOf str;
+        default = lib.optional config.services.matrix-synapse.enable
+          config.services.matrix-synapse.serviceUnit;
+        defaultText = lib.literalExpression ''
+          lib.optional config.services.matrix-synapse.enable config.services.matrix-synapse.serviceUnit
+        '';
         description = ''
-          This is the token that the homeserver will use when sending requests
-          to the app service. This can be anything you want.
+          List of Systemd services to require and wait for when starting the application service.
         '';
       };
-      dataDir = mkOption {
-        type = types.path;
-        default = "/var/lib/mautrix-discord";
+
+      registerToSynapse = lib.mkOption {
+        type = lib.types.bool;
+        default = config.services.matrix-synapse.enable;
+        defaultText =
+          lib.literalExpression "config.services.matrix-synapse.enable";
+        description = ''
+          Whether to add the bridge's app service registration file to
+          `services.matrix-synapse.settings.app_service_config_files`.
+        '';
+      };
+
+      dataDir = lib.mkOption {
+        type = lib.types.path;
+        default = dataDir;
+        defaultText = lib.literalExpression "${dataDir}";
+        description = ''
+          Directory to store the bridge's configuration and database files.
+          This directory will be created if it does not exist.
+        '';
       };
     };
   };
-
-  config = mkIf cfg.enable {
-    meta.maintainers = [ maintainers.sumnerevans ];
-
-    assertions = [{
-      assertion = cfg.useLocalSynapse -> config.services.matrix-synapse.enable;
-      message = ''
-        Mautrix-Discord must be running on the same server as Synapse if
-        'useLocalSynapse' is enabled.
-      '';
-    }];
-
-    services.matrix-synapse.settings.app_service_config_files =
-      mkIf cfg.useLocalSynapse [ mautrixDiscordAppserviceConfigYaml ];
-
-    # Create a user for mautrix-discord.
-    users = {
-      users.mautrixdiscord = {
-        group = "matrix";
-        isSystemUser = true;
-        home = cfg.dataDir;
-        createHome = true;
-      };
-      groups.matrix = { };
+  config = lib.mkIf cfg.enable {
+    users.users.mautrix-discord = {
+      isSystemUser = true;
+      group = "mautrix-discord";
+      home = dataDir;
+      description = "Mautrix-Discord bridge user";
     };
 
-    services.nginx = {
-      enable = true;
+    users.groups.mautrix-discord = { };
 
-      virtualHosts."discord-media.nevarro.space" = {
-        enableACME = true;
-        forceSSL = true;
-
-        locations."/" = {
-          proxyPass = "http://${cfg.listenAddress}:${toString cfg.listenPort}";
-          extraConfig = ''
-            access_log /var/log/nginx/mautrix-discord.access.log;
-          '';
-        };
-      };
+    services.matrix-synapse = lib.mkIf cfg.registerToSynapse {
+      settings.app_service_config_files = [ registrationFile ];
     };
+    systemd.services.matrix-synapse = lib.mkIf cfg.registerToSynapse {
+      serviceConfig.SupplementaryGroups = [ "mautrix-discord" ];
+    };
+    systemd.tmpfiles.rules =
+      [ "d ${cfg.dataDir} 770 mautrix-discord mautrix-discord -" ];
 
     systemd.services.mautrix-discord = {
-      description = "Discord <-> Matrix Bridge";
+      description =
+        "Mautrix-Discord, a Matrix-Discord puppeting/relaybot bridge";
+
       wantedBy = [ "multi-user.target" ];
-      wants = [ "network-online.target" ] ++ optional cfg.useLocalSynapse config.services.matrix-synapse.serviceUnit;
-      after = [ "network-online.target" ] ++ optional cfg.useLocalSynapse config.services.matrix-synapse.serviceUnit;
-      requires = [ "network-online.target" ] ++ optional cfg.useLocalSynapse config.services.matrix-synapse.serviceUnit;
+      wants = [ "network-online.target" ] ++ cfg.serviceDependencies;
+      after = [ "network-online.target" ] ++ cfg.serviceDependencies;
+      path = [ pkgs.lottieconverter pkgs.ffmpeg-headless ];
+
+      environment.HOME = cfg.dataDir;
+
+      preStart = ''
+        mkdir -p '${cfg.dataDir}'
+        umask 0177
+        cp '${settingsFileUnformatted}' '${settingsFile}'
+        # generate the appservice's registration file if absent
+        if [ ! -f '${registrationFile}' ]; then
+          ${lib.getExe pkgs.mautrix-discord} \
+            --generate-registration \
+            --config='${settingsFile}' \
+            --registration='${registrationFile}'
+        fi
+
+        chmod 640 ${registrationFile}
+
+        # 1. Overwrite registration tokens in config
+        #    is set, set it as the login shared secret value for the configured
+        #    homeserver domain.
+        ${pkgs.yq}/bin/yq -s '.[0].appservice.as_token = .[1].as_token
+          | .[0].appservice.hs_token = .[1].hs_token
+          | .[0]' \
+          '${settingsFile}' '${registrationFile}' > '${settingsFile}.tmp'
+        mv '${settingsFile}.tmp' '${settingsFile}'
+
+        umask $old_umask
+      '';
+
       serviceConfig = {
-        User = "mautrixdiscord";
-        Group = "matrix";
-        ExecStart = "${pkgs.mautrix-discord}/bin/mautrix-discord --no-update";
-        WorkingDirectory = cfg.dataDir;
+        User = "mautrix-discord";
+        Group = "mautrix-discord";
+        Type = "exec";
         Restart = "on-failure";
-        SupplementaryGroups = [ "keys" ];
+        RestartSec = 30;
+        WorkingDirectory = cfg.dataDir;
+        ExecStart = ''
+          ${lib.getExe pkgs.mautrix-discord} \
+            --config='${settingsFile}'
+        '';
+
+        ProtectSystem = "strict";
+        ProtectHome = true;
+        ProtectKernelTunables = true;
+        ProtectKernelModules = true;
+        ProtectControlGroups = true;
+        PrivateDevices = true;
+        PrivateTmp = true;
+        RestrictSUIDSGID = true;
+        RestrictRealtime = true;
+        LockPersonality = true;
+        ProtectKernelLogs = true;
+        ProtectHostname = true;
+        PrivateUsers = true;
+        ProtectClock = true;
+
+        SystemCallArchitectures = "native";
+        SystemCallErrorNumber = "EPERM";
+        SystemCallFilter = "@system-service";
+        ReadWritePaths = [ cfg.dataDir ];
       };
     };
-
-    # TODO make this work
-    services.prometheus = {
-      enable = true;
-      scrapeConfigs = [{
-        job_name = "mautrixdiscord";
-        scrape_interval = "15s";
-        metrics_path = "/";
-        static_configs = [{ targets = [ "0.0.0.0:9011" ]; }];
-      }];
-    };
-
-    # Add a backup service.
-    services.backup.backups.mautrix-discord = { path = cfg.dataDir; };
   };
 }
