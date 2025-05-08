@@ -1,9 +1,9 @@
-{ config, ... }: {
+{ config, lib, ... }: {
   imports = [ ./hardware-configuration.nix ];
 
   deployment.keys = let
     keyFor = keyname: for: {
-      keyCommand = [ "cat" "./secrets/${keyname}" ];
+      keyCommand = [ "cat" "secrets/${keyname}" ];
       user = for;
       group = for;
     };
@@ -121,7 +121,11 @@
   services.mautrix-discord = {
     enable = true;
     homeserver = "https://matrix.nevarro.space";
-  } // (import ../../../secrets/matrix/appservices/mautrix-discord.nix);
+    appServiceToken = lib.readFile
+      "secrets/matrix/appservices/mautrix-discord/appservice-token";
+    homeserverToken = lib.readFile
+      "secrets/matrix/appservices/mautrix-discord/homeserver-token";
+  };
 
   # Synapse
   services.matrix-synapse.enable = true;

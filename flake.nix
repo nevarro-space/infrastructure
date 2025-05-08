@@ -35,13 +35,6 @@
             openssl
             pre-commit
             sops
-
-            # Terraform + Linters
-            # terraform
-            # terraform-docs
-            # terraform-lsp
-            # tflint
-            # tfsec
           ];
         };
       }));
