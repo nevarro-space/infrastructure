@@ -26,9 +26,9 @@ in {
     enable = true;
 
     # Make sure that Prometheus is setup for Synapse.
-    scrapeConfigs = (mapAttrsToList (k: v: {
-      job_name = elemAt (splitString "_" k) 0;
-      static_configs = [{ targets = [ "${toString v.value}:9002" ]; }];
+    scrapeConfigs = (map (ip: {
+      job_name = ip;
+      static_configs = [{ targets = [ "${ip}:9002" ]; }];
     }) internalIPs) ++ [{
       job_name = "synapse";
       scrape_interval = "15s";
