@@ -10,41 +10,6 @@ let
   registrationFile = "${cfg.dataDir}/registration.yaml";
   registrationFileUnsubstituted =
     format.generate "meowlnir-registration-unsubstituted.yaml" cfg.registration;
-
-  mkDefaults = lib.mapAttrsRecursive (n: v: lib.mkDefault v);
-  defaultConfig = {
-    meowlnir = rec {
-      id = "meowlnir";
-      address = "http://${hostname}:${toString port}";
-      hostname = "localhost";
-      port = 29339;
-    };
-    encryption = {
-      enable = true;
-      pickle_key = "fi.mau.meowlnir.e2ee";
-    };
-    database = {
-      type = "sqlite3-fk-wal";
-      uri = "file:${cfg.dataDir}/meowlnir.db?_txlock=immediate";
-    };
-    logging = {
-      min_level = "debug";
-      writers = [{
-        type = "stdout";
-        format = "json";
-      }];
-    };
-  };
-  defaultRegistration = {
-    inherit (cfg.settings.meowlnir) id;
-    url = cfg.settings.meowlnir.address;
-    sender_localpart = "meowlnirfakesenderlocalpart";
-    rate_limited = false;
-    "org.matrix.msc3202" = true;
-    "io.element.msc4190" = true;
-    "de.sorunome.msc2409.push_ephemeral" = true;
-    receive_ephemeral = true;
-  };
 in {
   options.services.meowlnir = {
     enable = lib.mkEnableOption "meowlnir service";
@@ -75,7 +40,29 @@ in {
             "postgres://meowlnir:meowlnir@localhost/matrix-synapse?sslmode=disable";
         };
       };
-      default = defaultConfig;
+      default = {
+        meowlnir = rec {
+          id = "meowlnir";
+          address = "http://${hostname}:${toString port}";
+          hostname = "localhost";
+          port = 29339;
+        };
+        encryption = {
+          enable = true;
+          pickle_key = "fi.mau.meowlnir.e2ee";
+        };
+        database = {
+          type = "sqlite3-fk-wal";
+          uri = "file:${cfg.dataDir}/meowlnir.db?_txlock=immediate";
+        };
+        logging = {
+          min_level = "debug";
+          writers = [{
+            type = "stdout";
+            format = "json";
+          }];
+        };
+      };
       description = ''
         {file}`config.yaml` configuration as a Nix attribute set.
         Configuration options should match those described in
@@ -100,7 +87,16 @@ in {
           }];
         };
       };
-      default = defaultRegistration;
+      default = {
+        inherit (cfg.settings.meowlnir) id;
+        url = cfg.settings.meowlnir.address;
+        sender_localpart = "meowlnirfakesenderlocalpart";
+        rate_limited = false;
+        "org.matrix.msc3202" = true;
+        "io.element.msc4190" = true;
+        "de.sorunome.msc2409.push_ephemeral" = true;
+        receive_ephemeral = true;
+      };
       description = ''
         {file}`registration.yaml` configuration as a Nix attribute set. See
         [Appservice registration in the README](https://github.com/maunium/meowlnir/?tab=readme-ov-file#appservice-registration)
@@ -186,13 +182,11 @@ in {
       serviceConfig.SupplementaryGroups = [ "meowlnir" ];
     };
 
-    services.meowlnir.settings = lib.mkMerge (map mkDefaults [
-      defaultConfig
+    services.meowlnir.settings = {
       # Note: this is defined here to avoid the docs depending on `config`
-      {
-        homeserver.domain = config.services.matrix-synapse.settings.server_name;
-      }
-    ]);
+      homeserver.domain =
+        lib.mkDefault config.services.matrix-synapse.settings.server_name;
+    };
 
     systemd.services.meowlnir = {
       description = "meowlnir - opinionated Matrix moderation bot";
