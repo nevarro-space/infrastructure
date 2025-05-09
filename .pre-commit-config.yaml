@@ -6,6 +6,5 @@ repos:
       - id: trailing-whitespace
         exclude_types: [markdown]
       - id: end-of-file-fixer
-        exclude: terraform-output.json
       - id: check-yaml
       - id: check-added-large-files
