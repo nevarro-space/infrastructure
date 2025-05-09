@@ -15,6 +15,7 @@
     # Matrix Bot Secrets
     maubot_yaml = keyFor "matrix/bots/maubot.yaml" "root";
     meowlnir_env = keyFor "matrix/meowlnir_env" "meowlnir";
+    mautrix_discord_env = keyFor "matrix/mautrix_discord_env" "mautrix-discord";
     mscbot_password = keyFor "matrix/bots/mscbot" "msclinkbot";
 
     # Matrix Server Secrets
@@ -131,8 +132,8 @@
           uri =
             "file:/var/lib/mautrix-discord/mautrix-discord.db?_txlock=immediate";
         };
-        as_token = "$MEOWLNIR_AS_TOKEN";
-        hs_token = "$MEOWLNIR_HS_TOKEN";
+        as_token = "$MAUTRIX_DISCORD_AS_TOKEN";
+        hs_token = "$MAUTRIX_DISCORD_HS_TOKEN";
       };
       bridge = {
         delivery_receipts = true;
@@ -160,17 +161,28 @@
             "ed25519 Eh81nA EkQgQPrpncdecK1Yh/Is7H1iII1ibn67CZFWhleEkh0";
         };
         login_shared_secret_map = {
-          "nevarro.space" = "as_token:$MEOWLNIR_AS_TOKEN";
+          "nevarro.space" = "as_token:$MAUTRIX_DISCORD_AS_TOKEN";
         };
       };
-      logging = {
-        min_level = "debug";
-        writers = [{
-          type = "stdout";
-          format = "json";
-        }];
+    };
+    registration = {
+      as_token = "$MAUTRIX_DISCORD_AS_TOKEN";
+      hs_token = "$MAUTRIX_DISCORD_HS_TOKEN";
+      sender_localpart = "AHT0JhmxbyUF7NzqHacFBccIKEuUTMkd";
+      namespaces = {
+        users = [
+          {
+            regex = "^@discordbot:nevarro.space$";
+            exclusive = true;
+          }
+          {
+            regex = "^@discord_.*:nevarro.space$";
+            exclusive = true;
+          }
+        ];
       };
     };
+    environmentFile = "/run/keys/mautrix_discord_env";
   };
   services.nginx = {
     enable = true;

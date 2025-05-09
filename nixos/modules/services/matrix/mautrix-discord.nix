@@ -1,12 +1,13 @@
 { lib, config, pkgs, ... }:
 let
-  dataDir = "/var/lib/mautrix-discord";
-  registrationFile = "${dataDir}/discord-registration.yaml";
   cfg = config.services.mautrix-discord;
   settingsFormat = pkgs.formats.yaml { };
-  settingsFile = "${dataDir}/config.yaml";
-  settingsFileUnformatted =
-    settingsFormat.generate "config.yaml" cfg.settings;
+  settingsFile = "${cfg.dataDir}/config.yaml";
+  settingsFileUnformatted = settingsFormat.generate "config.yaml" cfg.settings;
+  registrationFile = "${cfg.dataDir}/registration.yaml";
+  registrationFileUnsubstituted =
+    settingsFormat.generate "mautrix-discord-registration-unsubstituted.yaml"
+    cfg.registration;
   port = 29334;
 in {
   options = {
@@ -186,6 +187,40 @@ in {
           {file}`config.yaml` configuration as a Nix attribute set
           Configuration options should match those described in
           [example-config.yaml](https://github.com/mautrix/discord/blob/main/example-config.yaml).
+
+          Secret tokens should be specified using {option}`environmentFile`
+          instead
+        '';
+      };
+
+      registration = lib.mkOption rec {
+        apply = lib.recursiveUpdate default;
+        inherit (settingsFormat) type;
+        example = {
+          as_token = "$MAUTRIX_DISCORD_AS_TOKEN";
+          hs_token = "$MAUTRIX_DISCORD_HS_TOKEN";
+          sender_localpart = "mohMex1ro0zaeraimeem";
+          namespaces = {
+            users = [{
+              regex = "@abuse:example.com";
+              exclusive = true;
+            }];
+          };
+        };
+        default = {
+          inherit (cfg.settings.appservice) id;
+          url = cfg.settings.appservice.address;
+          sender_localpart = "mautrixdiscord";
+          rate_limited = false;
+          "de.sorunome.msc2409.push_ephemeral" = true;
+          receive_ephemeral = true;
+        };
+        description = ''
+          {file}`registration.yaml` configuration as a Nix attribute set. See
+          [Registering Appservices](https://docs.mau.fi/bridges/general/registering-appservices.html)
+
+          Secret tokens should be specified using {option}`environmentFile`
+          instead
         '';
       };
 
@@ -214,11 +249,26 @@ in {
 
       dataDir = lib.mkOption {
         type = lib.types.path;
-        default = dataDir;
-        defaultText = lib.literalExpression "${dataDir}";
+        default = "/var/lib/mautrix-discord";
         description = ''
           Directory to store the bridge's configuration and database files.
           This directory will be created if it does not exist.
+        '';
+      };
+
+      environmentFile = lib.mkOption {
+        type = lib.types.nullOr lib.types.path;
+        default = null;
+        description = ''
+          File containing environment variables to substitute when copying the configuration
+          out of Nix store to the `services.mautrix-discord.dataDir`.
+
+          Can be used for storing the secrets without making them available in the Nix store.
+
+          For example, you can set
+          `services.mautrix-discord.settings.appservice.as_token = "$MAUTRIX_DISCORD_APPSERVICE_AS_TOKEN"`
+          and then specify `MAUTRIX_DISCORD_APPSERVICE_AS_TOKEN="{token}"` in the environment file.
+          This value will get substituted into the configuration file as as token.
         '';
       };
     };
@@ -227,7 +277,7 @@ in {
     users.users.mautrix-discord = {
       isSystemUser = true;
       group = "mautrix-discord";
-      home = dataDir;
+      home = cfg.dataDir;
       description = "Mautrix-Discord bridge user";
     };
 
@@ -255,33 +305,24 @@ in {
 
       preStart = ''
         mkdir -p '${cfg.dataDir}'
+        test -f '${settingsFile}' && rm -f '${settingsFile}'
+        old_umask=$(umask)
         umask 0177
-        cp '${settingsFileUnformatted}' '${settingsFile}'
-        # generate the appservice's registration file if absent
-        if [ ! -f '${registrationFile}' ]; then
-          ${lib.getExe pkgs.mautrix-discord} \
-            --generate-registration \
-            --config='${settingsFile}' \
-            --registration='${registrationFile}'
-        fi
-
-        chmod 644 ${registrationFile}
-
-        # 1. Overwrite registration tokens in config
-        #    is set, set it as the login shared secret value for the configured
-        #    homeserver domain.
-        ${pkgs.yq}/bin/yq -s '.[0].appservice.as_token = .[1].as_token
-          | .[0].appservice.hs_token = .[1].hs_token
-          | .[0]' \
-          '${settingsFile}' '${registrationFile}' > '${settingsFile}.tmp'
-        mv '${settingsFile}.tmp' '${settingsFile}'
-
+        ${pkgs.envsubst}/bin/envsubst \
+          -o '${settingsFile}' \
+          -i '${settingsFileUnformatted}'
         umask $old_umask
+
+        ${pkgs.envsubst}/bin/envsubst \
+          -o '${registrationFile}' \
+          -i '${registrationFileUnsubstituted}'
+        chmod 644 ${registrationFile}
       '';
 
       serviceConfig = {
         User = "mautrix-discord";
         Group = "mautrix-discord";
+        EnvironmentFile = cfg.environmentFile;
         Type = "exec";
         Restart = "on-failure";
         RestartSec = 30;
