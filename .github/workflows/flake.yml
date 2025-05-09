@@ -9,7 +9,6 @@ jobs:
   update-flake:
     name: Update Flake
     runs-on: ubuntu-latest
-    environment: production
 
     steps:
       - uses: actions/checkout@v4
