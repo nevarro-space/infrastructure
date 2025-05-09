@@ -17,9 +17,7 @@
   outputs = inputs@{ self, colmena, nixpkgs, flake-utils, ... }:
     {
       colmenaHive = colmena.lib.makeHive self.outputs.colmena;
-      colmena = import ./nixos/colmena.nix (inputs // {
-        terraform-outputs = nixpkgs.lib.importJSON ./terraform-output.json;
-      });
+      colmena = import ./nixos/colmena.nix inputs;
     } // (flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = import nixpkgs {
@@ -31,7 +29,6 @@
           packages = with pkgs; [
             cargo
             colmena.packages.${system}.colmena
-            git-crypt
             openssl
             pre-commit
             sops

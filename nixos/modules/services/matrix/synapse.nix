@@ -1,13 +1,10 @@
 { config, lib, pkgs, ... }:
-let
-  synapse-http-antispam =
-    pkgs.callPackage ../../../pkgs/synapse-http-antispam.nix { };
-in lib.mkIf config.services.matrix-synapse.enable {
+lib.mkIf config.services.matrix-synapse.enable {
   services.matrix-synapse = {
     configureRedisLocally = true; # Required for workers
     plugins = [
       pkgs.matrix-synapse-plugins.matrix-synapse-shared-secret-auth
-      synapse-http-antispam
+      pkgs.matrix-synapse-plugins.synapse-http-antispam
     ];
     extraConfigFiles = [
       "/run/keys/nevarro_space_registration_shared_secret"

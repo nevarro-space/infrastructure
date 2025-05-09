@@ -1,4 +1,4 @@
-{ nixpkgs, terraform-outputs, mineshspc, ... }:
+{ nixpkgs, mineshspc, ... }:
 let system = "x86_64-linux";
 in {
   meta = {
@@ -74,8 +74,6 @@ in {
   defaults = { config, ... }: {
     imports = [ ./modules ];
 
-    _module.args = { inherit terraform-outputs; };
-
     deployment.replaceUnknownProfiles = true;
 
     system.stateVersion = "23.05";
@@ -90,7 +88,7 @@ in {
 
   monitoring = {
     deployment = {
-      targetHost = terraform-outputs.monitoring_server_ipv4.value;
+      targetHost = "monitoring.nevarro.space";
       tags = [ "hetzner" "ashburn" ];
     };
 
@@ -99,7 +97,7 @@ in {
 
   matrix = {
     deployment = {
-      targetHost = terraform-outputs.matrix_server_ipv4.value;
+      targetHost = "matrix.nevarro.space";
       tags = [ "hetzner" "ashburn" ];
     };
 
@@ -108,7 +106,7 @@ in {
 
   mineshspc = {
     deployment = {
-      targetHost = terraform-outputs.mineshspc_server_ipv4.value;
+      targetHost = "mineshspc.com";
       tags = [ "hetzner" "ashburn" ];
     };
 

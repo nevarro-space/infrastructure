@@ -1,4 +1,4 @@
-{ modulesPath, terraform-outputs, ... }: {
+{ modulesPath, ... }: {
   imports = [ (modulesPath + "/profiles/qemu-guest.nix") ];
 
   fileSystems = {
@@ -7,8 +7,7 @@
       fsType = "ext4";
     };
     "/mnt/postgresql-data" = {
-      device =
-        terraform-outputs.matrix_server_postgresql_data_linux_device.value;
+      device = "/dev/disk/by-id/scsi-0HC_Volume_31815425";
       fsType = "ext4";
     };
   };
