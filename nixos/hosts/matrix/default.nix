@@ -148,19 +148,19 @@
             send = "cross-signed-tofu";
             share = "unverified";
           };
-          permissions = {
-            "nevarro.space" = "user";
-            "@sumner:nevarro.space" = "admin";
-          };
-          direct_media = {
-            enabled = true;
-            server_name = "discord-media.nevarro.space";
-            server_key =
-              "ed25519 Eh81nA EkQgQPrpncdecK1Yh/Is7H1iII1ibn67CZFWhleEkh0";
-          };
-          login_shared_secret_map = {
-            "nevarro.space" = "as_token:$MEOWLNIR_AS_TOKEN";
-          };
+        };
+        permissions = {
+          "nevarro.space" = "user";
+          "@sumner:nevarro.space" = "admin";
+        };
+        direct_media = {
+          enabled = true;
+          server_name = "discord-media.nevarro.space";
+          server_key =
+            "ed25519 Eh81nA EkQgQPrpncdecK1Yh/Is7H1iII1ibn67CZFWhleEkh0";
+        };
+        login_shared_secret_map = {
+          "nevarro.space" = "as_token:$MEOWLNIR_AS_TOKEN";
         };
       };
       logging = {

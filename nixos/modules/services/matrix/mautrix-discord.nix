@@ -3,10 +3,10 @@ let
   dataDir = "/var/lib/mautrix-discord";
   registrationFile = "${dataDir}/discord-registration.yaml";
   cfg = config.services.mautrix-discord;
-  settingsFormat = pkgs.formats.json { };
-  settingsFile = "${dataDir}/config.json";
+  settingsFormat = pkgs.formats.yaml { };
+  settingsFile = "${dataDir}/config.yaml";
   settingsFileUnformatted =
-    settingsFormat.generate "${dataDir}/config.yaml" cfg.settings;
+    settingsFormat.generate "config.yaml" cfg.settings;
   port = 29334;
 in {
   options = {
@@ -57,10 +57,10 @@ in {
           bridge = {
             username_template = "discord_{{.}}";
             displayname_template =
-              "'{{or .GlobalName .Username}}{{if .Bot}} (bot){{end}}'";
+              "{{or .GlobalName .Username}}{{if .Bot}} (bot){{end}}";
             channel_name_template =
-              "'{{if or (eq .Type 3) (eq .Type 4)}}{{.Name}}{{else}}#{{.Name}}{{end}}'";
-            guild_name_template = "'{{.Name}}'";
+              "{{if or (eq .Type 3) (eq .Type 4)}}{{.Name}}{{else}}#{{.Name}}{{end}}";
+            guild_name_template = "{{.Name}}";
             private_chat_portal_meta = "default";
 
             public_address = null;
@@ -100,7 +100,7 @@ in {
                 fps = 25;
               };
             };
-            command_prefix = "'!discord'";
+            command_prefix = "!discord";
             management_room_text = {
               welcome = "Hello, I'm a Discord bridge bot.";
               welcome_connected = "Use `help` for help.";
@@ -265,7 +265,7 @@ in {
             --registration='${registrationFile}'
         fi
 
-        chmod 640 ${registrationFile}
+        chmod 644 ${registrationFile}
 
         # 1. Overwrite registration tokens in config
         #    is set, set it as the login shared secret value for the configured
