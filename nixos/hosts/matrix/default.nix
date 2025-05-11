@@ -160,9 +160,19 @@
           server_key =
             "ed25519 Eh81nA EkQgQPrpncdecK1Yh/Is7H1iII1ibn67CZFWhleEkh0";
         };
+        double_puppet_server_map = {
+          "nevarro.space" = "https://matrix.nevarro.space";
+        };
         login_shared_secret_map = {
           "nevarro.space" = "as_token:$MAUTRIX_DISCORD_AS_TOKEN";
         };
+      };
+      logging = {
+        min_level = "debug";
+        writers = [{
+          type = "stdout";
+          format = "json";
+        }];
       };
     };
     registration = {
