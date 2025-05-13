@@ -76,7 +76,7 @@
     enable = true;
     settings = {
       homeserver = {
-        address = "http://localhost:8008";
+        address = "https://matrix.nevarro.space";
         domain = "nevarro.space";
       };
 
@@ -123,7 +123,7 @@
     enable = true;
     settings = {
       homeserver = {
-        address = "http://localhost:8008";
+        address = "https://matrix.nevarro.space";
         domain = "nevarro.space";
       };
       appservice = {

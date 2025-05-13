@@ -14,9 +14,81 @@ in {
   options.services.meowlnir = {
     enable = lib.mkEnableOption "meowlnir service";
 
-    settings = lib.mkOption rec {
-      apply = lib.recursiveUpdate default;
-      inherit (format) type;
+    settings = lib.mkOption {
+      type = lib.types.submodule {
+        freeformType = format.type;
+        options = {
+          meowlnir = {
+            id = lib.mkOption {
+              type = lib.types.str;
+              default = "meowlnir";
+              description = "The ID of the appservice.";
+            };
+            address = lib.mkOption {
+              type = lib.types.str;
+              default = "http://${cfg.settings.meowlnir.hostname}:${
+                  toString cfg.settings.meowlnir.port
+                }";
+              defaultText = lib.literalExpression
+                "http://\${config.services.meowlnir.settings.meowlnir.hostname}:\${toString config.services.meowlnir.settings.meowlnir.port}";
+              description = "The address for the appservice to listen on.";
+            };
+            hostname = lib.mkOption {
+              type = lib.types.str;
+              default = "localhost";
+              description = "The hostname for the appservice to listen on.";
+            };
+            port = lib.mkOption {
+              type = lib.types.int;
+              default = 29339;
+              description = "The port for the appservice to listen on.";
+            };
+          };
+          encryption = {
+            enable = lib.mkEnableOption
+              "end-to-end encryption support. This requires MSC3202, MSC4190 and MSC4203 to be implemented on the server"
+              // {
+                default = true;
+              };
+            pickle_key = lib.mkOption {
+              type = lib.types.str;
+              default = "fi.mau.meowlnir.e2ee";
+              description = "The pickle key for the encryption module.";
+            };
+          };
+          database = {
+            type = lib.mkOption {
+              type = lib.types.enum [ "sqlite3-fk-wal" "postgres" ];
+              default = "sqlite3-fk-wal";
+              description = ''
+                The type of database to use. Supported values are
+                `sqlite3-fk-wal` and `postgres`.
+              '';
+            };
+            uri = lib.mkOption {
+              type = lib.types.str;
+              default = "file:${cfg.dataDir}/meowlnir.db?_txlock=immediate";
+              defaultText = lib.literalExpression
+                "file:\${config.services.meowlnir.dataDir}/meowlnir.db?_txlock=immediate";
+              description = "The database URI.";
+            };
+          };
+          logging = {
+            min_level = lib.mkOption {
+              type = lib.types.str;
+              default = "debug";
+              description = "The minimum logging level.";
+            };
+            writers = lib.mkOption {
+              type = lib.types.listOf lib.types.attrs;
+              default = [{
+                type = "stdout";
+                format = "json";
+              }];
+            };
+          };
+        };
+      };
       example = {
         homeserver = {
           address = "http://localhost:8008";
@@ -40,29 +112,7 @@ in {
             "postgres://meowlnir:meowlnir@localhost/matrix-synapse?sslmode=disable";
         };
       };
-      default = {
-        meowlnir = rec {
-          id = "meowlnir";
-          address = "http://${hostname}:${toString port}";
-          hostname = "localhost";
-          port = 29339;
-        };
-        encryption = {
-          enable = true;
-          pickle_key = "fi.mau.meowlnir.e2ee";
-        };
-        database = {
-          type = "sqlite3-fk-wal";
-          uri = "file:${cfg.dataDir}/meowlnir.db?_txlock=immediate";
-        };
-        logging = {
-          min_level = "debug";
-          writers = [{
-            type = "stdout";
-            format = "json";
-          }];
-        };
-      };
+      default = { };
       description = ''
         {file}`config.yaml` configuration as a Nix attribute set.
         Configuration options should match those described in
@@ -197,6 +247,10 @@ in {
 
       restartTriggers = [ settingsFileUnsubstituted ];
       preStart = ''
+        # ensure that the data directory is set up correctly
+        mkdir -p ${cfg.dataDir}
+        chmod 755 ${cfg.dataDir}
+
         # substitute the settings file by environment variables
         # in this case read from EnvironmentFile
         test -f '${settingsFile}' && rm -f '${settingsFile}'
