@@ -304,7 +304,10 @@ in {
       environment.HOME = cfg.dataDir;
 
       preStart = ''
+        # ensure that the data directory is set up correctly
         mkdir -p '${cfg.dataDir}'
+        chmod 755 '${cfg.dataDir}'
+
         test -f '${settingsFile}' && rm -f '${settingsFile}'
         old_umask=$(umask)
         umask 0177
