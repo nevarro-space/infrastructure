@@ -22,7 +22,7 @@ jobs:
           token: ${{ secrets.SECRET_REPO_CLONE_TOKEN }}
           path: infrastructure-secrets
 
-      - uses: nixbuild/nix-quick-install-action@v30
+      - uses: nixbuild/nix-quick-install-action@v32
 
       - name: Install SSH Key
         uses: shimataro/ssh-key-action@v2.7.0
