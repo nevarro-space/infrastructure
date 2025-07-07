@@ -127,13 +127,21 @@
         domain = "nevarro.space";
       };
       appservice = {
-        database = {
-          type = "sqlite3-fk-wal";
-          uri =
-            "file:/var/lib/mautrix-discord/mautrix-discord.db?_txlock=immediate";
+        address = "http://localhost:8009";
+        port = 8009;
+        id = "discord";
+        bot = {
+          username = "discordbot";
+          displayname = "Discord bridge bot";
+          avatar = "mxc://maunium.net/nIdEykemnwdisvHbpxflpDlC";
         };
         as_token = "$MAUTRIX_DISCORD_AS_TOKEN";
         hs_token = "$MAUTRIX_DISCORD_HS_TOKEN";
+        database = {
+          type = "sqlite3-fk-wal";
+          uri =
+            "file:${config.services.mautrix-discord.dataDir}/mautrix-discord.db?_txlock=immediate";
+        };
       };
       bridge = {
         delivery_receipts = true;
@@ -173,23 +181,6 @@
           type = "stdout";
           format = "json";
         }];
-      };
-    };
-    registration = {
-      as_token = "$MAUTRIX_DISCORD_AS_TOKEN";
-      hs_token = "$MAUTRIX_DISCORD_HS_TOKEN";
-      sender_localpart = "AHT0JhmxbyUF7NzqHacFBccIKEuUTMkd";
-      namespaces = {
-        users = [
-          {
-            regex = "^@discordbot:nevarro.space$";
-            exclusive = true;
-          }
-          {
-            regex = "^@discord_.*:nevarro.space$";
-            exclusive = true;
-          }
-        ];
       };
     };
     environmentFile = "/run/keys/mautrix_discord_env";
