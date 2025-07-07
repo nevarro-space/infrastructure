@@ -14,19 +14,19 @@ in {
           matrix-synapse-unwrapped =
             super.matrix-synapse-unwrapped.overridePythonAttrs (old: rec {
               pname = "matrix-synapse";
-              version = "1.131.0";
+              version = "1.133.0";
 
               src = super.fetchFromGitHub {
                 owner = "element-hq";
                 repo = "synapse";
                 rev = "v${version}";
-                hash = "sha256-nXDVkuV5GCk0Lp4LfyiModKdO30PJ40B5mXdm5tMHQo=";
+                hash = "sha256-SCpLM/4sxE9xA781tgjrNNXpScCQOtgKnZKq64eCay8=";
               };
 
               cargoDeps = super.rustPlatform.fetchCargoVendor {
                 inherit src;
                 name = "${pname}-${version}";
-                hash = "sha256-9VJnn8aPkShqK2wYGFr+S5koIjma7VOr+LkLXwStL1E=";
+                hash = "sha256-qgQU041VlAFFgEg2RhbK6g+aike+HN0FYuvHYtufzW8=";
               };
 
               patches = [ ];
@@ -52,23 +52,6 @@ in {
         #     doInstallCheck = false;
         #   });
         # })
-        (self: super: {
-          meowlnir = super.meowlnir.overrideAttrs (old: {
-            pname = "meowlnir";
-            version = "0.4.0";
-
-            src = super.fetchFromGitHub {
-              owner = "maunium";
-              repo = "meowlnir";
-              rev = "v0.4.0";
-              hash = "sha256-wPPL/4ky7AAR6gL0EIdfpkpdOGPIAZ7pm8NEZDT6hv0=";
-            };
-
-            vendorHash = "sha256-s6GlTES+h+0HpthTXN7V/ddPtIeEmtJ83xn7QVQknLA=";
-
-            doInstallCheck = false;
-          });
-        })
       ];
     };
   };
