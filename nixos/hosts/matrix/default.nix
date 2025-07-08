@@ -127,8 +127,8 @@
         domain = "nevarro.space";
       };
       appservice = {
-        address = "http://localhost:8009";
-        port = 8009;
+        address = "http://localhost:29334";
+        port = 29334;
         id = "discord";
         bot = {
           username = "discordbot";
