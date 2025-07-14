@@ -84,9 +84,13 @@
         id = "meowlnir";
         as_token = "$MEOWLNIR_AS_TOKEN";
         hs_token = "$MEOWLNIR_HS_TOKEN";
-        pickle_key = "$MEOWLNIR_PICKLE_KEY";
         management_secret = "$MEOWLNIR_MANAGEMENT_SECRET";
         report_room = "!jbWwxAnPTAvGkjQjXh:nevarro.space";
+      };
+
+      encryption = {
+        enable = true;
+        pickle_key = "$MEOWLNIR_PICKLE_KEY";
       };
 
       antispam.secret = "$MEOWLNIR_ANTISPAM_SECRET";
@@ -109,7 +113,6 @@
       };
     };
     environmentFile = "/run/keys/meowlnir_env";
-    registerToSynapse = true;
     serviceDependencies =
       [ config.services.matrix-synapse.serviceUnit "meowlnir_env-key.service" ];
   };
