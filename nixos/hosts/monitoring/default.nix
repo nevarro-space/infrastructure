@@ -1,5 +1,4 @@
-{ config, lib, ... }:
-with lib;
+{ config, ... }:
 let
   matrixDomain = "matrix.${config.networking.domain}";
   internalIPs = [
@@ -17,6 +16,36 @@ in {
       address = [ "2a01:4ff:f0:9b5d::1/64" ];
     };
     "10-nevarronet".matchConfig.MACAddress = "86:00:00:43:8c:62";
+  };
+
+  services.goatcounter = {
+    enable = true;
+    extraArgs = [ "-websocket" ];
+    proxy = true;
+    port = 7128;
+  };
+  services.nginx = {
+    enable = true;
+    virtualHosts = {
+      "stats.nevarro.space" = {
+        enableACME = true;
+        forceSSL = true;
+        locations."/" = {
+          proxyPass = "http://localhost:7128";
+          recommendedProxySettings = true;
+          proxyWebsockets = true;
+        };
+      };
+      "stats.sumnerevans.com" = {
+        enableACME = true;
+        forceSSL = true;
+        locations."/" = {
+          proxyPass = "http://localhost:7128";
+          recommendedProxySettings = true;
+          proxyWebsockets = true;
+        };
+      };
+    };
   };
 
   services.grafana.enable = true;
