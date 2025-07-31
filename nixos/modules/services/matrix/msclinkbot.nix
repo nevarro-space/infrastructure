@@ -44,8 +44,17 @@ in {
   config = mkIf cfg.enable {
     systemd.services.msclinkbot = {
       description = "MSC Link Bot";
-      requires = [ "matrix-synapse.target" "mscbot_password-key.service" ];
       wantedBy = [ "multi-user.target" ];
+      after =
+        [ "network-online.target" config.services.matrix-synapse.serviceUnit ];
+      wants =
+        [ "network-online.target" config.services.matrix-synapse.serviceUnit ];
+      requires = [
+        "network-online.target"
+        config.services.matrix-synapse.serviceUnit
+        "mscbot_password-key.service"
+      ];
+
       serviceConfig = {
         ExecStart = ''
           ${msclinkbot}/bin/msc-link-bot --config ${mscLinkBotConfigFile}
