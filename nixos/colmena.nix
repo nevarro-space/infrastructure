@@ -9,30 +9,30 @@ in {
       config.permittedInsecurePackages = [ "olm-3.2.16" ];
       overlays = [
         (self: super: { inherit (mineshspc.packages.${system}) mineshspc; })
-        (self: super: {
-          # Custom package that tracks with the latest release of Synapse.
-          matrix-synapse-unwrapped =
-            super.matrix-synapse-unwrapped.overridePythonAttrs (old: rec {
-              pname = "matrix-synapse";
-              version = "1.136.0";
-
-              src = super.fetchFromGitHub {
-                owner = "element-hq";
-                repo = "synapse";
-                rev = "v${version}";
-                hash = "sha256-9nN4sQXCamVi+FRN9++FN5nQmjYZnPKDLxjxEuga6EM=";
-              };
-
-              cargoDeps = super.rustPlatform.fetchCargoVendor {
-                inherit src;
-                name = "${pname}-${version}";
-                hash = "sha256-GX4lVg6aPVlqFgSSGsUg3wi7bne9jVWPTVx8rO5SjL8=";
-              };
-
-              doInstallCheck = false;
-              doCheck = false;
-            });
-        })
+        # (self: super: {
+        #   # Custom package that tracks with the latest release of Synapse.
+        #   matrix-synapse-unwrapped =
+        #     super.matrix-synapse-unwrapped.overridePythonAttrs (old: rec {
+        #       pname = "matrix-synapse";
+        #       version = "1.137.0";
+        #
+        #       src = super.fetchFromGitHub {
+        #         owner = "element-hq";
+        #         repo = "synapse";
+        #         rev = "v${version}";
+        #         hash = "sha256-jnbW1p5JK00Of6XqoDfWs/4SqIztafjkvXUDWhMTm30=";
+        #       };
+        #
+        #       cargoDeps = super.rustPlatform.fetchCargoVendor {
+        #         inherit src;
+        #         name = "${pname}-${version}";
+        #         hash = "sha256-qpgDErV1VVzaUHHQX4ReXCPihdrSKI/4HtbDeQIblR8=";
+        #       };
+        #
+        #       doInstallCheck = false;
+        #       doCheck = false;
+        #     });
+        # })
       ];
     };
   };
