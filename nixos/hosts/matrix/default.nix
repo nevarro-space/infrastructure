@@ -1,4 +1,4 @@
-{ config, ... }: {
+{ config, pkgs, ... }: {
   imports = [ ./hardware-configuration.nix ];
 
   deployment.keys = let
@@ -172,7 +172,7 @@
           "nevarro.space" = "https://matrix.nevarro.space";
         };
         login_shared_secret_map = {
-          "nevarro.space" = "as_token:$MAUTRIX_DISCORD_AS_TOKEN";
+          "nevarro.space" = "as_token:tophi4quoiquoowauqu8uo7ye9oovaiThi1shohGahlaitii4a";
         };
       };
       logging = {
@@ -201,7 +201,26 @@
   };
 
   # Synapse
-  services.matrix-synapse.enable = true;
+  services.matrix-synapse = {
+    enable = true;
+    settings.app_service_config_files = let
+      format = pkgs.formats.yaml { };
+      doublePuppeting = format.generate "double-puppeting.yaml" {
+        id = "doublepuppet";
+        url = "";
+        as_token = "tophi4quoiquoowauqu8uo7ye9oovaiThi1shohGahlaitii4a";
+        hs_token = "hs_token_doesn't_matter";
+        sender_localpart = "Ahya2Iboow";
+        rate_limited = false;
+        namespaces = {
+          users = [{
+            regex = "@.*:nevarro.space";
+            exclusive = true;
+          }];
+        };
+      };
+    in [ doublePuppeting ];
+  };
   services.cleanup-synapse.environmentFile =
     "/run/keys/nevarro_space_cleanup_synapse_environment_file";
 
