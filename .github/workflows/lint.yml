@@ -20,7 +20,7 @@ jobs:
           fail-mode: true
 
       - name: Install Nix
-        uses: DeterminateSystems/nix-installer-action@v20
+        uses: DeterminateSystems/nix-installer-action@v21
 
       - name: Run pre-commit
         run: nix develop --command pre-commit run --all --verbose
