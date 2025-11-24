@@ -12,11 +12,11 @@ jobs:
     environment: production
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           path: infrastructure
 
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           repository: nevarro-space/infrastructure-secrets
           token: ${{ secrets.SECRET_REPO_CLONE_TOKEN }}
