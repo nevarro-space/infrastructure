@@ -20,7 +20,7 @@ in {
 
   services.goatcounter = {
     enable = true;
-    extraArgs = [ "-websocket" ];
+    extraArgs = [ "-websocket"  "-automigrate" ];
     proxy = true;
     port = 7128;
   };
