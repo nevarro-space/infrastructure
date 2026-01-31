@@ -6,7 +6,8 @@ let
     "10.0.1.3" # matrix
     "10.0.1.4" # mineshspc
   ];
-in {
+in
+{
   imports = [ ./hardware-configuration.nix ];
 
   networking.hostName = "monitoring";
@@ -20,7 +21,10 @@ in {
 
   services.goatcounter = {
     enable = true;
-    extraArgs = [ "-websocket"  "-automigrate" ];
+    extraArgs = [
+      "-websocket"
+      "-automigrate"
+    ];
     proxy = true;
     port = 7128;
   };
@@ -55,98 +59,102 @@ in {
     enable = true;
 
     # Make sure that Prometheus is setup for Synapse.
-    scrapeConfigs = (map (ip: {
-      job_name = ip;
-      static_configs = [{ targets = [ "${ip}:9002" ]; }];
-    }) internalIPs) ++ [{
-      job_name = "synapse";
-      scrape_interval = "15s";
-      metrics_path = "/_synapse/metrics";
-      static_configs = [
+    scrapeConfigs =
+      (map (ip: {
+        job_name = ip;
+        static_configs = [ { targets = [ "${ip}:9002" ]; } ];
+      }) internalIPs)
+      ++ [
         {
-          targets = [ "10.0.1.3:9009" ];
-          labels = {
-            instance = matrixDomain;
-            job = "master";
-            index = "1";
-          };
-        }
-        {
-          # Federation sender 1
-          targets = [ "10.0.1.3:9101" ];
-          labels = {
-            instance = matrixDomain;
-            job = "federation_sender";
-            index = "1";
-          };
-        }
-        {
-          # Federation sender 2
-          targets = [ "10.0.1.3:9106" ];
-          labels = {
-            instance = matrixDomain;
-            job = "federation_sender";
-            index = "2";
-          };
-        }
-        {
-          # Federation reader 1
-          targets = [ "10.0.1.3:9102" ];
-          labels = {
-            instance = matrixDomain;
-            job = "federation_reader";
-            index = "1";
-          };
-        }
-        {
-          # Event persister 1
-          targets = [ "10.0.1.3:9103" ];
-          labels = {
-            instance = matrixDomain;
-            job = "event_persister";
-            index = "1";
-          };
-        }
-        {
-          # Event persister 2
-          targets = [ "10.0.1.3:9107" ];
-          labels = {
-            instance = matrixDomain;
-            job = "event_persister";
-            index = "2";
-          };
-        }
-        {
-          # Synchotron 1
-          targets = [ "10.0.1.3:9104" ];
-          labels = {
-            instance = matrixDomain;
-            job = "synchotron";
-            index = "1";
-          };
-        }
-        {
-          # Media repo 1
-          targets = [ "10.0.1.3:9105" ];
-          labels = {
-            instance = matrixDomain;
-            job = "media_repo";
-            index = "1";
-          };
+          job_name = "synapse";
+          scrape_interval = "15s";
+          metrics_path = "/_synapse/metrics";
+          static_configs = [
+            {
+              targets = [ "10.0.1.3:9009" ];
+              labels = {
+                instance = matrixDomain;
+                job = "master";
+                index = "1";
+              };
+            }
+            {
+              # Federation sender 1
+              targets = [ "10.0.1.3:9101" ];
+              labels = {
+                instance = matrixDomain;
+                job = "federation_sender";
+                index = "1";
+              };
+            }
+            {
+              # Federation sender 2
+              targets = [ "10.0.1.3:9106" ];
+              labels = {
+                instance = matrixDomain;
+                job = "federation_sender";
+                index = "2";
+              };
+            }
+            {
+              # Federation reader 1
+              targets = [ "10.0.1.3:9102" ];
+              labels = {
+                instance = matrixDomain;
+                job = "federation_reader";
+                index = "1";
+              };
+            }
+            {
+              # Event persister 1
+              targets = [ "10.0.1.3:9103" ];
+              labels = {
+                instance = matrixDomain;
+                job = "event_persister";
+                index = "1";
+              };
+            }
+            {
+              # Event persister 2
+              targets = [ "10.0.1.3:9107" ];
+              labels = {
+                instance = matrixDomain;
+                job = "event_persister";
+                index = "2";
+              };
+            }
+            {
+              # Synchotron 1
+              targets = [ "10.0.1.3:9104" ];
+              labels = {
+                instance = matrixDomain;
+                job = "synchotron";
+                index = "1";
+              };
+            }
+            {
+              # Media repo 1
+              targets = [ "10.0.1.3:9105" ];
+              labels = {
+                instance = matrixDomain;
+                job = "media_repo";
+                index = "1";
+              };
+            }
+          ];
         }
       ];
-    }];
   };
 
   services.healthcheck = {
     enable = true;
-    url =
-      "https://heartbeat.uptimerobot.com/m798927859-250faf0ac3b6657ccc5f90b1923aa6afc3719748";
-    disks = [{
-      path = "/";
-      threshold = 95;
-      url =
-        "https://heartbeat.uptimerobot.com/m798927865-2e9fa771d33b4450dca50d0a0d0ea33b1685d3d8";
-    }];
+    url = "https://heartbeat.uptimerobot.com/m798927859-250faf0ac3b6657ccc5f90b1923aa6afc3719748";
+    disks = [
+      {
+        path = "/";
+        threshold = 95;
+        url = "https://heartbeat.uptimerobot.com/m798927865-2e9fa771d33b4450dca50d0a0d0ea33b1685d3d8";
+      }
+    ];
   };
 }

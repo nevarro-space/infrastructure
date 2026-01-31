@@ -1,6 +1,8 @@
 { nixpkgs, mineshspc, ... }:
-let system = "x86_64-linux";
-in {
+let
+  system = "x86_64-linux";
+in
+{
   meta = {
     description = "Nevarro Infrastructure";
 
@@ -37,25 +39,32 @@ in {
     };
   };
 
-  defaults = { config, ... }: {
-    imports = [ ./modules ];
+  defaults =
+    { config, ... }:
+    {
+      imports = [ ./modules ];
 
-    deployment.replaceUnknownProfiles = true;
+      deployment.replaceUnknownProfiles = true;
 
-    system.stateVersion = "23.05";
+      system.stateVersion = "23.05";
 
-    swapDevices = [{
-      device = "/var/swapfile";
-      size = 4096;
-    }];
+      swapDevices = [
+        {
+          device = "/var/swapfile";
+          size = 4096;
+        }
+      ];
 
-    services.logrotate.enable = true;
-  };
+      services.logrotate.enable = true;
+    };
 
   monitoring = {
     deployment = {
       targetHost = "monitoring.nevarro.space";
-      tags = [ "hetzner" "ashburn" ];
+      tags = [
+        "hetzner"
+        "ashburn"
+      ];
     };
 
     imports = [ ./hosts/monitoring ];
@@ -64,7 +73,10 @@ in {
   matrix = {
     deployment = {
       targetHost = "matrix.nevarro.space";
-      tags = [ "hetzner" "ashburn" ];
+      tags = [
+        "hetzner"
+        "ashburn"
+      ];
     };
 
     imports = [ ./hosts/matrix ];
@@ -73,7 +85,10 @@ in {
   mineshspc = {
     deployment = {
       targetHost = "mineshspc.com";
-      tags = [ "hetzner" "ashburn" ];
+      tags = [
+        "hetzner"
+        "ashburn"
+      ];
     };
 
     imports = [ ./hosts/mineshspc ];

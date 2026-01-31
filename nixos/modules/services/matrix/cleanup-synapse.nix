@@ -2,7 +2,12 @@
 # - https://levans.fr/shrink-synapse-database.html
 # - https://foss-notes.blog.nomagic.uk/2021/03/matrix-database-house-cleaning/
 # - https://git.envs.net/envs/matrix-conf/src/branch/master/usr/local/bin
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 with pkgs;
 with lib;
 let
@@ -12,8 +17,7 @@ let
   adminV1Url = "http://localhost:8008/_synapse/admin/v1";
   adminV2Url = "http://localhost:8008/_synapse/admin/v2";
   adminMediaRepoUrl = "http://localhost:8011/_synapse/admin/v1";
-  adminCurl =
-    ''${curl}/bin/curl --header "Authorization: Bearer $CLEANUP_ACCESS_TOKEN"'';
+  adminCurl = ''${curl}/bin/curl --header "Authorization: Bearer $CLEANUP_ACCESS_TOKEN"'';
 
   # Delete old cached remote media
   purgeRemoteMedia = writeShellScriptBin "purge-remote-media" ''
@@ -68,7 +72,8 @@ let
 
     systemctl start matrix-synapse.target
   '';
-in {
+in
+{
   options.services.cleanup-synapse = {
     environmentFile = mkOption {
       type = types.path;
@@ -139,8 +144,10 @@ in {
     # };
 
     # Allow root to manage matrix-synapse database.
-    services.postgresql.ensureUsers = [{
-      name = "root";
-    }];
+    services.postgresql.ensureUsers = [
+      {
+        name = "root";
+      }
+    ];
   };
 }

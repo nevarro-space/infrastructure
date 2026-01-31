@@ -1,4 +1,8 @@
-{ lib, fetchFromGitHub, buildGoModule }:
+{
+  lib,
+  fetchFromGitHub,
+  buildGoModule,
+}:
 buildGoModule {
   pname = "msclinkbot";
   version = "unstable-2024-07-12";
@@ -16,8 +20,7 @@ buildGoModule {
 
   meta = with lib; {
     homepage = "https://git.hnitbjorg.xyz/~edwargix/msc-link-bot";
-    description =
-      "A re-write of @msclinkbot:matrix.org with support for encrypted rooms.";
+    description = "A re-write of @msclinkbot:matrix.org with support for encrypted rooms.";
     license = licenses.mit;
     maintainers = with maintainers; [ sumnerevans ];
   };

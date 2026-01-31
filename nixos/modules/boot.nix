@@ -1,8 +1,12 @@
 {
   boot = {
     loader.grub.device = "/dev/sda";
-    initrd.availableKernelModules =
-      [ "ata_piix" "uhci_hcd" "xen_blkfront" "vmw_pvscsi" ];
+    initrd.availableKernelModules = [
+      "ata_piix"
+      "uhci_hcd"
+      "xen_blkfront"
+      "vmw_pvscsi"
+    ];
     initrd.kernelModules = [ "nvme" ];
     tmp.cleanOnBoot = true;
     loader.timeout = 10;

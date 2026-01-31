@@ -1,5 +1,7 @@
-let promPort = 9002;
-in {
+let
+  promPort = 9002;
+in
+{
   config = {
     services.prometheus.exporters.node = {
       enable = true;

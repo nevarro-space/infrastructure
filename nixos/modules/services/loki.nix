@@ -1,6 +1,8 @@
 { config, lib, ... }:
-let lokiCfg = config.services.loki;
-in lib.mkIf lokiCfg.enable {
+let
+  lokiCfg = config.services.loki;
+in
+lib.mkIf lokiCfg.enable {
   services.loki.configuration = {
     auth_enabled = false;
     server.http_listen_port = 3100;

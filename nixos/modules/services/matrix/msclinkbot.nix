@@ -1,4 +1,9 @@
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 with lib;
 let
   cfg = config.services.msclinkbot;
@@ -18,16 +23,18 @@ let
 
     logging = {
       min_level = "debug";
-      writers = [{
-        type = "stdout";
-        format = "json";
-      }];
+      writers = [
+        {
+          type = "stdout";
+          format = "json";
+        }
+      ];
     };
   };
   format = pkgs.formats.yaml { };
-  mscLinkBotConfigFile =
-    format.generate "msclinkbot.config.yaml" mscLinkBotConfig;
-in {
+  mscLinkBotConfigFile = format.generate "msclinkbot.config.yaml" mscLinkBotConfig;
+in
+{
   options = {
     services.msclinkbot = {
       enable = mkEnableOption "MSC Link Bot";
@@ -45,10 +52,14 @@ in {
     systemd.services.msclinkbot = {
       description = "MSC Link Bot";
       wantedBy = [ "multi-user.target" ];
-      after =
-        [ "network-online.target" config.services.matrix-synapse.serviceUnit ];
-      wants =
-        [ "network-online.target" config.services.matrix-synapse.serviceUnit ];
+      after = [
+        "network-online.target"
+        config.services.matrix-synapse.serviceUnit
+      ];
+      wants = [
+        "network-online.target"
+        config.services.matrix-synapse.serviceUnit
+      ];
       requires = [
         "network-online.target"
         config.services.matrix-synapse.serviceUnit
@@ -77,6 +88,8 @@ in {
     };
 
     # Add a backup service.
-    services.backup.backups.msclinkbot = { path = cfg.dataDir; };
+    services.backup.backups.msclinkbot = {
+      path = cfg.dataDir;
+    };
   };
 }

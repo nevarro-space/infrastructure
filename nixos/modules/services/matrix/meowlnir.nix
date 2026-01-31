@@ -1,16 +1,20 @@
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 let
   cfg = config.services.meowlnir;
   format = pkgs.formats.yaml { };
 
   settingsFile = "${cfg.dataDir}/config.yaml";
-  settingsFileUnsubstituted =
-    format.generate "meowlnir-config-unsubstituted.yaml" cfg.settings;
+  settingsFileUnsubstituted = format.generate "meowlnir-config-unsubstituted.yaml" cfg.settings;
 
   registrationFile = "${cfg.dataDir}/registration.yaml";
-  registrationFileUnsubstituted =
-    format.generate "meowlnir-registration-unsubstituted.yaml" cfg.registration;
-in {
+  registrationFileUnsubstituted = format.generate "meowlnir-registration-unsubstituted.yaml" cfg.registration;
+in
+{
   options.services.meowlnir = {
     enable = lib.mkEnableOption "meowlnir service";
 
@@ -26,11 +30,8 @@ in {
             };
             address = lib.mkOption {
               type = lib.types.str;
-              default = "http://${cfg.settings.meowlnir.hostname}:${
-                  toString cfg.settings.meowlnir.port
-                }";
-              defaultText = lib.literalExpression
-                "http://\${config.services.meowlnir.settings.meowlnir.hostname}:\${toString config.services.meowlnir.settings.meowlnir.port}";
+              default = "http://${cfg.settings.meowlnir.hostname}:${toString cfg.settings.meowlnir.port}";
+              defaultText = lib.literalExpression "http://\${config.services.meowlnir.settings.meowlnir.hostname}:\${toString config.services.meowlnir.settings.meowlnir.port}";
               description = "The address for the appservice to listen on.";
             };
             hostname = lib.mkOption {
@@ -45,8 +46,8 @@ in {
             };
           };
           encryption = {
-            enable = lib.mkEnableOption
-              "end-to-end encryption support. This requires MSC3202, MSC4190 and MSC4203 to be implemented on the server"
+            enable =
+              lib.mkEnableOption "end-to-end encryption support. This requires MSC3202, MSC4190 and MSC4203 to be implemented on the server"
               // {
                 default = true;
               };
@@ -58,7 +59,10 @@ in {
           };
           database = {
             type = lib.mkOption {
-              type = lib.types.enum [ "sqlite3-fk-wal" "postgres" ];
+              type = lib.types.enum [
+                "sqlite3-fk-wal"
+                "postgres"
+              ];
               default = "sqlite3-fk-wal";
               description = ''
                 The type of database to use. Supported values are
@@ -68,8 +72,7 @@ in {
             uri = lib.mkOption {
               type = lib.types.str;
               default = "file:${cfg.dataDir}/meowlnir.db?_txlock=immediate";
-              defaultText = lib.literalExpression
-                "file:\${config.services.meowlnir.dataDir}/meowlnir.db?_txlock=immediate";
+              defaultText = lib.literalExpression "file:\${config.services.meowlnir.dataDir}/meowlnir.db?_txlock=immediate";
               description = "The database URI.";
             };
           };
@@ -81,10 +84,12 @@ in {
             };
             writers = lib.mkOption {
               type = lib.types.listOf lib.types.attrs;
-              default = [{
-                type = "stdout";
-                format = "json";
-              }];
+              default = [
+                {
+                  type = "stdout";
+                  format = "json";
+                }
+              ];
             };
           };
         };
@@ -108,8 +113,7 @@ in {
 
         synapse_db = {
           type = "postgres";
-          uri =
-            "postgres://meowlnir:meowlnir@localhost/matrix-synapse?sslmode=disable";
+          uri = "postgres://meowlnir:meowlnir@localhost/matrix-synapse?sslmode=disable";
         };
       };
       default = { };
@@ -131,10 +135,12 @@ in {
         hs_token = "$MEOWLNIR_HS_TOKEN";
         sender_localpart = "mohMex1ro0zaeraimeem";
         namespaces = {
-          users = [{
-            regex = "@abuse:example.com";
-            exclusive = true;
-          }];
+          users = [
+            {
+              regex = "@abuse:example.com";
+              exclusive = true;
+            }
+          ];
         };
       };
       default = {
@@ -182,8 +188,7 @@ in {
 
     serviceDependencies = lib.mkOption {
       type = with lib.types; listOf str;
-      default = lib.optional config.services.matrix-synapse.enable
-        config.services.matrix-synapse.serviceUnit;
+      default = lib.optional config.services.matrix-synapse.enable config.services.matrix-synapse.serviceUnit;
       defaultText = lib.literalExpression ''
         optional config.services.matrix-synapse.enable config.services.matrix-synapse.serviceUnits
       '';
@@ -195,8 +200,7 @@ in {
     registerToSynapse = lib.mkOption {
       type = lib.types.bool;
       default = config.services.matrix-synapse.enable;
-      defaultText =
-        lib.literalExpression "config.services.matrix-synapse.enable";
+      defaultText = lib.literalExpression "config.services.matrix-synapse.enable";
       description = ''
         Whether to add the bridge's app service registration file to
         `services.matrix-synapse.settings.app_service_config_files` and enable
@@ -234,8 +238,7 @@ in {
 
     services.meowlnir.settings = {
       # Note: this is defined here to avoid the docs depending on `config`
-      homeserver.domain =
-        lib.mkDefault config.services.matrix-synapse.settings.server_name;
+      homeserver.domain = lib.mkDefault config.services.matrix-synapse.settings.server_name;
     };
 
     systemd.services.meowlnir = {

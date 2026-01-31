@@ -12,7 +12,12 @@
 #    This service can be set as a prerequisite for starting up other services
 #    that depend on that data.
 
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 with lib;
 let
   cfg = config.services.backup;
@@ -33,7 +38,8 @@ let
 
   # Scripts
   # ===========================================================================
-  resticBackupScript = paths: exclude:
+  resticBackupScript =
+    paths: exclude:
     pkgs.writeScriptBin "restic-backup" ''
       #!${pkgs.stdenv.shell}
       set -xe
@@ -70,14 +76,14 @@ let
 
   # Services
   # ===========================================================================
-  resticBackupService = backups: exclude:
+  resticBackupService =
+    backups: exclude:
     let
       paths = mapAttrsToList (n: { path, ... }: path) backups;
-      script =
-        resticBackupScript paths (exclude ++ [ ".restic-backup-restored" ]);
-    in {
-      description =
-        "Backup ${concatStringsSep ", " paths} to ${resticRepository}";
+      script = resticBackupScript paths (exclude ++ [ ".restic-backup-restored" ]);
+    in
+    {
+      description = "Backup ${concatStringsSep ", " paths} to ${resticRepository}";
       environment = resticEnvironment;
       startAt = frequency;
       serviceConfig = {
@@ -111,45 +117,50 @@ let
       ${resticCmd} snapshots || ${resticCmd} init
     '';
   };
-in {
-  options = let
-    backupDirOpts = { name, ... }: {
-      options = {
-        path = mkOption {
+in
+{
+  options =
+    let
+      backupDirOpts =
+        { name, ... }:
+        {
+          options = {
+            path = mkOption {
+              type = types.str;
+              description = "The path to backup using restic.";
+            };
+          };
+        };
+    in
+    {
+      services.backup = {
+        backups = mkOption {
+          type = with types; attrsOf (submodule backupDirOpts);
+          description = "List of backup configurations.";
+          default = { };
+        };
+
+        exclude = mkOption {
+          type = with types; listOf str;
+          description = ''
+            List of patterns to exclude. `.restic-backup-restored` files are
+            already ignored.
+          '';
+          default = [ ];
+          example = [ ".git/*" ];
+        };
+
+        backupCompleteURL = mkOption {
           type = types.str;
-          description = "The path to backup using restic.";
+          description = "URL to ping on completion of this server's backup job.";
+        };
+
+        pruneCompleteURL = mkOption {
+          type = types.str;
+          description = "URL to ping on completion of this server's prune job.";
         };
       };
     };
-  in {
-    services.backup = {
-      backups = mkOption {
-        type = with types; attrsOf (submodule backupDirOpts);
-        description = "List of backup configurations.";
-        default = { };
-      };
-
-      exclude = mkOption {
-        type = with types; listOf str;
-        description = ''
-          List of patterns to exclude. `.restic-backup-restored` files are
-          already ignored.
-        '';
-        default = [ ];
-        example = [ ".git/*" ];
-      };
-
-      backupCompleteURL = mkOption {
-        type = types.str;
-        description = "URL to ping on completion of this server's backup job.";
-      };
-
-      pruneCompleteURL = mkOption {
-        type = types.str;
-        description = "URL to ping on completion of this server's prune job.";
-      };
-    };
-  };
 
   config = mkIf (cfg.backups != { }) {
     systemd.services = {

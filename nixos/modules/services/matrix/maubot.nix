@@ -1,8 +1,14 @@
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 let
   port = 29316;
   dataDir = "/var/lib/maubot";
-in {
+in
+{
   options = {
     services.maubot-docker.enable = lib.mkEnableOption "Maubot via Docker";
   };
@@ -13,8 +19,7 @@ in {
       containers.maubot = {
         volumes = [ "${dataDir}:/data:z" ];
         ports = [ "${toString port}:${toString port}" ];
-        image =
-          "dock.mau.dev/maubot/maubot:094e1eca35fd7d859bdf03db0555925986265996-amd64";
+        image = "dock.mau.dev/maubot/maubot:094e1eca35fd7d859bdf03db0555925986265996-amd64";
       };
     };
 
