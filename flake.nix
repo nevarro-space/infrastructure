@@ -6,33 +6,50 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    flake-utils.url = "github:numtide/flake-utils";
     mineshspc = {
       url = "github:ColoradoSchoolOfMines/mineshspc.com";
       inputs.nixpkgs.follows = "nixpkgs";
-      inputs.flake-utils.follows = "flake-utils";
     };
   };
 
-  outputs = inputs@{ self, colmena, nixpkgs, flake-utils, ... }:
+  outputs =
+    inputs@{
+      self,
+      colmena,
+      nixpkgs,
+      flake-parts,
+      ...
+    }:
     {
       colmenaHive = colmena.lib.makeHive self.outputs.colmena;
       colmena = import ./nixos/colmena.nix inputs;
-    } // (flake-utils.lib.eachDefaultSystem (system:
-      let
-        pkgs = import nixpkgs {
-          inherit system;
-          config.allowUnfree = true;
+    }
+    // (flake-parts.lib.mkFlake { inherit inputs; } {
+      systems = [ "x86_64-linux" ];
+      perSystem =
+        {
+          lib,
+          pkgs,
+          system,
+          ...
+        }:
+        {
+          _module.args.pkgs = import inputs.nixpkgs {
+            inherit system;
+          };
+
+          formatter = pkgs.nixfmt-tree;
+
+          devShells.default = pkgs.mkShell {
+            packages = with pkgs; [
+              cargo
+              colmena.packages.${system}.colmena
+              nixfmt-tree
+              openssl
+              pre-commit
+              sops
+            ];
+          };
         };
-      in {
-        devShells.default = pkgs.mkShell {
-          packages = with pkgs; [
-            cargo
-            colmena.packages.${system}.colmena
-            openssl
-            pre-commit
-            sops
-          ];
-        };
-      }));
+    });
 }
