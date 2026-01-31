@@ -51,7 +51,7 @@ in
     let
       yamlFormat = pkgs.formats.yaml { };
       siteConfig = {
-        registration_enabled = false;
+        registration_enabled = true;
 
         database = {
           type = "sqlite3";
