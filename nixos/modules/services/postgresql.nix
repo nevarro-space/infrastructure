@@ -3,7 +3,7 @@ with lib;
 mkMerge [
   (mkIf config.services.postgresql.enable {
     services.postgresql = {
-      extraPlugins = with config.services.postgresql.package.pkgs; [ pg_repack ];
+      extensions = with config.services.postgresql.package.pkgs; [ pg_repack ];
       settings = {
         max_connections = 500;
         shared_buffers = "4GB";

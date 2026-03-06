@@ -7,6 +7,8 @@ in
 mkIf cfg.enable {
   services.grafana.settings = {
     server.domain = serverName;
+
+    security.secret_key = "$__file{/run/keys/grafana_secret_key}";
   };
 
   services.nginx = {

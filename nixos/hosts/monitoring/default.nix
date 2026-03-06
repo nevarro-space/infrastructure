@@ -10,6 +10,16 @@ in
 {
   imports = [ ./hardware-configuration.nix ];
 
+  deployment.keys = {
+    grafana_secret_key = {
+      keyCommand = [
+        "cat"
+        "secrets/grafana_secret_key"
+      ];
+      user = "grafana";
+    };
+  };
+
   networking.hostName = "monitoring";
   systemd.network.networks = {
     "10-wan" = {
@@ -53,6 +63,7 @@ in
   };
 
   services.grafana.enable = true;
+  systemd.services.grafana.serviceConfig.SupplementaryGroups = [ "keys" ];
   services.loki.enable = true;
 
   services.prometheus = {

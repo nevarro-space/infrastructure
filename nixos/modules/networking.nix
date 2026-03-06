@@ -20,5 +20,7 @@
     };
   };
 
+  networking.useNetworkd = true;
+
   services.fail2ban.enable = true;
 }
