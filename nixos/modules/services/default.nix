@@ -1,6 +1,7 @@
 {
   imports = [
     ./acme.nix
+    ./alloy.nix
     ./grafana.nix
     ./healthcheck.nix
     ./loki.nix
@@ -8,7 +9,6 @@
     ./nginx.nix
     ./postgresql.nix
     ./prometheus.nix
-    ./promtail.nix
     ./restic.nix
     ./ssh.nix
   ];
