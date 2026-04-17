@@ -8,7 +8,11 @@ let
   ];
 in
 {
-  imports = [ ./hardware-configuration.nix ];
+  imports = [
+    ./hardware-configuration.nix
+    ./goatcounter.nix
+    ./grafana.nix
+  ];
 
   deployment.keys = {
     grafana_secret_key = {
@@ -29,41 +33,6 @@ in
     "10-nevarronet".matchConfig.MACAddress = "86:00:00:43:8c:62";
   };
 
-  services.goatcounter = {
-    enable = true;
-    extraArgs = [
-      "-websocket"
-      "-automigrate"
-    ];
-    proxy = true;
-    port = 7128;
-  };
-  services.nginx = {
-    enable = true;
-    virtualHosts = {
-      "stats.nevarro.space" = {
-        enableACME = true;
-        forceSSL = true;
-        locations."/" = {
-          proxyPass = "http://localhost:7128";
-          recommendedProxySettings = true;
-          proxyWebsockets = true;
-        };
-      };
-      "stats.sumnerevans.com" = {
-        enableACME = true;
-        forceSSL = true;
-        locations."/" = {
-          proxyPass = "http://localhost:7128";
-          recommendedProxySettings = true;
-          proxyWebsockets = true;
-        };
-      };
-    };
-  };
-
-  services.grafana.enable = true;
-  systemd.services.grafana.serviceConfig.SupplementaryGroups = [ "keys" ];
   services.loki.enable = true;
 
   services.prometheus = {

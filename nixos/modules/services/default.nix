@@ -2,7 +2,6 @@
   imports = [
     ./acme.nix
     ./alloy.nix
-    ./grafana.nix
     ./healthcheck.nix
     ./loki.nix
     ./matrix
