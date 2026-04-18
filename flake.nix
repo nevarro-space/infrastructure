@@ -42,12 +42,8 @@
 
           devShells.default = pkgs.mkShell {
             packages = with pkgs; [
-              cargo
               colmena.packages.${system}.colmena
-              nixfmt-tree
-              openssl
               pre-commit
-              sops
             ];
           };
         };
