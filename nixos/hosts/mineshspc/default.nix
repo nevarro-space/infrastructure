@@ -52,6 +52,9 @@ in
       yamlFormat = pkgs.formats.yaml { };
       siteConfig = {
         registration_enabled = false;
+        homepage = {
+          h2_text = "Thanks for a great 2026 competition!";
+        };
 
         database = {
           type = "sqlite3";
@@ -90,6 +93,14 @@ in
         path = [
           pkgs.yq
           pkgs.envsubst
+        ];
+        requires = [
+          "network-online.target"
+          "mineshspc_env-key.service"
+        ];
+        after = [
+          "network-online.target"
+          "mineshspc_env-key.service"
         ];
         serviceConfig = {
           Type = "oneshot";
@@ -132,7 +143,6 @@ in
           Group = "mineshspc";
           ExecStart = "${pkgs.mineshspc}/bin/mineshspc -config ${minesHSPCDataDir}/config.yaml";
           Restart = "on-failure";
-          EnvironmentFile = "/run/keys/mineshspc_env";
         };
         restartTriggers = [ unsubstituted ];
       };
