@@ -90,7 +90,7 @@ lib.mkIf config.services.matrix-synapse.enable {
         }
         {
           port = 9009;
-          bind_addresses = [ "127.0.0.1" ];
+          bind_addresses = [ "0.0.0.0" ];
           tls = false;
           type = "metrics";
           resources = [ { names = [ "metrics" ]; } ];
@@ -165,7 +165,7 @@ lib.mkIf config.services.matrix-synapse.enable {
         mkMetricsListener = port: {
           inherit port;
           type = "metrics";
-          bind_addresses = [ "127.0.0.1" ];
+          bind_addresses = [ "0.0.0.0" ];
           resources = [ { names = [ "metrics" ]; } ];
         };
         mkReplicationListener = port: {
@@ -264,12 +264,12 @@ lib.mkIf config.services.matrix-synapse.enable {
   networking.firewall.allowedTCPPorts = [
     9009
     9101
-    9106
     9102
     9103
-    9107
     9104
     9105
+    9106
+    9107
   ];
 
   # Make sure that Postgres is setup for Synapse.
