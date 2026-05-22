@@ -80,7 +80,7 @@ in
           writers = [
             {
               type = "stdout";
-              format = "pretty-colored";
+              format = "json";
             }
           ];
         };
