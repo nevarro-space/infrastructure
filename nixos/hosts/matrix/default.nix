@@ -1,4 +1,9 @@
-{ config, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 {
   imports = [ ./hardware-configuration.nix ];
 
@@ -120,6 +125,12 @@
   services.maubot-docker.enable = true;
 
   # Discord <-> Matrix Bridge
+  # Allow mautrix-discord directory to be traversed by matrix-synapse (which is
+  # "other" relative to the mautrix-discord:mautrix-discord owned dir). Without
+  # o+x, synapse can't reach the registration file even though it has group read
+  # via mautrix-discord-registration.
+  systemd.services.mautrix-discord-registration.serviceConfig.StateDirectoryMode = lib.mkForce "0751";
+
   services.mautrix-discord = {
     enable = true;
     settings = {
