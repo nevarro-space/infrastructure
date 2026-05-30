@@ -75,6 +75,8 @@ in
           secret_key = "$MINESHSPC_RECAPTCHA_SECRET_KEY";
         };
 
+        admin_emails = "$MINESHSPC_ADMIN_EMAILS";
+
         logging = {
           min_level = "debug";
           writers = [
