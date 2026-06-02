@@ -1,3 +1,4 @@
+{ lib, ... }:
 {
   services.goatcounter = {
     enable = true;
@@ -11,8 +12,15 @@
 
   services.nginx = {
     enable = true;
-    virtualHosts = {
-      "stats.nevarro.space" = {
+    virtualHosts =
+      let
+        domains = [
+          "stats.nevarro.space"
+          "stats.scopedcommits.com"
+          "stats.sumnerevans.com"
+        ];
+      in
+      lib.genAttrs domains (_: {
         enableACME = true;
         forceSSL = true;
         locations."/" = {
@@ -20,16 +28,6 @@
           recommendedProxySettings = true;
           proxyWebsockets = true;
         };
-      };
-      "stats.sumnerevans.com" = {
-        enableACME = true;
-        forceSSL = true;
-        locations."/" = {
-          proxyPass = "http://localhost:7128";
-          recommendedProxySettings = true;
-          proxyWebsockets = true;
-        };
-      };
-    };
+      });
   };
 }
