@@ -58,69 +58,6 @@ in
                 index = "1";
               };
             }
-            {
-              # Federation sender 1
-              targets = [ "10.0.1.3:9101" ];
-              labels = {
-                instance = matrixDomain;
-                job = "federation_sender";
-                index = "1";
-              };
-            }
-            {
-              # Federation sender 2
-              targets = [ "10.0.1.3:9106" ];
-              labels = {
-                instance = matrixDomain;
-                job = "federation_sender";
-                index = "2";
-              };
-            }
-            {
-              # Federation reader 1
-              targets = [ "10.0.1.3:9102" ];
-              labels = {
-                instance = matrixDomain;
-                job = "federation_reader";
-                index = "1";
-              };
-            }
-            {
-              # Event persister 1
-              targets = [ "10.0.1.3:9103" ];
-              labels = {
-                instance = matrixDomain;
-                job = "event_persister";
-                index = "1";
-              };
-            }
-            {
-              # Event persister 2
-              targets = [ "10.0.1.3:9107" ];
-              labels = {
-                instance = matrixDomain;
-                job = "event_persister";
-                index = "2";
-              };
-            }
-            {
-              # Synchotron 1
-              targets = [ "10.0.1.3:9104" ];
-              labels = {
-                instance = matrixDomain;
-                job = "synchotron";
-                index = "1";
-              };
-            }
-            {
-              # Media repo 1
-              targets = [ "10.0.1.3:9105" ];
-              labels = {
-                instance = matrixDomain;
-                job = "media_repo";
-                index = "1";
-              };
-            }
           ];
         }
       ];
