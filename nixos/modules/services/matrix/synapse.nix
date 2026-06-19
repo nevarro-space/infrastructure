@@ -253,7 +253,6 @@ lib.mkIf config.services.matrix-synapse.enable {
         value = {
           serviceConfig.SupplementaryGroups = [
             "keys"
-            "mautrix-discord-registration"
             "meowlnir"
           ];
         };

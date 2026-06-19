@@ -41,7 +41,7 @@ NixOS infrastructure managed by [colmena](https://colmena.cli.rs/). Three hosts 
 - `restic.nix` — custom backup module; exposes `services.backup.backups` attrset; backs up to Backblaze B2, restores on first boot if `.restic-backup-restored` is absent
 - `healthcheck.nix` — UptimeRobot heartbeat pings for uptime and disk thresholds
 - `matrix/synapse.nix` — Synapse config with workers: 2 federation senders, 2 event persisters, 1 synchotron, 1 media repo; nginx routes traffic to appropriate workers
-- `matrix/` — also contains meowlnir (moderation bot), maubot, mautrix-discord bridge, msclinkbot, cleanup-synapse
+- `matrix/` — also contains meowlnir (moderation bot), maubot, msclinkbot, cleanup-synapse
 
 ## Secrets
 

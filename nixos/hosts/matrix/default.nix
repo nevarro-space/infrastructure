@@ -26,7 +26,6 @@
       # Matrix Bot Secrets
       maubot_yaml = keyFor "matrix/bots/maubot.yaml" "root";
       meowlnir_env = keyFor "matrix/meowlnir_env" "meowlnir";
-      mautrix_discord_env = keyFor "matrix/mautrix_discord_env" "mautrix-discord";
       mscbot_password = keyFor "matrix/bots/mscbot" "msclinkbot";
 
       # Matrix Server Secrets
@@ -123,94 +122,6 @@
 
   # Maubot
   services.maubot-docker.enable = true;
-
-  # Discord <-> Matrix Bridge
-  # Allow mautrix-discord directory to be traversed by matrix-synapse (which is
-  # "other" relative to the mautrix-discord:mautrix-discord owned dir). Without
-  # o+x, synapse can't reach the registration file even though it has group read
-  # via mautrix-discord-registration.
-  systemd.services.mautrix-discord-registration.serviceConfig.StateDirectoryMode = lib.mkForce "0751";
-
-  services.mautrix-discord = {
-    enable = true;
-    settings = {
-      homeserver = {
-        address = "https://matrix.nevarro.space";
-        domain = "nevarro.space";
-      };
-      appservice = {
-        address = "http://localhost:29334";
-        port = 29334;
-        id = "discord";
-        bot = {
-          username = "discordbot";
-          displayname = "Discord bridge bot";
-          avatar = "mxc://maunium.net/nIdEykemnwdisvHbpxflpDlC";
-        };
-        as_token = "$MAUTRIX_DISCORD_AS_TOKEN";
-        hs_token = "$MAUTRIX_DISCORD_HS_TOKEN";
-        database = {
-          type = "sqlite3-fk-wal";
-          uri = "file:${config.services.mautrix-discord.dataDir}/mautrix-discord.db?_txlock=immediate";
-        };
-      };
-      bridge = {
-        delivery_receipts = true;
-        delete_portal_on_channel_delete = true;
-        federate_rooms = false;
-        encryption = {
-          allow = true;
-          default = true;
-          require = true;
-          allow_key_sharing = true;
-          verification_levels = {
-            receive = "unverified";
-            send = "cross-signed-tofu";
-            share = "unverified";
-          };
-        };
-        permissions = {
-          "nevarro.space" = "user";
-          "@sumner:nevarro.space" = "admin";
-        };
-        direct_media = {
-          enabled = true;
-          server_name = "discord-media.nevarro.space";
-          server_key = "ed25519 Eh81nA EkQgQPrpncdecK1Yh/Is7H1iII1ibn67CZFWhleEkh0";
-        };
-        double_puppet_server_map = {
-          "nevarro.space" = "https://matrix.nevarro.space";
-        };
-        login_shared_secret_map = {
-          "nevarro.space" = "as_token:tophi4quoiquoowauqu8uo7ye9oovaiThi1shohGahlaitii4a";
-        };
-      };
-      logging = {
-        min_level = "debug";
-        writers = [
-          {
-            type = "stdout";
-            format = "json";
-          }
-        ];
-      };
-    };
-    environmentFile = "/run/keys/mautrix_discord_env";
-  };
-  services.nginx = {
-    enable = true;
-
-    virtualHosts."discord-media.nevarro.space" = {
-      enableACME = true;
-      forceSSL = true;
-      locations."/" = {
-        proxyPass = "http://localhost:29334";
-        extraConfig = ''
-          access_log /var/log/nginx/mautrix-discord.access.log;
-        '';
-      };
-    };
-  };
 
   # Synapse
   services.matrix-synapse = {
