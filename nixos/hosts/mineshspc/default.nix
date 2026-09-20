@@ -77,6 +77,8 @@ in
 
         admin_emails = "$MINESHSPC_ADMIN_EMAILS";
 
+        archive = import ./archive.nix;
+
         logging = {
           min_level = "debug";
           writers = [
