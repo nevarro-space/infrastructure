@@ -53,6 +53,7 @@ in
       siteConfig = {
         registration_enabled = false;
         homepage = {
+          schedule_date = "Date TBD";
           h2_text = "Thanks for a great 2026 competition!";
         };
 
