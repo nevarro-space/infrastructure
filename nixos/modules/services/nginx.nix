@@ -11,9 +11,6 @@ lib.mkIf nginxCfg.enable {
     recommendedProxySettings = true;
     recommendedTlsSettings = true;
 
-    appendConfig = ''
-      worker_processes auto;
-    '';
     eventsConfig = ''
       worker_connections 8192;
     '';
