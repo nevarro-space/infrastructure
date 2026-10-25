@@ -36,6 +36,12 @@ mkMerge [
       startAt = "0/3:0"; # systemd-analyze calendar "0/3:0"
     };
 
+    # The timer may fire while PostgreSQL is still starting during boot.
+    systemd.services.postgresqlBackup = {
+      after = [ "postgresql.service" ];
+      requires = [ "postgresql.service" ];
+    };
+
     # Add a backup service.
     services.backup.backups.postgresql = {
       path = config.services.postgresqlBackup.location;
