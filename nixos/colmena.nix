@@ -46,7 +46,7 @@ in
 
       deployment.replaceUnknownProfiles = true;
 
-      system.stateVersion = "23.05";
+      system.stateVersion = "26.11";
 
       swapDevices = [
         {

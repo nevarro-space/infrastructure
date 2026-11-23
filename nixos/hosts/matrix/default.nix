@@ -152,6 +152,7 @@
 
   # PosgreSQL
   services.postgresql.enable = true;
+  services.postgresql.package = pkgs.postgresql_18;
   services.postgresql.dataDir = "/mnt/postgresql-data/${config.services.postgresql.package.psqlSchema}";
   services.postgresqlBackup.enable = true;
 }
